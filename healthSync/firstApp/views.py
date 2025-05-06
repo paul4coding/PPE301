@@ -25,7 +25,7 @@ def connexion(request):
             mot_de_passe = form.cleaned_data['mot_de_passe']
             try:
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
-                return redirect('home') 
+                return redirect('acceuil') 
             except Utilisateur.DoesNotExist:
                 form.add_error(None, "Identifiants incorrects.")
     else:

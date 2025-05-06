@@ -1,0 +1,9 @@
+{% extends "user_template/base.html" %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Connexion ou Inscription</h1>
+    <a href="{% url 'connexion' %}" class="btn btn-primary m-2">Se connecter</a>
+    <a href="{% url 'inscription' %}" class="btn btn-success m-2">S'inscrire</a>
+</div>
+{% endblock %}

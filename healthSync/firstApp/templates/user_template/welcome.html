@@ -1,9 +1,168 @@
-{% extends "user_template/base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthSync – Bienvenue</title>
 
-{% block content %}
-<div class="container text-center mt-5">
-    <h1 class="mb-4">Connexion ou Inscription</h1>
-    <a href="{% url 'connexion' %}" class="btn btn-primary m-2">Se connecter</a>
-    <a href="{% url 'inscription' %}" class="btn btn-success m-2">S'inscrire</a>
-</div>
-{% endblock %}
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <!-- LineIcons -->
+  <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+
+   <!-- CSS -->
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+</head>
+<body>
+
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">HealthSync</a>
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a href="#hero" class="nav-link">Accueil</a></li>
+          <li class="nav-item"><a href="{% url 'connexion' %}" class="nav-link">Connexion</a></li>
+          <li class="nav-item"><a href="{% url 'inscription' %}" class="nav-link">Inscription</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <h1>Bienvenue sur <span style="color: #00ADB5;">HealthSync</span></h1>
+      <p class="lead mb-4">Votre palteforme pour suivre votre santé de prêt et vous faciliter vos opérations à l'hôpital.</p>
+      <a href="{% url 'connexion' %}" class="btn btn-jade btn-lg me-3">Se connecter</a>
+      <a href="{% url 'inscription' %}" class="btn btn-outline-light btn-lg">S'inscrire</a>
+    </div>
+  </section>
+
+  <!-- À propos -->
+<section class="py-5">
+    <div class="container">
+      <h2 class="text-center section-title mb-4" data-aos="fade-up">Pourquoi HealthSync ?</h2>
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="zoom-in">
+          <div class="card border-0 shadow-sm h-100 text-center p-3">
+            <i class="lni lni-sthethoscope fs-1 text-success mb-3"></i>
+            <h5>Gestion Médicale</h5>
+            <p>Suivi des dossiers patients, traitements, antécédents et prescriptions en un clic.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+          <div class="card border-0 shadow-sm h-100 text-center p-3">
+            <i class="lni lni-users fs-1 text-success mb-3"></i>
+            <h5>Organisation du Personnel</h5>
+            <p>Gérez les plannings, affectations et performances de votre équipe médicale.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+          <div class="card border-0 shadow-sm h-100 text-center p-3">
+            <i class="lni lni-stats-up fs-1 text-success mb-3"></i>
+            <h5>Tableaux de Bord</h5>
+            <p>Visualisez l’activité hospitalière grâce à des statistiques précises et dynamiques.</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- les fonctionnalités côté patients -->
+      <div class="row g-4 mt-4">
+        <div class="col-md-6" data-aos="fade-up">
+          <div class="card border-0 shadow-sm h-100 text-center p-3">
+            <i class="lni lni-files fs-1 text-success mb-3"></i>
+            <h5>Suivi personnalisé</h5>
+            <p>Les patients peuvent consulter l’historique de leurs prescriptions, consultations et factures à tout moment.</p>
+          </div>
+        </div>
+        <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="card border-0 shadow-sm h-100 text-center p-3">
+            <i class="lni lni-calendar fs-1 text-success mb-3"></i>
+            <h5>Services en ligne</h5>
+            <p>Prise de rendez-vous, réception des résultats d’analyses et suivi des examens sont accessibles directement via l’application.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Témoignages -->
+<section class="bg-light py-5">
+    <div class="container">
+      <h2 class="text-center section-title mb-5" data-aos="fade-up">Ils parlent de nous</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <blockquote class="blockquote text-center" data-aos="fade-right">
+            <p class="mb-4">« HealthSync a révolutionné notre manière de gérer les services hospitaliers. Tout est centralisé, rapide et sécurisé. »</p>
+            <footer class="blockquote-footer">Dr. Amina Ndiaye, <cite>CHU de Dakar</cite></footer>
+          </blockquote>
+          <blockquote class="blockquote text-center mt-5" data-aos="fade-left">
+            <p class="mb-4">« Grâce à cette plateforme, le suivi des patients n’a jamais été aussi fluide. »</p>
+            <footer class="blockquote-footer">Jean-Luc Morel, <cite>Clinique du Sud</cite></footer>
+          </blockquote>
+          <!-- Nouveaux témoignages des patients -->
+          <blockquote class="blockquote text-center mt-5" data-aos="fade-up">
+            <p class="mb-4">« En tant que patient, je peux consulter l’historique de mes visites et traitements en un clin d’œil. C’est rassurant et très pratique. »</p>
+            <footer class="blockquote-footer">Fatou Diallo, <cite>Patiente régulière</cite></footer>
+          </blockquote>
+          <blockquote class="blockquote text-center mt-5" data-aos="fade-up" data-aos-delay="100">
+            <p class="mb-4">« L’application est super intuitive ! Je reçois des rappels pour mes rendez-vous et je peux suivre mes analyses sans me déplacer. »</p>
+            <footer class="blockquote-footer">Michel Durand, <cite>Utilisateur HealthSync</cite></footer>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Contact rapide -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center section-title mb-4" data-aos="fade-up">Une question ? Contactez-nous</h2>
+      <form class="row g-3 justify-content-center" data-aos="fade-up">
+        <div class="col-md-5">
+          <input type="text" class="form-control" placeholder="Votre nom" required />
+        </div>
+        <div class="col-md-5">
+          <input type="email" class="form-control" placeholder="Votre email" required />
+        </div>
+        <div class="col-md-10">
+          <textarea class="form-control" rows="4" placeholder="Votre message..." required></textarea>
+        </div>
+        <div class="col-md-10 text-center">
+          <button class="btn btn-jade btn-lg">Envoyer</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1">&copy; 2025 HealthSync. Tous droits réservés.</p>
+      <p class="small">Politique de confidentialité • Mentions légales</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000 });
+  </script>
+
+</body>
+</html>

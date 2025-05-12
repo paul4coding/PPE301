@@ -1,36 +1,47 @@
-<h2>Inscription</h2>
-<form method="post">
-    {% csrf_token %}
-    <p>Qui suis-je ?</p>
-    {{ form.user_type }}
-    <div id="personnel-role-section" style="display: none;">
-        <p>Quel est votre rôle ?</p>
-        {{ form.personnel_role }}
-    </div>w
-    {{ form.nom.label }} {{ form.nom }}
-    {{ form.prenom.label }} {{ form.prenom }}
-    {{ form.sexe.label }} {{ form.sexe }}
-    {{ form.age.label }} {{ form.age }}
-    {{ form.email.label }} {{ form.email }}
-    {{ form.mot_de_passe.label }} {{ form.mot_de_passe }}
-    <button type="submit">S'inscrire</button>
-</form>
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription</title>
+    <link rel="stylesheet" href="{% static 'css/inscription.css' %}">
+</head>
+<body>
 
-<script>
-    // JavaScript pour afficher/masquer la section "Quel est votre rôle ?"
-    document.addEventListener('DOMContentLoaded', function () {
-        const userTypeInputs = document.querySelectorAll('input[name="user_type"]');
-        const personnelRoleSection = document.getElementById('personnel-role-section');
+<div class="form-container">
+    <h2>Inscription</h2>
+    <form method="post">
+        {% csrf_token %}
+        <p>Qui suis-je ?</p>
+        {{ form.user_type }}
 
-        userTypeInputs.forEach(input => {
-            input.addEventListener('change', function () {
-                if (this.value === 'personnel') {
-                    personnelRoleSection.style.display = 'block';
-                } else {
-                    personnelRoleSection.style.display = 'none';
-                }
-            });
-        });
-    });
-</script>
+        <div id="personnel-role-section" style="display: none;">
+            <p>Quel est votre rôle ?</p>
+            {{ form.personnel_role }}
+        </div>
 
+        <label>{{ form.nom.label }}</label>
+        {{ form.nom }}
+
+        <label>{{ form.prenom.label }}</label>
+        {{ form.prenom }}
+
+        <label>{{ form.sexe.label }}</label>
+        {{ form.sexe }}
+
+        <label>{{ form.age.label }}</label>
+        {{ form.age }}
+
+        <label>{{ form.email.label }}</label>
+        {{ form.email }}
+
+        <label>{{ form.mot_de_passe.label }}</label>
+        {{ form.mot_de_passe }}
+
+        <button type="submit">S'inscrire</button>
+    </form>
+</div>
+
+<script src="{% static 'js/inscription.js' %}"></script>
+</body>
+</html>

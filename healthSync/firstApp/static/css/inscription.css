@@ -1,6 +1,6 @@
 body {
-    background-color: #0d1117;
-    color: #c9d1d9;
+    background-color: #279aa7;
+    color: #ffffff;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -8,7 +8,7 @@ body {
     height: 100vh;
 }
 .form-container {
-    background-color: #161b22;
+    background-color: #1e1e1e;
     padding: 2rem;
     border-radius: 8px;
     width: 360px;
@@ -29,7 +29,7 @@ body {
     width: 100%;
     padding: 10px;
     margin-top: 4px;
-    background-color: #0d1117;
+    background-color: #b9b6b6;
     border: 1px solid #30363d;
     border-radius: 6px;
     color: #c9d1d9;
@@ -51,7 +51,18 @@ body {
     background-color: #238636;
     border: none;
     border-radius: 6px;
-    color: white;
+    color: rgb(245, 245, 245);
     font-weight: bold;
     cursor: pointer;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 2rem; /* Augmente l'espacement entre le logo et le formulaire */
+}
+
+.logo {
+    max-width: 150px; /* Augmente légèrement la taille du logo */
+    height: auto;
+    margin-top: -1rem; /* Optionnel : ajuste la position verticale si nécessaire */
 }

@@ -12,6 +12,7 @@
     
     <div class="logo-container">
         <img src="{% static 'img/logo/logohs1.png' %}" alt="Logo" class="logo">  
+    </div>
 
     <h2>Inscription</h2>
     <form method="post">
@@ -22,6 +23,11 @@
         <div id="personnel-role-section" style="display: none;">
             <p>Quel est votre rôle ?</p>
             {{ form.personnel_role }}
+        </div>
+
+        <div id="specialite-section" style="display: none;">
+            <p>Spécialité (si Médecin) :</p>
+            {{ form.specialite }}
         </div>
 
         <label>{{ form.nom.label }}</label>

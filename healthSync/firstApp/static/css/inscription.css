@@ -25,6 +25,7 @@ body {
 .form-container input[type="text"],
 .form-container input[type="email"],
 .form-container input[type="password"],
+.form-container input[type="number"],
 .form-container select {
     width: 100%;
     padding: 10px;
@@ -33,6 +34,8 @@ body {
     border: 1px solid #000000;
     border-radius: 6px;
     color: #070606;
+    font-size: 0.9rem;
+   
 }
 .form-container input[type="radio"] {
     margin-right: 6px;

@@ -29,10 +29,10 @@ body {
     width: 100%;
     padding: 10px;
     margin-top: 4px;
-    background-color: #b9b6b6;
-    border: 1px solid #30363d;
+    background-color: #fffcfc;
+    border: 1px solid #000000;
     border-radius: 6px;
-    color: #c9d1d9;
+    color: #070606;
 }
 .form-container input[type="radio"] {
     margin-right: 6px;

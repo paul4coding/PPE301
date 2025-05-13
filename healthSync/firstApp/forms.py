@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur
+from .models import Utilisateur, Specialite
 
 class ConnexionForm(forms.Form):
     email = forms.EmailField()
@@ -20,6 +20,12 @@ class InscriptionForm(forms.ModelForm):
         ],
         required=False,
         label="Quel est votre rôle ?"
+    )
+
+    specialite = forms.ModelChoiceField(
+        queryset=Specialite.objects.all(),
+        required=False,
+        label="Spécialité (si Médecin)"
     )
 
     class Meta:

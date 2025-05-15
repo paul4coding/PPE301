@@ -35,7 +35,7 @@
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a href="#hero" class="nav-link">A propos</a></li>
-          <li class="nav-item"><a href="{% url 'connexion' %}" class="nav-link">Connexion</a></li>
+          <a href="{% url 'connexion' %}" class="btn btn-jade btn-lg me-3">Connexion</a>
           <li class="nav-item"><a href="{% url 'inscription' %}" class="nav-link">Inscription</a></li>
         </ul>
       </div>
@@ -47,7 +47,7 @@
     <div class="container">
       <h1>Bienvenue sur <span style="color: #00ADB5;">HealthSync</span></h1>
       <p class="lead mb-4">Votre palteforme pour suivre votre santé de prêt et vous faciliter vos opérations à l'hôpital.</p>
-      <a href="{% url 'connexion' %}" class="btn btn-jade btn-lg me-3">Se connecter</a>
+      <a href="{% url 'connexion' %}" class="btn btn-jade btn-lg me-3">Deconnexion</a>
       <a href="{% url 'inscription' %}" class="btn btn-outline-light btn-lg">S'inscrire</a>
     </div>
   </section>

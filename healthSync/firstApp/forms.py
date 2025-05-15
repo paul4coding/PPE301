@@ -14,8 +14,8 @@ class InscriptionForm(forms.ModelForm):
     )
     personnel_role = forms.ChoiceField(
         choices=[
-            ('medecin', 'Médecin'),
             ('laborantin', 'Laborantin'),
+            ('medecin', 'Médecin'),
             ('secretaire', 'Secrétaire')
         ],
         required=False,

@@ -12,5 +12,7 @@ urlpatterns = [
    path('connexion/', views.connexion, name='connexion'), 
 
    path('welcome/', views.welcome_view, name='welcome'),
-    
+   
+# Admin URL
+   path('admin_home/', views.admin_home, name='admin_home'),
 ]

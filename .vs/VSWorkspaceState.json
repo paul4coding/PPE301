@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\healthSync",
+    "\\healthSync\\firstApp",
+    "\\healthSync\\firstApp\\static",
+    "\\healthSync\\firstApp\\templates",
+    "\\healthSync\\firstApp\\templates\\admin_template",
+    "\\healthSync\\firstApp\\templates\\user_template",
+    "\\healthSync\\healthSync"
+  ],
+  "SelectedNode": "\\healthSync\\firstApp\\templates\\user_template\\base.html",
+  "PreviewInSolutionExplorer": false
+}

@@ -7,6 +7,7 @@ class ConnexionForm(forms.Form):
 
 class InscriptionForm(forms.ModelForm):
     mot_de_passe = forms.CharField(widget=forms.PasswordInput)
+    photo = forms.ImageField(required=False, label="Photo de profil")
     user_type = forms.ChoiceField(
         choices=[('patient', 'Patient'), ('personnel', 'Personnel de santé')],
         widget=forms.RadioSelect,
@@ -30,4 +31,4 @@ class InscriptionForm(forms.ModelForm):
 
     class Meta:
         model = Utilisateur
-        fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'user_type', 'personnel_role']
+        fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'photo', 'user_type', 'personnel_role']

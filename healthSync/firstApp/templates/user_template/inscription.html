@@ -15,7 +15,7 @@
     </div>
 
     <h2>Inscription</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <p>Qui suis-je ?</p>
         {{ form.user_type }}
@@ -47,6 +47,9 @@
 
         <label>{{ form.mot_de_passe.label }}</label>
         {{ form.mot_de_passe }}
+
+         <label>{{ form.photo.label }}</label>
+        {{ form.photo }}
 
         <button type="submit">S'inscrire</button>
     </form>

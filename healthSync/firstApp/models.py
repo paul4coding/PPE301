@@ -9,7 +9,7 @@ class Utilisateur(models.Model):
     age = models.IntegerField()
     email = models.EmailField(unique=True)
     mot_de_passe = models.CharField(max_length=100)
-
+    photo = models.ImageField(upload_to='photos/', null=True, blank=True)
     def __str__(self):
         return f"{self.prenom} {self.nom}"
 

@@ -3,6 +3,12 @@ from django.db import models
 
 class Utilisateur(models.Model):
     """Classe parent pour tous les types d'utilisateurs."""
+    ROLE_CHOICES = [
+        ('patient', 'Patient'),
+        ('medecin', 'Médecin'),
+        ('secretaire', 'Secrétaire'),
+        ('laborantin', 'Laborantin'),
+    ]
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     sexe = models.CharField(max_length=1, choices=[('M', 'Masculin'), ('F', 'Féminin')])

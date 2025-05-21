@@ -54,6 +54,7 @@
 
 <body class=" ">
     <!-- START TOPBAR -->
+
 {% include "admin_template/partials/_header.html" %}
     <!-- END TOPBAR -->
     <!-- START CONTAINER -->
@@ -87,8 +88,11 @@
                                     <div class="box">
                                         <div class="hos-promo">
                                             <div class="promo-info">
-                                                <h3 class="w-text bold">Get full free <br> medical Check up!</h3>
-                                                <h4 class="g-text bold">29 Nov .... 20:00 PM</h4>
+                                                {% if utilisateur_connecte %}
+                                                    <h3 class="w-text bold">Bonjour, {{ utilisateur_connecte.prenom }}</h3>
+                                                {% endif %}
+                                                <h3 class="w-text bold">Bienvenu sur HealthSync</h3>
+                                                <h4 class="g-text bold"></h4>
                                             </div>
                                         </div>
                                     </div>

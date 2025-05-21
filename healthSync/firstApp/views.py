@@ -6,6 +6,7 @@ from .models import Utilisateur,Patient, Laborantin, Medecin, Secretaire
 #Methode pour afficher la page utilisateur
 def user_home(request):
     return render(request, 'user_template/home.html')
+
 def inscription(request):
     if request.method == 'POST':
         form = InscriptionForm(request.POST, request.FILES)  # <-- Correction ici
@@ -36,6 +37,7 @@ def inscription(request):
     else:
         form = InscriptionForm()
     return render(request, 'user_template/inscription.html', {'form': form})
+
 def connexion(request):
     if request.method == 'POST':
         form = ConnexionForm(request.POST)

@@ -63,7 +63,6 @@ def inscription(request):
         form = InscriptionForm()
     # Pas besoin de rôles ici sauf si sidebar affichée (ajouter si besoin)
     return render(request, 'user_template/inscription.html', {'form': form})
-
 def connexion(request):
     if request.method == 'POST':
         form = ConnexionForm(request.POST)
@@ -74,7 +73,9 @@ def connexion(request):
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
                 request.session['user_id'] = user.id
                 # Redirection selon le type d'utilisateur
-                if hasattr(user, 'medecin'):
+                if hasattr(user, 'admin'):
+                    return redirect('admin_dashboard')  # Crée une vue spéciale pour l'admin
+                elif hasattr(user, 'medecin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'secretaire'):
                     return redirect('admin_home')
@@ -113,6 +114,7 @@ def admin_home(request):
         user = Utilisateur.objects.get(id=user_id)
         role = get_user_role(user)
         nb_medecins = Medecin.objects.count()
+<<<<<<< HEAD
     return render(request, 'admin_template/home.html', {
         'user': user,
         'role': role,
@@ -121,3 +123,15 @@ def admin_home(request):
     })
 
 # Si tu as secretaire_home, laborantin_home, etc., ajoute le calcul et le passage des variables comme ci-dessus !
+=======
+    return render(request, 'admin_template/home.html', {'user': user})
+
+
+def admin_dashboard(request):
+    user_id = request.session.get('user_id')
+    user = None
+    if user_id:
+        user = Utilisateur.objects.get(id=user_id)
+    # Ajoute ici toutes les infos que tu veux afficher à l'admin
+    return render(request, 'admin_template/home.html', {'user': user})
+>>>>>>> 90a5cfac10988c890b9d97fac18f6ad76a26027c

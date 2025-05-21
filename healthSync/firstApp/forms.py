@@ -28,7 +28,11 @@ class InscriptionForm(forms.ModelForm):
         required=False,
         label="Spécialité (si Médecin)"
     )
+    numero_carte_identite = forms.CharField(
+        required=False,
+        label="Numéro de carte d'identité"
+    )
 
     class Meta:
         model = Utilisateur
-        fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'photo', 'user_type', 'personnel_role']
+        fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'photo', 'user_type', 'personnel_role','numero_carte_identite']

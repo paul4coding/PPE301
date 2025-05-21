@@ -41,3 +41,7 @@ class Medecin(Utilisateur):
 class Secretaire(Utilisateur):
     """Classe pour les secrétaires."""
 
+class Admin(Utilisateur):
+    """Classe pour les administrateurs."""
+    pass
+    

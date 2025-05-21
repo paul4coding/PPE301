@@ -114,7 +114,7 @@ def admin_home(request):
         user = Utilisateur.objects.get(id=user_id)
         role = get_user_role(user)
         nb_medecins = Medecin.objects.count()
-<<<<<<< HEAD
+
     return render(request, 'admin_template/home.html', {
         'user': user,
         'role': role,
@@ -123,7 +123,7 @@ def admin_home(request):
     })
 
 # Si tu as secretaire_home, laborantin_home, etc., ajoute le calcul et le passage des variables comme ci-dessus !
-=======
+
     return render(request, 'admin_template/home.html', {'user': user})
 
 
@@ -134,4 +134,4 @@ def admin_dashboard(request):
         user = Utilisateur.objects.get(id=user_id)
     # Ajoute ici toutes les infos que tu veux afficher à l'admin
     return render(request, 'admin_template/home.html', {'user': user})
->>>>>>> 90a5cfac10988c890b9d97fac18f6ad76a26027c
+

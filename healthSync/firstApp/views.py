@@ -73,4 +73,5 @@ def admin_home(request):
     if user_id:
         from .models import Utilisateur
         user = Utilisateur.objects.get(id=user_id)
+        nb_medecins = Medecin.objects.count()
     return render(request, 'admin_template/home.html', {'user': user})

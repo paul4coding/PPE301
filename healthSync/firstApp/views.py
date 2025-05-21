@@ -37,7 +37,6 @@ def inscription(request):
     else:
         form = InscriptionForm()
     return render(request, 'user_template/inscription.html', {'form': form})
-
 def connexion(request):
     if request.method == 'POST':
         form = ConnexionForm(request.POST)
@@ -46,10 +45,11 @@ def connexion(request):
             mot_de_passe = form.cleaned_data['mot_de_passe']
             try:
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
-                # Sauvegarde l'ID utilisateur dans la session
                 request.session['user_id'] = user.id
                 # Redirection selon le type d'utilisateur
-                if hasattr(user, 'medecin'):
+                if hasattr(user, 'admin'):
+                    return redirect('admin_dashboard')  # Crée une vue spéciale pour l'admin
+                elif hasattr(user, 'medecin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'secretaire'):
                     return redirect('secretaire_home')
@@ -76,4 +76,13 @@ def admin_home(request):
         from .models import Utilisateur
         user = Utilisateur.objects.get(id=user_id)
         nb_medecins = Medecin.objects.count()
+    return render(request, 'admin_template/home.html', {'user': user})
+
+
+def admin_dashboard(request):
+    user_id = request.session.get('user_id')
+    user = None
+    if user_id:
+        user = Utilisateur.objects.get(id=user_id)
+    # Ajoute ici toutes les infos que tu veux afficher à l'admin
     return render(request, 'admin_template/home.html', {'user': user})

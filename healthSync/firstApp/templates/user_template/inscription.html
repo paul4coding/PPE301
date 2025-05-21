@@ -48,12 +48,36 @@
         <label>{{ form.mot_de_passe.label }}</label>
         {{ form.mot_de_passe }}
 
-         <label>{{ form.photo.label }}</label>
+        <div id="carte-identite-section" style="display: none;">
+            <label>{{ form.numero_carte_identite.label }}</label>
+            {{ form.numero_carte_identite }}
+        </div>
+
+        <label>{{ form.photo.label }}</label>
         {{ form.photo }}
 
         <button type="submit">S'inscrire</button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function toggleCarteIdentite() {
+        var userType = document.querySelector('input[name="user_type"]:checked');
+        var carteSection = document.getElementById('carte-identite-section');
+        if (userType && userType.value === 'patient') {
+            carteSection.style.display = '';
+        } else {
+            carteSection.style.display = 'none';
+        }
+    }
+
+    toggleCarteIdentite();
+    document.querySelectorAll('input[name="user_type"]').forEach(function(radio) {
+        radio.addEventListener('change', toggleCarteIdentite);
+    });
+});
+</script>
 
 <script src="{% static 'js/inscription.js' %}"></script>
 </body>

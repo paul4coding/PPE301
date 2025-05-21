@@ -8,235 +8,181 @@
 
         <ul class='wraplist'>
             <li class='menusection'>Principal</li>
-            <li class="open">
-                <a href="{% url 'admin_home' %}">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20">
-                    </i>
+
+            {% if role == 'secretaire' or role == 'laborantin' %}
+            <li>
+                <a href='index-hos-dashboard.html'>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord</span>
                 </a>
             </li>
-            <li class="">
-                <a href="{% static 'admin/html/hos-patient-dash.html' %}">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/3.png' %}" alt="" class="width-20">
-                    </i>
+            {% endif %}
+
+            {% if role == 'patient' %}
+            <li>
+                <a href='hos-patient-dash.html'>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/3.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord patient</span>
                 </a>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'medecin' %}
+            <li>
                 <a href='hos-doctor-dash.html'>
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord médecin</span>
                 </a>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'secretaire' %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/2.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/2.png' %}" alt="" class="width-20"></i>
                     <span class="title">Médecins</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/hos-all-doctors.html'%}">Tous les médecins</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-add-doctor.html'%}">Ajouter un médecin</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-edit-doctor.html'%}">Modifier un médecin</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-doctor-profile.html'%}">Profil du médecin</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/hos-all-doctors.html'%}">Tous les médecins</a></li>
+                    <li><a href="{% static 'admin/html/hos-add-doctor.html'%}">Ajouter un médecin</a></li>
+                    <li><a href="{% static 'admin/html/hos-edit-doctor.html'%}">Modifier un médecin</a></li>
+                    <li><a href="{% static 'admin/html/hos-doctor-profile.html'%}">Profil du médecin</a></li>
                 </ul>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'secretaire' %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/5.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/5.png' %}" alt="" class="width-20"></i>
                     <span class="title">Patients</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/hos-all-patients.html'%}">Tous les patients</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-add-patient.html'%}">Ajouter un patient</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-edit-patient.html'%}">Modifier un patient</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-patient-profile.html'%}">Profil du patient</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/hos-all-patients.html'%}">Tous les patients</a></li>
+                    <li><a href="{% static 'admin/html/hos-add-patient.html'%}">Ajouter un patient</a></li>
+                    <li><a href="{% static 'admin/html/hos-edit-patient.html'%}">Modifier un patient</a></li>
+                    <li><a href="{% static 'admin/html/hos-patient-profile.html'%}">Profil du patient</a></li>
                 </ul>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'secretaire' %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/6.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/6.png' %}" alt="" class="width-20"></i>
                     <span class="title">Rendez-vous</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/hos-schedule.html'%}">Planning du médecin</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-book-appointment.html'%}">Prendre rendez-vous</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/hos-schedule.html'%}">Planning du médecin</a></li>
+                    <li><a href="{% static 'admin/html/hos-book-appointment.html'%}">Prendre rendez-vous</a></li>
                 </ul>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'secretaire' %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/7.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/7.png' %}" alt="" class="width-20"></i>
                     <span class="title">Facturation</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/hos-payment.html'%}">Paiements</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-add-payment.html'%}">Ajouter un paiement</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-patient-invoice.html'%}">Facture du patient</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/hos-payment.html'%}">Paiements</a></li>
+                    <li><a href="{% static 'admin/html/hos-add-payment.html'%}">Ajouter un paiement</a></li>
+                    <li><a href="{% static 'admin/html/hos-patient-invoice.html'%}">Facture du patient</a></li>
                 </ul>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role == 'secretaire' %}
+            <li>
                 <a href='hos-events.html'>
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/9.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/9.png' %}" alt="" class="width-20"></i>
                     <span class="title">Gestion des événements</span>
                 </a>
             </li>
+            {% endif %}
 
-            <li class="">
+            {# Utilisation des variables de contexte pour les tests 'in' #}
+            {% if role in roles_pages_acces %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20"></i>
                     <span class="title">Pages d’accès</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/ui-login.html'%}">Connexion</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/ui-register.html'%}">Inscription</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/ui-404.html'%}">Erreur 404</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/ui-login.html'%}">Connexion</a></li>
+                    <li><a href="{% static 'admin/html/ui-register.html'%}">Inscription</a></li>
+                    <li><a href="{% static 'admin/html/ui-404.html'%}">Erreur 404</a></li>
                 </ul>
             </li>
-            <li class="">
+            {% endif %}
+
+            {% if role in roles_support %}
+            <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/11.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/11.png' %}" alt="" class="width-20"></i>
                     <span class="title">Support</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/hos-faq.html'%}">FAQ</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/hos-support.html'%}">Centre d’aide</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/hos-faq.html'%}">FAQ</a></li>
+                    <li><a href="{% static 'admin/html/hos-support.html'%}">Centre d’aide</a></li>
                 </ul>
             </li>
+            {% endif %}
+
+            {% if role != 'patient' %}
             <li class='menusection'>Visualisation de données</li>
+
             <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/12.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/12.png' %}" alt="" class="width-20"></i>
                     <span class="title">Echarts</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/charts-echart-line.html'%}">Graphiques en ligne</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-echart-bar.html'%}">Graphiques en barres</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-echart-pie.html'%}">Graphiques en secteurs</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-echart-doughnut.html'%}">Graphiques en anneaux</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/charts-echart-line.html'%}">Graphiques en ligne</a></li>
+                    <li><a href="{% static 'admin/html/charts-echart-bar.html'%}">Graphiques en barres</a></li>
+                    <li><a href="{% static 'admin/html/charts-echart-pie.html'%}">Graphiques en secteurs</a></li>
+                    <li><a href="{% static 'admin/html/charts-echart-doughnut.html'%}">Graphiques en anneaux</a></li>
                 </ul>
             </li>
+
             <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/13.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/13.png' %}" alt="" class="width-20"></i>
                     <span class="title">Morris Charts</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/charts-morris-line.html'%}">Graphiques en ligne</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-morris-bar.html'%}">Graphiques en barres</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-morris-area.html'%}">Graphiques en aires</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-morris-donut.html'%}">Graphiques en beignets</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/charts-morris-line.html'%}">Graphiques en ligne</a></li>
+                    <li><a href="{% static 'admin/html/charts-morris-bar.html'%}">Graphiques en barres</a></li>
+                    <li><a href="{% static 'admin/html/charts-morris-area.html'%}">Graphiques en aires</a></li>
+                    <li><a href="{% static 'admin/html/charts-morris-donut.html'%}">Graphiques en beignets</a></li>
                 </ul>
             </li>
+
             <li>
                 <a href="javascript:;">
-                    <i class="img">
-                        <img src="{% static 'admin/data/hos-dash/icons/14.png' %}" alt="" class="width-20">
-                    </i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/14.png' %}" alt="" class="width-20"></i>
                     <span class="title">Charts JS</span>
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-line.html'%}">Graphiques en ligne</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-bar.html'%}">Graphiques en barres</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-radar.html'%}">Graphiques radar</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-polar.html'%}">Graphiques polaires</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-pie.html'%}">Graphiques en secteurs</a>
-                    </li>
-                    <li>
-                        <a class href="{% static 'admin/html/charts-js-doughnut.html'%}">Graphiques en anneaux</a>
-                    </li>
+                    <li><a href="{% static 'admin/html/charts-js-line.html'%}">Graphiques en ligne</a></li>
+                    <li><a href="{% static 'admin/html/charts-js-bar.html'%}">Graphiques en barres</a></li>
+                    <li><a href="{% static 'admin/html/charts-js-radar.html'%}">Graphiques radar</a></li>
+                    <li><a href="{% static 'admin/html/charts-js-polar.html'%}">Graphiques polaires</a></li>
+                    <li><a href="{% static 'admin/html/charts-js-pie.html'%}">Graphiques en secteurs</a></li>
+                    <li><a href="{% static 'admin/html/charts-js-doughnut.html'%}">Graphiques en anneaux</a></li>
                 </ul>
             </li>
+            {% endif %}
         </ul>
 
     </div>

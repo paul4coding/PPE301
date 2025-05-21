@@ -88,8 +88,8 @@
                                     <div class="box">
                                         <div class="hos-promo">
                                             <div class="promo-info">
-                                                {% if utilisateur_connecte %}
-                                                    <h3 class="w-text bold">Bonjour, {{ utilisateur_connecte.prenom }}</h3>
+                                                {% if user %}
+                                                    <h3 class="w-text bold">Bonjour, {{ user.prenom }}</h3>
                                                 {% endif %}
                                                 <h3 class="w-text bold">Bienvenu sur HealthSync</h3>
                                                 <h4 class="g-text bold"></h4>

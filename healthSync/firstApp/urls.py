@@ -15,4 +15,11 @@ urlpatterns = [
    
 # Admin URL
    path('admin_home/', views.admin_home, name='admin_home'),
+
+
+   path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+
+
+   path('admin/personnels_a_valider/', views.personnels_a_valider, name='personnels_a_valider'),
+    path('admin/valider_personnel/<int:user_id>/', views.valider_personnel, name='valider_personnel'),
 ]

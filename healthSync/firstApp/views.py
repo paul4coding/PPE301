@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
-
+from django.views.decorators.http import require_POST
+from django.contrib import messages
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):
@@ -50,19 +51,23 @@ def inscription(request):
                 'photo': photo,
             }
             if user_type == 'patient':
-                Patient.objects.create(**user_data, numero_carte_identite=form.cleaned_data['numero_carte_identite'])
+                Patient.objects.create(
+                    **user_data,
+                    numero_carte_identite=form.cleaned_data['numero_carte_identite'],
+                    is_validated=True  # Patient validé directement
+                )
             elif user_type == 'personnel':
                 if personnel_role == 'medecin':
-                    Medecin.objects.create(**user_data, specialite=specialite)
+                    Medecin.objects.create(**user_data, specialite=specialite, is_validated=False)
                 elif personnel_role == 'laborantin':
-                    Laborantin.objects.create(**user_data)
+                    Laborantin.objects.create(**user_data, is_validated=False)
                 elif personnel_role == 'secretaire':
-                    Secretaire.objects.create(**user_data)
+                    Secretaire.objects.create(**user_data, is_validated=False)
             return redirect('welcome')
     else:
         form = InscriptionForm()
-    # Pas besoin de rôles ici sauf si sidebar affichée (ajouter si besoin)
     return render(request, 'user_template/inscription.html', {'form': form})
+
 def connexion(request):
     if request.method == 'POST':
         form = ConnexionForm(request.POST)
@@ -71,10 +76,14 @@ def connexion(request):
             mot_de_passe = form.cleaned_data['mot_de_passe']
             try:
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
+                # Vérification de la validation pour le personnel de santé
+                if (hasattr(user, 'medecin') or hasattr(user, 'secretaire') or hasattr(user, 'laborantin')) and not user.is_validated:
+                    form.add_error(None, "Votre compte doit être validé par l'administrateur avant de pouvoir vous connecter.")
+                    return render(request, 'user_template/connexion.html', {'form': form})
                 request.session['user_id'] = user.id
                 # Redirection selon le type d'utilisateur
                 if hasattr(user, 'admin'):
-                    return redirect('admin_dashboard')  # Crée une vue spéciale pour l'admin
+                    return redirect('admin_dashboard')
                 elif hasattr(user, 'medecin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'secretaire'):
@@ -82,7 +91,7 @@ def connexion(request):
                 elif hasattr(user, 'laborantin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'patient'):
-                    return redirect('welcome')
+                    return redirect('admin_home')
                 else:
                     return redirect('admin_home')
             except Utilisateur.DoesNotExist:
@@ -132,6 +141,35 @@ def admin_dashboard(request):
     user = None
     if user_id:
         user = Utilisateur.objects.get(id=user_id)
-    # Ajoute ici toutes les infos que tu veux afficher à l'admin
-    return render(request, 'admin_template/home.html', {'user': user})
+    # Liste des personnels de santé non validés (patients exclus)
+    medecins = Medecin.objects.filter(is_validated=False)
+    laborantins = Laborantin.objects.filter(is_validated=False)
+    secretaires = Secretaire.objects.filter(is_validated=False)
+    return render(request, 'admin_template/admin_dashboard.html', {
+        'user': user,
+        'medecins': medecins,
+        'laborantins': laborantins,
+        'secretaires': secretaires,
+    })
+
+
+def personnels_a_valider(request):
+    # Liste tous les personnels de santé non validés
+    medecins = Medecin.objects.filter(is_validated=False)
+    laborantins = Laborantin.objects.filter(is_validated=False)
+    secretaires = Secretaire.objects.filter(is_validated=False)
+    return render(request, 'admin_template/personnels_a_valider.html', {
+        'medecins': medecins,
+        'laborantins': laborantins,
+        'secretaires': secretaires,
+    })
+
+
+@require_POST
+def valider_personnel(request, user_id):
+    user = get_object_or_404(Utilisateur, id=user_id)
+    user.is_validated = True
+    user.save()
+    messages.success(request, f"{user.prenom} {user.nom} autorisé avec succès !")
+    return redirect('admin_dashboard')
 

@@ -173,3 +173,7 @@ def valider_personnel(request, user_id):
     messages.success(request, f"{user.prenom} {user.nom} autorisé avec succès !")
     return redirect('admin_dashboard')
 
+
+def liste_patients(request):
+    patients = Patient.objects.all()
+    return render(request, 'hos-all-patients.html', {'patients': patients})

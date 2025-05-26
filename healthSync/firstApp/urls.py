@@ -22,4 +22,8 @@ urlpatterns = [
 
    path('admin/personnels_a_valider/', views.personnels_a_valider, name='personnels_a_valider'),
     path('admin/valider_personnel/<int:user_id>/', views.valider_personnel, name='valider_personnel'),
+    
+
+    path('patients/', views.liste_patients, name='liste_patients'),
+
 ]

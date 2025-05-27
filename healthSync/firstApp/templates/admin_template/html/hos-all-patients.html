@@ -3,10 +3,6 @@
 <html lang="en">
 
 <head>
-    <!-- 
-        * @Package:  Multipurpose Dashboard
-        * @Version: 1.0.0
-    -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Multipurpose Dashboard</title>
@@ -33,9 +29,6 @@
     <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <!-- CORE CSS FRAMEWORK - END -->
-
-    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - START -->
-    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - END -->
 
     <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
@@ -65,19 +58,16 @@
 
                 <div class='col-xs-12'>
                     <div class="page-title">
-
                         <div class="pull-left">
-                            <!-- PAGE HEADING TAG - START -->
-                            <h1 class="title">All Patients</h1>
-                            <!-- PAGE HEADING TAG - END -->
+                            <h1 class="title">Tous les patients</h1>
                         </div>
-
                     </div>
                 </div>
 
                 <div class="clearfix"></div>
                 <!-- MAIN CONTENT AREA STARTS -->
 
+                {% for patient in patients %}
                 <div class="col-lg-4 col-md-6">
                     <section class="box ">
                         <div class="content-body p">
@@ -85,10 +75,14 @@
                                 <div class="doctors-list patient relative">
                                     <div class="doctors-head relative text-center">
                                         <div class="patient-img img-circle">
-                                            <img src="{% static 'admin/data/profile/avatar-1.png' %}" class="rad-50 center-block" alt="">
+                                            {% if patient.photo %}
+                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="">
+                                            {% else %}
+                                                <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="">
+                                            {% endif %}
                                             <div class="stutas recent"></div>
                                         </div>
-                                        <h3 class="header w-text relative bold">Name : Smith Wright</h3>
+                                        <h3 class="header w-text relative bold">Nom : {{ patient.nom }} {{ patient.prenom }}</h3>
                                     </div>
                                     <div class="row">
                                         <div class="patients-info relative" >
@@ -96,8 +90,16 @@
                                                 <div class="patient-card has-shadow2">
                                                     <div class="doc-info-wrap">
                                                         <div class="patient-info">
-                                                            <h5 class="bold">Male</h5>
-                                                            <h6>Patient  Gender</h6>
+                                                            <h5 class="bold">
+                                                                {% if patient.sexe == "M" %}
+                                                                    Masculin
+                                                                {% elif patient.sexe == "F" %}
+                                                                    Féminin
+                                                                {% else %}
+                                                                    {{ patient.sexe }}
+                                                                {% endif %}
+                                                            </h5>
+                                                            <h6>Genre du Patient(e)</h6>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -106,8 +108,8 @@
                                                 <div class="patient-card has-shadow2">
                                                     <div class="doc-info-wrap">
                                                         <div class="patient-info">
-                                                            <h5 class="bold">Age: 23</h5>
-                                                            <h6>Years Old</h6>
+                                                            <h5 class="bold">Age: {{ patient.age }}</h5>
+                                                            <h6>Ans</h6>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -116,7 +118,11 @@
                                     </div><!-- end row -->
                                     <div class="col-xs-12 mb-30">
                                         <div class="form-group no-mb">
-                                            <button type="button" class="btn btn-primary btn-lg gradient-blue" style="width:100%"> View Profile</button>
+                                            {% if patient.id %}
+                                                <a href="{% url 'hos_patient_profile' patient.id %}" class="btn btn-primary btn-lg gradient-blue" style="width:100%">Voir le profil</a>
+                                            {% else %}
+                                                <span class="btn btn-default btn-lg gradient-blue" style="width:100%;pointer-events:none;">Profil indisponible</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -124,13 +130,17 @@
                         </div>
                     </section>
                 </div>
-                <!-- ... autres patients ... -->
+                {% empty %}
+                <div class="col-xs-12">
+                    <div class="alert alert-info text-center">Aucun patient trouvé.</div>
+                </div>
+                {% endfor %}
 
                 <div class="clearfix"></div>
 
                 <div class="col-xs-12 mb-30 mt-15">
                     <div class="form-group no-mb text-center">
-                        <button type="button" class="btn btn-primary btn-lg gradient-blue" style="width:100%;max-width:300px"> Load more</button>
+                        <button type="button" class="btn btn-primary btn-lg gradient-blue" style="width:100%;max-width:300px">Load more</button>
                     </div>
                 </div>
 
@@ -161,145 +171,12 @@
                             <i class="fa fa-circle"></i>
                         </div>
                     </li>
-                    <li class="user-row " id='chat_user_2' data-user-id='2'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-2.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Folisise Chosiel</a></h4>
-                            <span class="status away" data-status="away"> Away</span>
-                        </div>
-                        <div class="user-status away">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_3' data-user-id='3'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-3.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Aron Gonzalez</a></h4>
-                            <span class="status busy" data-status="busy"> Busy</span>
-                        </div>
-                        <div class="user-status busy">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-
+                    <!-- ... autres utilisateurs ... -->
                 </ul>
 
                 <h4 class="group-head">More Contacts</h4>
                 <ul class="contact-list">
-
-                    <li class="user-row " id='chat_user_4' data-user-id='4'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-4.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Chris Fox</a></h4>
-                            <span class="status offline" data-status="offline"> Offline</span>
-                        </div>
-                        <div class="user-status offline">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_5' data-user-id='5'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-5.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Mogen Polish</a></h4>
-                            <span class="status offline" data-status="offline"> Offline</span>
-                        </div>
-                        <div class="user-status offline">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_6' data-user-id='6'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-1.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Smith Carter</a></h4>
-                            <span class="status available" data-status="available"> Available</span>
-                        </div>
-                        <div class="user-status available">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_7' data-user-id='7'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-2.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Amilia Gozenal</a></h4>
-                            <span class="status busy" data-status="busy"> Busy</span>
-                        </div>
-                        <div class="user-status busy">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_8' data-user-id='8'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-3.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Tahir Jemyship</a></h4>
-                            <span class="status away" data-status="away"> Away</span>
-                        </div>
-                        <div class="user-status away">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_9' data-user-id='9'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-4.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Johanson Wright</a></h4>
-                            <span class="status busy" data-status="busy"> Busy</span>
-                        </div>
-                        <div class="user-status busy">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_10' data-user-id='10'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-5.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Loni Tindall</a></h4>
-                            <span class="status away" data-status="away"> Away</span>
-                        </div>
-                        <div class="user-status away">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_11' data-user-id='11'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-1.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Natcho Herlaey</a></h4>
-                            <span class="status idle" data-status="idle"> Idle</span>
-                        </div>
-                        <div class="user-status idle">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <li class="user-row " id='chat_user_12' data-user-id='12'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-2.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Shakira Swedan</a></h4>
-                            <span class="status idle" data-status="idle"> Idle</span>
-                        </div>
-                        <div class="user-status idle">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-
+                    <!-- ... autres utilisateurs ... -->
                 </ul>
             </div>
 
@@ -323,10 +200,6 @@
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
     <!-- CORE JS FRAMEWORK - END -->
-
-    <!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - START -->
-    
-    <!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - END -->
 
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>

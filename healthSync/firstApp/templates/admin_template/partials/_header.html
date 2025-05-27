@@ -151,14 +151,24 @@
                     </ul>
                 </li>
                 <li class="profile">
-                        <a href="#" data-toggle="dropdown" class="toggle">
-                            {% if user.photo %}
-                                <img src="{{ user.photo.url }}" alt="user-image" class="img-circle img-inline">
+                    <a href="#" data-toggle="dropdown" class="toggle">
+                        {% if user.photo %}
+                            <img src="{{ user.photo.url }}" alt="user-image" class="img-circle img-inline">
+                        {% else %}
+                            {% if role == "medecin" %}
+                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                            {% elif role == "secretaire" %}
+                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                            {% elif role == "laborantin" %}
+                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                            {% elif role == "patient" %}
+                                <img src="{% static 'admin/data/profile/1430504.jpg' %}" alt="user-image" class="img-circle img-inline">
                             {% else %}
                                 <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
                             {% endif %}
-                            <span>{{ user.prenom }} {{ user.nom }} <i class="fa fa-angle-down"></i></span>
-                        </a>
+                        {% endif %}
+                        <span>{{ user.prenom }} {{ user.nom }} <i class="fa fa-angle-down"></i></span>
+                    </a>
                     <ul class="dropdown-menu profile animated fadeIn">
                         <li>
                             <a href='hos-faq.html'>
@@ -182,6 +192,7 @@
                         </li>
                     </ul>
                 </li>
+
             </ul>
         </div>
     </div>

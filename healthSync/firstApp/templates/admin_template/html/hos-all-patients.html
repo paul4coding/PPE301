@@ -76,9 +76,9 @@
                                     <div class="doctors-head relative text-center">
                                         <div class="patient-img img-circle">
                                             {% if patient.photo %}
-                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="">
+                                                <img src="{{ patient.photo.url }}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
                                             {% else %}
-                                                <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="">
+                                                <img src="{% static 'admin/data/profile/1430504.png' %}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
                                             {% endif %}
                                             <div class="stutas recent"></div>
                                         </div>
@@ -116,13 +116,29 @@
                                             </div>
                                         </div>
                                     </div><!-- end row -->
-                                    <div class="col-xs-12 mb-30">
-                                        <div class="form-group no-mb">
+                                    <div class="col-xs-12 mb-20 text-center">
+                                        <div class="btn-group" role="group" aria-label="Actions patient">
+                                            <!-- Voir profil -->
                                             {% if patient.id %}
-                                                <a href="{% url 'hos_patient_profile' patient.id %}" class="btn btn-primary btn-lg gradient-blue" style="width:100%">Voir le profil</a>
+                                                <a href="{% url 'hos_patient_profile' patient.id %}" class="btn btn-primary gradient-blue" title="Voir le profil">
+                                                    <i class="fa fa-user"></i>
+                                                </a>
                                             {% else %}
-                                                <span class="btn btn-default btn-lg gradient-blue" style="width:100%;pointer-events:none;">Profil indisponible</span>
+                                                <span class="btn btn-default gradient-blue" style="pointer-events:none;" title="Profil indisponible">
+                                                    <i class="fa fa-user"></i>
+                                                </span>
                                             {% endif %}
+                                            <!-- Modifier -->
+                                            <a href="{% url 'hos_edit_patient' patient.id %}" class="btn btn-warning" title="Modifier">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                            <!-- Supprimer -->
+                                            <form action="{% url 'hos_delete_patient' patient.id %}" method="post" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -149,46 +165,12 @@
         </section>
         <!-- END CONTENT -->
         <div class="page-chatapi hideit">
-
-            <div class="search-bar">
-                <input type="text" placeholder="Search" class="form-control">
-            </div>
-
-            <div class="chat-wrapper">
-
-                <h4 class="group-head">Favourites</h4>
-                <ul class="contact-list">
-
-                    <li class="user-row " id='chat_user_1' data-user-id='1'>
-                        <div class="user-img">
-                            <a href="#"><img src="{% static 'admin/data/profile/avatar-1.png' %}" alt=""></a>
-                        </div>
-                        <div class="user-info">
-                            <h4><a href="#">Joge Lucky</a></h4>
-                            <span class="status available" data-status="available"> Available</span>
-                        </div>
-                        <div class="user-status available">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                    </li>
-                    <!-- ... autres utilisateurs ... -->
-                </ul>
-
-                <h4 class="group-head">More Contacts</h4>
-                <ul class="contact-list">
-                    <!-- ... autres utilisateurs ... -->
-                </ul>
-            </div>
-
+            <!-- ... le reste ... -->
         </div>
 
-        <div class="chatapi-windows ">
-
-        </div>
+        <div class="chatapi-windows "></div>
     </div>
     <!-- END CONTAINER -->
-    <!-- LOAD FILES AT PAGE END FOR FASTER LOADING -->
-
     <!-- CORE JS FRAMEWORK - START -->
     <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
@@ -200,10 +182,8 @@
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
     <!-- CORE JS FRAMEWORK - END -->
-
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
     <!-- END CORE TEMPLATE JS - END -->
-
 </body>
 </html>

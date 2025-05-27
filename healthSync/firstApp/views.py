@@ -3,11 +3,11 @@ from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-<<<<<<< HEAD
+
 from django.db import IntegrityError
-=======
+
 from django.contrib.auth.decorators import login_required
->>>>>>> c054497bc8aa8110ab70e96320f90266342bb0ef
+
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):
@@ -318,8 +318,64 @@ def hos_doctor_profile(request):
     return render(request, "admin_template/html/hos-doctor-profile.html", get_admin_context(request))
 def hos_edit_doctor(request):
     return render(request, "admin_template/html/hos-edit-doctor.html", get_admin_context(request))
-def hos_edit_patient(request):
-    return render(request, "admin_template/html/hos-edit-patient.html", get_admin_context(request))
+
+# modification patient
+def hos_edit_patient(request, patient_id):
+    context = get_admin_context(request)
+    patient = get_object_or_404(Patient, pk=patient_id)
+    context['patient'] = patient
+
+    if request.method == "POST":
+        nom = request.POST.get("nom")
+        prenom = request.POST.get("prenom")
+        sexe = request.POST.get("sexe")
+        age = request.POST.get("age")
+        email = request.POST.get("email")
+        numero_carte_identite = request.POST.get("numero_carte_identite")
+        password = request.POST.get("password")
+        password_confirm = request.POST.get("password_confirm")
+        photo = request.FILES.get("photo")
+
+        # Vérification unicité email/numéro_carte (hors patient courant)
+        if Patient.objects.exclude(pk=patient.pk).filter(email=email).exists():
+            messages.error(request, "Cet email est déjà utilisé par un autre patient.")
+            return render(request, "admin_template/html/hos-edit-patient.html", context)
+        if Patient.objects.exclude(pk=patient.pk).filter(numero_carte_identite=numero_carte_identite).exists():
+            messages.error(request, "Ce numéro de carte d'identité est déjà utilisé par un autre patient.")
+            return render(request, "admin_template/html/hos-edit-patient.html", context)
+        # Mot de passe : modifié uniquement si rempli et confirmation OK
+        if password or password_confirm:
+            if password != password_confirm:
+                messages.error(request, "Les mots de passe ne correspondent pas.")
+                return render(request, "admin_template/html/hos-edit-patient.html", context)
+            patient.mot_de_passe = password  # (Pense à hasher en prod !)
+
+        # Met à jour les infos
+        patient.nom = nom
+        patient.prenom = prenom
+        patient.sexe = sexe
+        patient.age = age
+        patient.email = email
+        patient.numero_carte_identite = numero_carte_identite
+        if photo:
+            patient.photo = photo
+        patient.save()
+        messages.success(request, "Le patient a bien été modifié.")
+        return redirect('hos_all_patients')
+
+    return render(request, "admin_template/html/hos-edit-patient.html", context)
+
+#suppresion patient
+def hos_delete_patient(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    if request.method == 'POST':
+        patient.delete()
+        messages.success(request, "Le patient a bien été supprimé.")
+        return redirect('hos_all_patients')
+    else:
+        # Optionnel : page de confirmation
+        return render(request, "admin_template/html/hos-confirm-delete-patient.html", {'patient': patient})
+
 def hos_events(request):
     return render(request, "admin_template/html/hos-events.html", get_admin_context(request))
 def hos_faq(request):

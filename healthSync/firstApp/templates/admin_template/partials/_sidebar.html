@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <!-- SIDEBAR - START -->
 
 <div class="page-sidebar fixedscroll">
@@ -11,7 +12,7 @@
 
             {% if role == 'secretaire' or role == 'laborantin' %}
             <li>
-                <a href="{% url 'index_dashboard' %}">
+                <a href="{% url 'admin_home' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord</span>
                 </a>
@@ -62,7 +63,6 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
                     <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
-                    <li><a href="{% url 'hos_edit_patient' %}">Modifier un patient</a></li>
 
                 </ul>
             </li>

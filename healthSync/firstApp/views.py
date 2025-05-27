@@ -3,6 +3,7 @@ from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.db import IntegrityError
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):
@@ -241,8 +242,54 @@ def form_wizard(request):
 # --- HOSPITAL/ADMIN ---
 def hos_add_doctor(request):
     return render(request, "admin_template/html/hos-add-doctor.html", get_admin_context(request))
+
+#ajout de patient
 def hos_add_patient(request):
-    return render(request, "admin_template/html/hos-add-patient.html", get_admin_context(request))
+    context = get_admin_context(request)
+    if request.method == "POST":
+        nom = request.POST.get("nom")
+        prenom = request.POST.get("prenom")
+        sexe = request.POST.get("sexe")
+        age = request.POST.get("age")
+        email = request.POST.get("email")
+        mot_de_passe = request.POST.get("password")
+        mot_de_passe2 = request.POST.get("password_confirm")
+        numero_carte_identite = request.POST.get("numero_carte_identite")
+        photo = request.FILES.get("photo")
+        
+        # Validation basique
+        if mot_de_passe != mot_de_passe2:
+            messages.error(request, "Les mots de passe ne correspondent pas.")
+            return render(request, "admin_template/html/hos-add-patient.html", context)
+        
+        if Patient.objects.filter(email=email).exists():
+            messages.error(request, "Cet email existe déjà.")
+            return render(request, "admin_template/html/hos-add-patient.html", context)
+        
+        if Patient.objects.filter(numero_carte_identite=numero_carte_identite).exists():
+            messages.error(request, "Ce numéro de carte d'identité existe déjà.")
+            return render(request, "admin_template/html/hos-add-patient.html", context)
+
+        try:
+            patient = Patient(
+                nom=nom,
+                prenom=prenom,
+                sexe=sexe,
+                age=age,
+                email=email,
+                mot_de_passe=mot_de_passe,  # À chiffrer avec make_password pour une vraie app !
+                numero_carte_identite=numero_carte_identite,
+                photo=photo
+            )
+            patient.save()
+            messages.success(request, "Le patient a bien été ajouté.")
+            return redirect("hos_all_patients")
+        except IntegrityError:
+            messages.error(request, "Erreur lors de la création du patient (données uniques ?).")
+            return render(request, "admin_template/html/hos-add-patient.html", context)
+
+    return render(request, "admin_template/html/hos-add-patient.html", context)
+
 def hos_add_payment(request):
     return render(request, "admin_template/html/hos-add-payment.html", get_admin_context(request))
 def hos_all_doctors(request):
@@ -273,7 +320,7 @@ def hos_patient_dash(request):
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
 
-
+#profile du patient
 def hos_patient_profile(request, id):
     patient = get_object_or_404(Patient, id=id)
     context = {

@@ -3,7 +3,11 @@ from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+<<<<<<< HEAD
 from django.db import IntegrityError
+=======
+from django.contrib.auth.decorators import login_required
+>>>>>>> c054497bc8aa8110ab70e96320f90266342bb0ef
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):
@@ -303,8 +307,13 @@ def hos_all_patients(request):
 
 def hos_book_appointment(request):
     return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
+
+@login_required
 def hos_doctor_dash(request):
-    return render(request, "admin_template/html/hos-doctor-dash.html", get_admin_context(request))
+    patient = request.user  # ou request.user.patient selon ton modèle
+    return render(request, 'admin_template/html/hos-patient-dash.html', {'patient': patient})
+
+
 def hos_doctor_profile(request):
     return render(request, "admin_template/html/hos-doctor-profile.html", get_admin_context(request))
 def hos_edit_doctor(request):

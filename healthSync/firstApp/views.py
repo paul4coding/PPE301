@@ -174,6 +174,174 @@ def valider_personnel(request, user_id):
     return redirect('admin_dashboard')
 
 
-def liste_patients(request):
-    patients = Patient.objects.all()
-    return render(request, 'hos-all-patients.html', {'patients': patients})
+
+
+# Fonction utilitaire pour DRY (évite la répétition)
+def get_admin_context(request):
+    user_id = request.session.get('user_id')
+    user = None
+    role = None
+    if user_id:
+        user = Utilisateur.objects.get(id=user_id)
+        # Utilise ta fonction pour déterminer le rôle :
+        role = get_user_role(user)
+    return {
+        'user': user,
+        'role': role,
+        'roles_pages_acces': ROLES_PAGES_ACCES,
+        'roles_support': ROLES_SUPPORT,
+    }
+
+# --- CHARTS ---
+def charts_chartjs_bar(request):
+    return render(request, "admin_template/html/charts-chartjs-bar.html", get_admin_context(request))
+def charts_chartjs_line(request):
+    return render(request, "admin_template/html/charts-chartjs-line.html", get_admin_context(request))
+def charts_chartjs_pie_donut(request):
+    return render(request, "admin_template/html/charts-chartjs-pie-donut.html", get_admin_context(request))
+def charts_echart_bar(request):
+    return render(request, "admin_template/html/charts-echart-bar.html", get_admin_context(request))
+def charts_echart_line(request):
+    return render(request, "admin_template/html/charts-echart-line.html", get_admin_context(request))
+def charts_flot_area(request):
+    return render(request, "admin_template/html/charts-flot-area.html", get_admin_context(request))
+def charts_flot_line(request):
+    return render(request, "admin_template/html/charts-flot-line.html", get_admin_context(request))
+def charts_flot_stacked(request):
+    return render(request, "admin_template/html/charts-flot-stacked.html", get_admin_context(request))
+def charts_morris_area(request):
+    return render(request, "admin_template/html/charts-morris-area.html", get_admin_context(request))
+def charts_morris_bar(request):
+    return render(request, "admin_template/html/charts-morris-bar.html", get_admin_context(request))
+def charts_morris_line(request):
+    return render(request, "admin_template/html/charts-morris-line.html", get_admin_context(request))
+def charts_morris_pie(request):
+    return render(request, "admin_template/html/charts-morris-pie.html", get_admin_context(request))
+def charts_sparkline_bar(request):
+    return render(request, "admin_template/html/charts-sparkline-bar.html", get_admin_context(request))
+def charts_sparkline_composite(request):
+    return render(request, "admin_template/html/charts-sparkline-composite.html", get_admin_context(request))
+def charts_sparkline_line(request):
+    return render(request, "admin_template/html/charts-sparkline-line.html", get_admin_context(request))
+
+# --- FORM ---
+def form_elements_grid(request):
+    return render(request, "admin_template/html/form-elements-grid.html", get_admin_context(request))
+def form_elements_icheck(request):
+    return render(request, "admin_template/html/form-elements-icheck.html", get_admin_context(request))
+def form_elements_premade(request):
+    return render(request, "admin_template/html/form-elements-premade.html", get_admin_context(request))
+def form_elements(request):
+    return render(request, "admin_template/html/form-elements.html", get_admin_context(request))
+def form_validation(request):
+    return render(request, "admin_template/html/form-validation.html", get_admin_context(request))
+def form_wizard(request):
+    return render(request, "admin_template/html/form-wizard.html", get_admin_context(request))
+
+# --- HOSPITAL/ADMIN ---
+def hos_add_doctor(request):
+    return render(request, "admin_template/html/hos-add-doctor.html", get_admin_context(request))
+def hos_add_patient(request):
+    return render(request, "admin_template/html/hos-add-patient.html", get_admin_context(request))
+def hos_add_payment(request):
+    return render(request, "admin_template/html/hos-add-payment.html", get_admin_context(request))
+def hos_all_doctors(request):
+    return render(request, "admin_template/html/hos-all-doctors.html", get_admin_context(request))
+def hos_all_patients(request):
+    return render(request, "admin_template/html/hos-all-patients.html", get_admin_context(request))
+def hos_book_appointment(request):
+    return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
+def hos_doctor_dash(request):
+    return render(request, "admin_template/html/hos-doctor-dash.html", get_admin_context(request))
+def hos_doctor_profile(request):
+    return render(request, "admin_template/html/hos-doctor-profile.html", get_admin_context(request))
+def hos_edit_doctor(request):
+    return render(request, "admin_template/html/hos-edit-doctor.html", get_admin_context(request))
+def hos_edit_patient(request):
+    return render(request, "admin_template/html/hos-edit-patient.html", get_admin_context(request))
+def hos_events(request):
+    return render(request, "admin_template/html/hos-events.html", get_admin_context(request))
+def hos_faq(request):
+    return render(request, "admin_template/html/hos-faq.html", get_admin_context(request))
+def hos_patient_dash(request):
+    return render(request, "admin_template/html/hos-patient-dash.html", get_admin_context(request))
+def hos_patient_invoice(request):
+    return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
+def hos_patient_profile(request):
+    return render(request, "admin_template/html/hos-patient-profile.html", get_admin_context(request))
+def hos_patients(request):
+    return render(request, "admin_template/html/hos-patients.html", get_admin_context(request))
+def hos_payment(request):
+    return render(request, "admin_template/html/hos-payment.html", get_admin_context(request))
+def hos_schedule(request):
+    return render(request, "admin_template/html/hos-schedule.html", get_admin_context(request))
+def hos_staff_profile(request):
+    return render(request, "admin_template/html/hos-staff-profile.html", get_admin_context(request))
+def hos_support(request):
+    return render(request, "admin_template/html/hos-support.html", get_admin_context(request))
+
+# --- INDEX / ACCUEIL ---
+def index_dashboard(request):
+    return render(request, "admin_template/html/index-dashboard.html", get_admin_context(request))
+def index(request):
+    return render(request, "admin_template/html/index.html", get_admin_context(request))
+
+# --- UI ---
+def ui_404(request):
+    return render(request, "admin_template/html/ui-404.html", get_admin_context(request))
+def ui_accordion(request):
+    return render(request, "admin_template/html/ui-accordion.html", get_admin_context(request))
+def ui_alerts(request):
+    return render(request, "admin_template/html/ui-alerts.html", get_admin_context(request))
+def ui_breadcrumbs(request):
+    return render(request, "admin_template/html/ui-breadcrumbs.html", get_admin_context(request))
+def ui_buttons(request):
+    return render(request, "admin_template/html/ui-buttons.html", get_admin_context(request))
+def ui_dropdowns(request):
+    return render(request, "admin_template/html/ui-dropdowns.html", get_admin_context(request))
+def ui_faq(request):
+    return render(request, "admin_template/html/ui-faq.html", get_admin_context(request))
+def ui_fontawesome(request):
+    return render(request, "admin_template/html/ui-fontawesome.html", get_admin_context(request))
+def ui_glyphicons(request):
+    return render(request, "admin_template/html/ui-glyphicons.html", get_admin_context(request))
+def ui_grids(request):
+    return render(request, "admin_template/html/ui-grids.html", get_admin_context(request))
+def ui_group_list(request):
+    return render(request, "admin_template/html/ui-group-list.html", get_admin_context(request))
+def ui_icons(request):
+    return render(request, "admin_template/html/ui-icons.html", get_admin_context(request))
+def ui_labels_badges(request):
+    return render(request, "admin_template/html/ui-labels-badges.html", get_admin_context(request))
+def ui_login(request):
+    return render(request, "admin_template/html/ui-login.html", get_admin_context(request))
+def ui_modals(request):
+    return render(request, "admin_template/html/ui-modals.html", get_admin_context(request))
+def ui_navbars(request):
+    return render(request, "admin_template/html/ui-navbars.html", get_admin_context(request))
+def ui_notifications(request):
+    return render(request, "admin_template/html/ui-notifications.html", get_admin_context(request))
+def ui_pagination(request):
+    return render(request, "admin_template/html/ui-pagination.html", get_admin_context(request))
+def ui_panels(request):
+    return render(request, "admin_template/html/ui-panels.html", get_admin_context(request))
+def ui_popovers(request):
+    return render(request, "admin_template/html/ui-popovers.html", get_admin_context(request))
+def ui_pricing_expanded(request):
+    return render(request, "admin_template/html/ui-pricing-expanded.html", get_admin_context(request))
+def ui_pricing_narrow(request):
+    return render(request, "admin_template/html/ui-pricing-narrow.html", get_admin_context(request))
+def ui_progress(request):
+    return render(request, "admin_template/html/ui-progress.html", get_admin_context(request))
+def ui_register(request):
+    return render(request, "admin_template/html/ui-register.html", get_admin_context(request))
+def ui_tabs(request):
+    return render(request, "admin_template/html/ui-tabs.html", get_admin_context(request))
+def ui_timeline_centered(request):
+    return render(request, "admin_template/html/ui-timeline-centered.html", get_admin_context(request))
+def ui_timeline_left(request):
+    return render(request, "admin_template/html/ui-timeline-left.html", get_admin_context(request))
+def ui_tooltips(request):
+    return render(request, "admin_template/html/ui-tooltips.html", get_admin_context(request))
+def ui_typography(request):
+    return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))

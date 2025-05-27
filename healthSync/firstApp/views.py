@@ -308,9 +308,10 @@ def hos_all_patients(request):
 def hos_book_appointment(request):
     return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
 
-@login_required
+
+
+
 def hos_doctor_dash(request):
-    patient = request.user  # ou request.user.patient selon ton modèle
     return render(request, 'admin_template/html/hos-patient-dash.html', {'patient': patient})
 
 
@@ -380,8 +381,18 @@ def hos_events(request):
     return render(request, "admin_template/html/hos-events.html", get_admin_context(request))
 def hos_faq(request):
     return render(request, "admin_template/html/hos-faq.html", get_admin_context(request))
+
+
 def hos_patient_dash(request):
-    return render(request, "admin_template/html/hos-patient-dash.html", get_admin_context(request))
+    user_id = request.session.get('user_id')
+    patient = None
+    if user_id:
+        try:
+            patient = Patient.objects.get(id=user_id)
+        except Patient.DoesNotExist:
+            patient = None
+    return render(request, "admin_template/html/hos-patient-dash.html", {"patient": patient})
+
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
 

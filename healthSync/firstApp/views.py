@@ -174,11 +174,11 @@ def valider_personnel(request, user_id):
     return redirect('admin_dashboard')
 
 
-<<<<<<< HEAD
+
 def all_patients(request):
     patients = Patient.objects.all()
     return render(request, 'admin_template/hos-all-patients.html', {'patients': patients})
-=======
+
 
 
 # Fonction utilitaire pour DRY (évite la répétition)
@@ -350,4 +350,4 @@ def ui_tooltips(request):
     return render(request, "admin_template/html/ui-tooltips.html", get_admin_context(request))
 def ui_typography(request):
     return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
->>>>>>> dbf1c99991e0a006a9df347fe6a099b9e6b9278d
+

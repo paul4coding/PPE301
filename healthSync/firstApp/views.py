@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
-
+from django.views.decorators.http import require_POST
+from django.contrib import messages
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):
@@ -50,19 +51,23 @@ def inscription(request):
                 'photo': photo,
             }
             if user_type == 'patient':
-                Patient.objects.create(**user_data, numero_carte_identite=form.cleaned_data['numero_carte_identite'])
+                Patient.objects.create(
+                    **user_data,
+                    numero_carte_identite=form.cleaned_data['numero_carte_identite'],
+                    is_validated=True  # Patient validé directement
+                )
             elif user_type == 'personnel':
                 if personnel_role == 'medecin':
-                    Medecin.objects.create(**user_data, specialite=specialite)
+                    Medecin.objects.create(**user_data, specialite=specialite, is_validated=False)
                 elif personnel_role == 'laborantin':
-                    Laborantin.objects.create(**user_data)
+                    Laborantin.objects.create(**user_data, is_validated=False)
                 elif personnel_role == 'secretaire':
-                    Secretaire.objects.create(**user_data)
+                    Secretaire.objects.create(**user_data, is_validated=False)
             return redirect('welcome')
     else:
         form = InscriptionForm()
-    # Pas besoin de rôles ici sauf si sidebar affichée (ajouter si besoin)
     return render(request, 'user_template/inscription.html', {'form': form})
+
 def connexion(request):
     if request.method == 'POST':
         form = ConnexionForm(request.POST)
@@ -71,10 +76,14 @@ def connexion(request):
             mot_de_passe = form.cleaned_data['mot_de_passe']
             try:
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
+                # Vérification de la validation pour le personnel de santé
+                if (hasattr(user, 'medecin') or hasattr(user, 'secretaire') or hasattr(user, 'laborantin')) and not user.is_validated:
+                    form.add_error(None, "Votre compte doit être validé par l'administrateur avant de pouvoir vous connecter.")
+                    return render(request, 'user_template/connexion.html', {'form': form})
                 request.session['user_id'] = user.id
                 # Redirection selon le type d'utilisateur
                 if hasattr(user, 'admin'):
-                    return redirect('admin_dashboard')  # Crée une vue spéciale pour l'admin
+                    return redirect('admin_dashboard')
                 elif hasattr(user, 'medecin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'secretaire'):
@@ -82,7 +91,7 @@ def connexion(request):
                 elif hasattr(user, 'laborantin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'patient'):
-                    return redirect('welcome')
+                    return redirect('admin_home')
                 else:
                     return redirect('admin_home')
             except Utilisateur.DoesNotExist:
@@ -132,6 +141,217 @@ def admin_dashboard(request):
     user = None
     if user_id:
         user = Utilisateur.objects.get(id=user_id)
-    # Ajoute ici toutes les infos que tu veux afficher à l'admin
-    return render(request, 'admin_template/home.html', {'user': user})
+    # Liste des personnels de santé non validés (patients exclus)
+    medecins = Medecin.objects.filter(is_validated=False)
+    laborantins = Laborantin.objects.filter(is_validated=False)
+    secretaires = Secretaire.objects.filter(is_validated=False)
+    return render(request, 'admin_template/admin_dashboard.html', {
+        'user': user,
+        'medecins': medecins,
+        'laborantins': laborantins,
+        'secretaires': secretaires,
+    })
+
+
+def personnels_a_valider(request):
+    # Liste tous les personnels de santé non validés
+    medecins = Medecin.objects.filter(is_validated=False)
+    laborantins = Laborantin.objects.filter(is_validated=False)
+    secretaires = Secretaire.objects.filter(is_validated=False)
+    return render(request, 'admin_template/personnels_a_valider.html', {
+        'medecins': medecins,
+        'laborantins': laborantins,
+        'secretaires': secretaires,
+    })
+
+
+@require_POST
+def valider_personnel(request, user_id):
+    user = get_object_or_404(Utilisateur, id=user_id)
+    user.is_validated = True
+    user.save()
+    messages.success(request, f"{user.prenom} {user.nom} autorisé avec succès !")
+    return redirect('admin_dashboard')
+
+
+
+def all_patients(request):
+    patients = Patient.objects.all()
+    return render(request, 'admin_template/hos-all-patients.html', {'patients': patients})
+
+
+
+# Fonction utilitaire pour DRY (évite la répétition)
+def get_admin_context(request):
+    user_id = request.session.get('user_id')
+    user = None
+    role = None
+    if user_id:
+        user = Utilisateur.objects.get(id=user_id)
+        # Utilise ta fonction pour déterminer le rôle :
+        role = get_user_role(user)
+    return {
+        'user': user,
+        'role': role,
+        'roles_pages_acces': ROLES_PAGES_ACCES,
+        'roles_support': ROLES_SUPPORT,
+    }
+
+# --- CHARTS ---
+def charts_chartjs_bar(request):
+    return render(request, "admin_template/html/charts-chartjs-bar.html", get_admin_context(request))
+def charts_chartjs_line(request):
+    return render(request, "admin_template/html/charts-chartjs-line.html", get_admin_context(request))
+def charts_chartjs_pie_donut(request):
+    return render(request, "admin_template/html/charts-chartjs-pie-donut.html", get_admin_context(request))
+def charts_echart_bar(request):
+    return render(request, "admin_template/html/charts-echart-bar.html", get_admin_context(request))
+def charts_echart_line(request):
+    return render(request, "admin_template/html/charts-echart-line.html", get_admin_context(request))
+def charts_flot_area(request):
+    return render(request, "admin_template/html/charts-flot-area.html", get_admin_context(request))
+def charts_flot_line(request):
+    return render(request, "admin_template/html/charts-flot-line.html", get_admin_context(request))
+def charts_flot_stacked(request):
+    return render(request, "admin_template/html/charts-flot-stacked.html", get_admin_context(request))
+def charts_morris_area(request):
+    return render(request, "admin_template/html/charts-morris-area.html", get_admin_context(request))
+def charts_morris_bar(request):
+    return render(request, "admin_template/html/charts-morris-bar.html", get_admin_context(request))
+def charts_morris_line(request):
+    return render(request, "admin_template/html/charts-morris-line.html", get_admin_context(request))
+def charts_morris_pie(request):
+    return render(request, "admin_template/html/charts-morris-pie.html", get_admin_context(request))
+def charts_sparkline_bar(request):
+    return render(request, "admin_template/html/charts-sparkline-bar.html", get_admin_context(request))
+def charts_sparkline_composite(request):
+    return render(request, "admin_template/html/charts-sparkline-composite.html", get_admin_context(request))
+def charts_sparkline_line(request):
+    return render(request, "admin_template/html/charts-sparkline-line.html", get_admin_context(request))
+
+# --- FORM ---
+def form_elements_grid(request):
+    return render(request, "admin_template/html/form-elements-grid.html", get_admin_context(request))
+def form_elements_icheck(request):
+    return render(request, "admin_template/html/form-elements-icheck.html", get_admin_context(request))
+def form_elements_premade(request):
+    return render(request, "admin_template/html/form-elements-premade.html", get_admin_context(request))
+def form_elements(request):
+    return render(request, "admin_template/html/form-elements.html", get_admin_context(request))
+def form_validation(request):
+    return render(request, "admin_template/html/form-validation.html", get_admin_context(request))
+def form_wizard(request):
+    return render(request, "admin_template/html/form-wizard.html", get_admin_context(request))
+
+# --- HOSPITAL/ADMIN ---
+def hos_add_doctor(request):
+    return render(request, "admin_template/html/hos-add-doctor.html", get_admin_context(request))
+def hos_add_patient(request):
+    return render(request, "admin_template/html/hos-add-patient.html", get_admin_context(request))
+def hos_add_payment(request):
+    return render(request, "admin_template/html/hos-add-payment.html", get_admin_context(request))
+def hos_all_doctors(request):
+    return render(request, "admin_template/html/hos-all-doctors.html", get_admin_context(request))
+
+def hos_all_patients(request):
+    context = get_admin_context(request)  # Ta fonction utilitaire pour le contexte user/role
+    context['patients'] = Patient.objects.all()
+    return render(request, "admin_template/html/hos-all-patients.html", context)
+
+def hos_book_appointment(request):
+    return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
+def hos_doctor_dash(request):
+    return render(request, "admin_template/html/hos-doctor-dash.html", get_admin_context(request))
+def hos_doctor_profile(request):
+    return render(request, "admin_template/html/hos-doctor-profile.html", get_admin_context(request))
+def hos_edit_doctor(request):
+    return render(request, "admin_template/html/hos-edit-doctor.html", get_admin_context(request))
+def hos_edit_patient(request):
+    return render(request, "admin_template/html/hos-edit-patient.html", get_admin_context(request))
+def hos_events(request):
+    return render(request, "admin_template/html/hos-events.html", get_admin_context(request))
+def hos_faq(request):
+    return render(request, "admin_template/html/hos-faq.html", get_admin_context(request))
+def hos_patient_dash(request):
+    return render(request, "admin_template/html/hos-patient-dash.html", get_admin_context(request))
+def hos_patient_invoice(request):
+    return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
+def hos_patient_profile(request):
+    return render(request, "admin_template/html/hos-patient-profile.html", get_admin_context(request))
+def hos_patients(request):
+    return render(request, "admin_template/html/hos-patients.html", get_admin_context(request))
+def hos_payment(request):
+    return render(request, "admin_template/html/hos-payment.html", get_admin_context(request))
+def hos_schedule(request):
+    return render(request, "admin_template/html/hos-schedule.html", get_admin_context(request))
+def hos_staff_profile(request):
+    return render(request, "admin_template/html/hos-staff-profile.html", get_admin_context(request))
+def hos_support(request):
+    return render(request, "admin_template/html/hos-support.html", get_admin_context(request))
+
+# --- INDEX / ACCUEIL ---
+def index_dashboard(request):
+    return render(request, "admin_template/html/index-dashboard.html", get_admin_context(request))
+def index(request):
+    return render(request, "admin_template/html/index.html", get_admin_context(request))
+
+# --- UI ---
+def ui_404(request):
+    return render(request, "admin_template/html/ui-404.html", get_admin_context(request))
+def ui_accordion(request):
+    return render(request, "admin_template/html/ui-accordion.html", get_admin_context(request))
+def ui_alerts(request):
+    return render(request, "admin_template/html/ui-alerts.html", get_admin_context(request))
+def ui_breadcrumbs(request):
+    return render(request, "admin_template/html/ui-breadcrumbs.html", get_admin_context(request))
+def ui_buttons(request):
+    return render(request, "admin_template/html/ui-buttons.html", get_admin_context(request))
+def ui_dropdowns(request):
+    return render(request, "admin_template/html/ui-dropdowns.html", get_admin_context(request))
+def ui_faq(request):
+    return render(request, "admin_template/html/ui-faq.html", get_admin_context(request))
+def ui_fontawesome(request):
+    return render(request, "admin_template/html/ui-fontawesome.html", get_admin_context(request))
+def ui_glyphicons(request):
+    return render(request, "admin_template/html/ui-glyphicons.html", get_admin_context(request))
+def ui_grids(request):
+    return render(request, "admin_template/html/ui-grids.html", get_admin_context(request))
+def ui_group_list(request):
+    return render(request, "admin_template/html/ui-group-list.html", get_admin_context(request))
+def ui_icons(request):
+    return render(request, "admin_template/html/ui-icons.html", get_admin_context(request))
+def ui_labels_badges(request):
+    return render(request, "admin_template/html/ui-labels-badges.html", get_admin_context(request))
+def ui_login(request):
+    return render(request, "admin_template/html/ui-login.html", get_admin_context(request))
+def ui_modals(request):
+    return render(request, "admin_template/html/ui-modals.html", get_admin_context(request))
+def ui_navbars(request):
+    return render(request, "admin_template/html/ui-navbars.html", get_admin_context(request))
+def ui_notifications(request):
+    return render(request, "admin_template/html/ui-notifications.html", get_admin_context(request))
+def ui_pagination(request):
+    return render(request, "admin_template/html/ui-pagination.html", get_admin_context(request))
+def ui_panels(request):
+    return render(request, "admin_template/html/ui-panels.html", get_admin_context(request))
+def ui_popovers(request):
+    return render(request, "admin_template/html/ui-popovers.html", get_admin_context(request))
+def ui_pricing_expanded(request):
+    return render(request, "admin_template/html/ui-pricing-expanded.html", get_admin_context(request))
+def ui_pricing_narrow(request):
+    return render(request, "admin_template/html/ui-pricing-narrow.html", get_admin_context(request))
+def ui_progress(request):
+    return render(request, "admin_template/html/ui-progress.html", get_admin_context(request))
+def ui_register(request):
+    return render(request, "admin_template/html/ui-register.html", get_admin_context(request))
+def ui_tabs(request):
+    return render(request, "admin_template/html/ui-tabs.html", get_admin_context(request))
+def ui_timeline_centered(request):
+    return render(request, "admin_template/html/ui-timeline-centered.html", get_admin_context(request))
+def ui_timeline_left(request):
+    return render(request, "admin_template/html/ui-timeline-left.html", get_admin_context(request))
+def ui_tooltips(request):
+    return render(request, "admin_template/html/ui-tooltips.html", get_admin_context(request))
+def ui_typography(request):
+    return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
 

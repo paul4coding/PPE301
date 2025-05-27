@@ -1,0 +1,20 @@
+<h2>Personnels de santé à valider</h2>
+
+{% for groupe, liste in [('Médecins', medecins), ('Laborantins', laborantins), ('Secrétaires', secretaires)] %}
+    <h3>{{ groupe }}</h3>
+    {% if liste %}
+        <ul>
+        {% for pers in liste %}
+            <li>
+                {{ pers.prenom }} {{ pers.nom }} ({{ pers.email }})
+                <form method="post" action="{% url 'valider_personnel' pers.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Valider</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun à valider.</p>
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,68 @@
+<!-- Ajoute SweetAlert2 dans le head de ton base.html ou ici si besoin -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            Swal.fire({
+                icon: 'success',
+                title: 'Succès',
+                text: "{{ message|escapejs }}",
+                confirmButtonColor: '#3085d6'
+            });
+        {% endfor %}
+    </script>
+{% endif %}
+
+<h2>Personnels de santé à valider</h2>
+
+<h3>Médecins à valider</h3>
+{% if medecins %}
+    <ul>
+    {% for pers in medecins %}
+        <li>
+            {{ pers.prenom }} {{ pers.nom }} ({{ pers.email }})
+            <form method="post" action="{% url 'valider_personnel' pers.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Valider</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun médecin à valider.</p>
+{% endif %}
+
+<h3>Laborantins à valider</h3>
+{% if laborantins %}
+    <ul>
+    {% for pers in laborantins %}
+        <li>
+            {{ pers.prenom }} {{ pers.nom }} ({{ pers.email }})
+            <form method="post" action="{% url 'valider_personnel' pers.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Valider</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun laborantin à valider.</p>
+{% endif %}
+
+<h3>Secrétaires à valider</h3>
+{% if secretaires %}
+    <ul>
+    {% for pers in secretaires %}
+        <li>
+            {{ pers.prenom }} {{ pers.nom }} ({{ pers.email }})
+            <form method="post" action="{% url 'valider_personnel' pers.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Valider</button>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune secrétaire à valider.</p>
+{% endif %}

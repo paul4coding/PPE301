@@ -11,7 +11,7 @@
 
             {% if role == 'secretaire' or role == 'laborantin' %}
             <li>
-                <a href='index-hos-dashboard.html'>
+                <a href="{% url 'index_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord</span>
                 </a>
@@ -20,7 +20,7 @@
 
             {% if role == 'patient' %}
             <li>
-                <a href='hos-patient-dash.html'>
+                <a href="{% url 'hos_patient_dash' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/3.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord patient</span>
                 </a>
@@ -29,7 +29,7 @@
 
             {% if role == 'medecin' %}
             <li>
-                <a href='hos-doctor-dash.html'>
+                <a href="{% url 'hos_doctor_dash' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord médecin</span>
                 </a>
@@ -44,10 +44,10 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/hos-all-doctors.html'%}">Tous les médecins</a></li>
-                    <li><a href="{% static 'admin/html/hos-add-doctor.html'%}">Ajouter un médecin</a></li>
-                    <li><a href="{% static 'admin/html/hos-edit-doctor.html'%}">Modifier un médecin</a></li>
-                    <li><a href="{% static 'admin/html/hos-doctor-profile.html'%}">Profil du médecin</a></li>
+                    <li><a href="{% url 'hos_all_doctors' %}">Tous les médecins</a></li>
+                    <li><a href="{% url 'hos_add_doctor' %}">Ajouter un médecin</a></li>
+                    <li><a href="{% url 'hos_edit_doctor' %}">Modifier un médecin</a></li>
+                    <li><a href="{% url 'hos_doctor_profile' %}">Profil du médecin</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -60,10 +60,13 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/hos-all-patients.html'%}">Tous les patients</a></li>
-                    <li><a href="{% static 'admin/html/hos-add-patient.html'%}">Ajouter un patient</a></li>
-                    <li><a href="{% static 'admin/html/hos-edit-patient.html'%}">Modifier un patient</a></li>
-                    <li><a href="{% static 'admin/html/hos-patient-profile.html'%}">Profil du patient</a></li>
+
+                    <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
+                    <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
+                    <li><a href="{% url 'hos_edit_patient' %}">Modifier un patient</a></li>
+
+
+
                 </ul>
             </li>
             {% endif %}
@@ -76,8 +79,8 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/hos-schedule.html'%}">Planning du médecin</a></li>
-                    <li><a href="{% static 'admin/html/hos-book-appointment.html'%}">Prendre rendez-vous</a></li>
+                    <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
+                    <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -90,16 +93,16 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/hos-payment.html'%}">Paiements</a></li>
-                    <li><a href="{% static 'admin/html/hos-add-payment.html'%}">Ajouter un paiement</a></li>
-                    <li><a href="{% static 'admin/html/hos-patient-invoice.html'%}">Facture du patient</a></li>
+                    <li><a href="{% url 'hos_payment' %}">Paiements</a></li>
+                    <li><a href="{% url 'hos_add_payment' %}">Ajouter un paiement</a></li>
+                    <li><a href="{% url 'hos_patient_invoice' %}">Facture du patient</a></li>
                 </ul>
             </li>
             {% endif %}
 
             {% if role == 'secretaire' %}
             <li>
-                <a href='hos-events.html'>
+                <a href="{% url 'hos_events' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/9.png' %}" alt="" class="width-20"></i>
                     <span class="title">Gestion des événements</span>
                 </a>
@@ -115,9 +118,9 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/ui-login.html'%}">Connexion</a></li>
-                    <li><a href="{% static 'admin/html/ui-register.html'%}">Inscription</a></li>
-                    <li><a href="{% static 'admin/html/ui-404.html'%}">Erreur 404</a></li>
+                    <li><a href="{% url 'ui_login' %}">Connexion</a></li>
+                    <li><a href="{% url 'ui_register' %}">Inscription</a></li>
+                    <li><a href="{% url 'ui_404' %}">Erreur 404</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -130,8 +133,8 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/hos-faq.html'%}">FAQ</a></li>
-                    <li><a href="{% static 'admin/html/hos-support.html'%}">Centre d’aide</a></li>
+                    <li><a href="{% url 'hos_faq' %}">FAQ</a></li>
+                    <li><a href="{% url 'hos_support' %}">Centre d’aide</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -146,10 +149,11 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/charts-echart-line.html'%}">Graphiques en ligne</a></li>
-                    <li><a href="{% static 'admin/html/charts-echart-bar.html'%}">Graphiques en barres</a></li>
-                    <li><a href="{% static 'admin/html/charts-echart-pie.html'%}">Graphiques en secteurs</a></li>
-                    <li><a href="{% static 'admin/html/charts-echart-doughnut.html'%}">Graphiques en anneaux</a></li>
+                    <li><a href="{% url 'charts_echart_line' %}">Graphiques en ligne</a></li>
+                    <li><a href="{% url 'charts_echart_bar' %}">Graphiques en barres</a></li>
+                    {# A compléter si tu ajoutes charts-echart-pie et doughnut dans tes vues/urls.py #}
+                    {# <li><a href="{% url 'charts_echart_pie' %}">Graphiques en secteurs</a></li> #}
+                    {# <li><a href="{% url 'charts_echart_doughnut' %}">Graphiques en anneaux</a></li> #}
                 </ul>
             </li>
 
@@ -160,10 +164,11 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/charts-morris-line.html'%}">Graphiques en ligne</a></li>
-                    <li><a href="{% static 'admin/html/charts-morris-bar.html'%}">Graphiques en barres</a></li>
-                    <li><a href="{% static 'admin/html/charts-morris-area.html'%}">Graphiques en aires</a></li>
-                    <li><a href="{% static 'admin/html/charts-morris-donut.html'%}">Graphiques en beignets</a></li>
+                    <li><a href="{% url 'charts_morris_line' %}">Graphiques en ligne</a></li>
+                    <li><a href="{% url 'charts_morris_bar' %}">Graphiques en barres</a></li>
+                    <li><a href="{% url 'charts_morris_area' %}">Graphiques en aires</a></li>
+                    {# A compléter si tu ajoutes charts-morris-donut dans tes vues/urls.py #}
+                    {# <li><a href="{% url 'charts_morris_donut' %}">Graphiques en beignets</a></li> #}
                 </ul>
             </li>
 
@@ -174,12 +179,13 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% static 'admin/html/charts-js-line.html'%}">Graphiques en ligne</a></li>
-                    <li><a href="{% static 'admin/html/charts-js-bar.html'%}">Graphiques en barres</a></li>
-                    <li><a href="{% static 'admin/html/charts-js-radar.html'%}">Graphiques radar</a></li>
-                    <li><a href="{% static 'admin/html/charts-js-polar.html'%}">Graphiques polaires</a></li>
-                    <li><a href="{% static 'admin/html/charts-js-pie.html'%}">Graphiques en secteurs</a></li>
-                    <li><a href="{% static 'admin/html/charts-js-doughnut.html'%}">Graphiques en anneaux</a></li>
+                    {# Ces vues ne sont pas dans la liste que tu m'as donnée, à créer si besoin ! #}
+                    {# <li><a href="{% url 'charts_js_line' %}">Graphiques en ligne</a></li> #}
+                    {# <li><a href="{% url 'charts_js_bar' %}">Graphiques en barres</a></li> #}
+                    {# <li><a href="{% url 'charts_js_radar' %}">Graphiques radar</a></li> #}
+                    {# <li><a href="{% url 'charts_js_polar' %}">Graphiques polaires</a></li> #}
+                    {# <li><a href="{% url 'charts_js_pie' %}">Graphiques en secteurs</a></li> #}
+                    {# <li><a href="{% url 'charts_js_doughnut' %}">Graphiques en anneaux</a></li> #}
                 </ul>
             </li>
             {% endif %}

@@ -3,11 +3,11 @@ from .forms import ConnexionForm, InscriptionForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-<<<<<<< HEAD
+
 from django.db import IntegrityError
-=======
+
 from django.contrib.auth.decorators import login_required
->>>>>>> c054497bc8aa8110ab70e96320f90266342bb0ef
+
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
     if hasattr(user, 'medecin'):

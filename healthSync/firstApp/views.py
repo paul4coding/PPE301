@@ -175,12 +175,6 @@ def valider_personnel(request, user_id):
 
 
 
-def all_patients(request):
-    patients = Patient.objects.all()
-    return render(request, 'admin_template/hos-all-patients.html', {'patients': patients})
-
-
-
 # Fonction utilitaire pour DRY (évite la répétition)
 def get_admin_context(request):
     user_id = request.session.get('user_id')
@@ -276,8 +270,14 @@ def hos_patient_dash(request):
     return render(request, "admin_template/html/hos-patient-dash.html", get_admin_context(request))
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
-def hos_patient_profile(request):
-    return render(request, "admin_template/html/hos-patient-profile.html", get_admin_context(request))
+
+#profil patient
+def hos_patient_profile(request, id_patient):
+    context = get_admin_context(request)
+    patient = Patient.objects.get(id_patient=id_patient)
+    context['patient'] = patient
+    return render(request, "admin_template/html/hos-patient-profile.html", context)
+
 def hos_patients(request):
     return render(request, "admin_template/html/hos-patients.html", get_admin_context(request))
 def hos_payment(request):

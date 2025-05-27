@@ -60,21 +60,14 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-<<<<<<< HEAD
-                    <li><a href="{% static 'admin_template/hos-all-patients.html'%}">Tous les patients</a></li>
-                    <li><a href="{% static 'admin/html/hos-add-patient.html'%}">Ajouter un patient</a></li>
-                    <li><a href="{% static 'admin/html/hos-edit-patient.html'%}">Modifier un patient</a></li>
-                    <li><a href="{% static 'admin/html/hos-patient-profile.html'%}">Profil du patient</a></li>
-=======
+
                     <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
                     <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
                     <li><a href="{% url 'hos_edit_patient' %}">Modifier un patient</a></li>
-<<<<<<< HEAD
-                    <li><a href="{% url 'hos_patient_profile'%}">Profil du patient</a></li>
-=======
-                    <li><a href="{% url 'hos_patient_profile' %}">Profil du patient</a></li>
->>>>>>> dbf1c99991e0a006a9df347fe6a099b9e6b9278d
->>>>>>> d2bf13833878e9636a8ca0be43e8b06745c3a14d
+                    <li><a href="{% url 'hos_patient_profile' patient.id_patient %}">Profil du patient</a></li>
+
+
+
                 </ul>
             </li>
             {% endif %}

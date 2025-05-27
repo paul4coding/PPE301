@@ -247,8 +247,13 @@ def hos_add_payment(request):
     return render(request, "admin_template/html/hos-add-payment.html", get_admin_context(request))
 def hos_all_doctors(request):
     return render(request, "admin_template/html/hos-all-doctors.html", get_admin_context(request))
+
+
 def hos_all_patients(request):
-    return render(request, "admin_template/html/hos-all-patients.html", get_admin_context(request))
+    context = get_admin_context(request)
+    context['patients'] = Patient.objects.all()
+    return render(request, "admin_template/html/hos-all-patients.html", context)
+
 def hos_book_appointment(request):
     return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
 def hos_doctor_dash(request):
@@ -267,8 +272,15 @@ def hos_patient_dash(request):
     return render(request, "admin_template/html/hos-patient-dash.html", get_admin_context(request))
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
-def hos_patient_profile(request):
-    return render(request, "admin_template/html/hos-patient-profile.html", get_admin_context(request))
+
+
+def hos_patient_profile(request, id):
+    patient = get_object_or_404(Patient, id=id)
+    context = {
+        'patient': patient,
+    }
+    return render(request, "admin_template/html/hos-patient-profile.html", context)
+
 def hos_patients(request):
     return render(request, "admin_template/html/hos-patients.html", get_admin_context(request))
 def hos_payment(request):

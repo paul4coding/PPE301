@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur, Specialite
+from .models import Utilisateur, Specialite,Medecin
 
 class ConnexionForm(forms.Form):
     email = forms.EmailField()
@@ -36,3 +36,32 @@ class InscriptionForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
         fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'photo', 'user_type', 'personnel_role','numero_carte_identite']
+        
+    
+class MedecinForm(forms.ModelForm):
+    class Meta:
+        model = Medecin
+        fields = [
+            'nom',
+            'prenom',
+            'sexe',
+            'age',
+            'email',
+            'mot_de_passe',
+            'photo',
+            'specialite'
+        ]
+        widgets = {
+            'mot_de_passe': forms.PasswordInput(render_value=True),
+            'sexe': forms.Select(choices=[('M', 'Masculin'), ('F', 'Féminin')]),
+        }
+        labels = {
+            'nom': "Nom",
+            'prenom': "Prénom",
+            'sexe': "Sexe",
+            'age': "Âge",
+            'email': "Email",
+            'mot_de_passe': "Mot de passe",
+            'photo': "Photo",
+            'specialite': "Spécialité",
+        }

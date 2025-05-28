@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ConnexionForm, InscriptionForm
-from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire
+from .forms import ConnexionForm, InscriptionForm, MedecinForm
+from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
@@ -244,8 +244,56 @@ def form_wizard(request):
     return render(request, "admin_template/html/form-wizard.html", get_admin_context(request))
 
 # --- HOSPITAL/ADMIN ---
+
+#ajout de medecin
 def hos_add_doctor(request):
-    return render(request, "admin_template/html/hos-add-doctor.html", get_admin_context(request))
+    context = get_admin_context(request)
+    context['specialites'] = Specialite.objects.all()
+
+    if request.method == "POST":
+        nom = request.POST.get("nom")
+        prenom = request.POST.get("prenom")
+        sexe = request.POST.get("sexe")
+        age = request.POST.get("age")
+        email = request.POST.get("email")
+        mot_de_passe = request.POST.get("mot_de_passe")
+        mot_de_passe_confirm = request.POST.get("mot_de_passe_confirm")
+        specialite_id = request.POST.get("specialite")
+        photo = request.FILES.get("photo")
+
+        # Vérification du mot de passe
+        if mot_de_passe != mot_de_passe_confirm:
+            messages.error(request, "Les mots de passe ne correspondent pas.")
+            return render(request, "admin_template/html/hos-add-doctor.html", context)
+
+        # Vérification email unique
+        if Medecin.objects.filter(email=email).exists():
+            messages.error(request, "Cet email existe déjà.")
+            return render(request, "admin_template/html/hos-add-doctor.html", context)
+
+        # Récupérer la spécialité
+        try:
+            specialite = Specialite.objects.get(pk=specialite_id)
+        except Specialite.DoesNotExist:
+            messages.error(request, "Spécialité invalide.")
+            return render(request, "admin_template/html/hos-add-doctor.html", context)
+
+        # Création du médecin
+        medecin = Medecin(
+            nom=nom,
+            prenom=prenom,
+            sexe=sexe,
+            age=age,
+            email=email,
+            mot_de_passe=mot_de_passe,  # Hash si tu veux, sinon plaintext, mais déconseillé en prod
+            specialite=specialite,
+            photo=photo
+        )
+        medecin.save()
+        messages.success(request, "Médecin ajouté avec succès.")
+        return redirect('hos_all_doctors')
+
+    return render(request, "admin_template/html/hos-add-doctor.html", context)
 
 #ajout de patient
 def hos_add_patient(request):
@@ -296,8 +344,12 @@ def hos_add_patient(request):
 
 def hos_add_payment(request):
     return render(request, "admin_template/html/hos-add-payment.html", get_admin_context(request))
+
+#affichage tous les docteurs 
 def hos_all_doctors(request):
-    return render(request, "admin_template/html/hos-all-doctors.html", get_admin_context(request))
+    context = get_admin_context(request)
+    context['medecins'] = Medecin.objects.select_related('specialite').all()
+    return render(request, "admin_template/html/hos-all-doctors.html", context)
 
 
 def hos_all_patients(request):
@@ -317,8 +369,69 @@ def hos_doctor_dash(request):
 
 def hos_doctor_profile(request):
     return render(request, "admin_template/html/hos-doctor-profile.html", get_admin_context(request))
-def hos_edit_doctor(request):
-    return render(request, "admin_template/html/hos-edit-doctor.html", get_admin_context(request))
+
+# Vue pour modifier un médecin
+def hos_edit_doctor(request, medecin_id):
+    context = get_admin_context(request)
+    medecin = get_object_or_404(Medecin, pk=medecin_id)
+    context['medecin'] = medecin
+    context['specialites'] = Specialite.objects.all()
+
+    if request.method == "POST":
+        nom = request.POST.get("nom")
+        prenom = request.POST.get("prenom")
+        sexe = request.POST.get("sexe")
+        age = request.POST.get("age")
+        email = request.POST.get("email")
+        specialite_id = request.POST.get("specialite")
+        password = request.POST.get("mot_de_passe")
+        password_confirm = request.POST.get("mot_de_passe_confirm")
+        photo = request.FILES.get("photo")
+
+        # Vérification unicité email (hors médecin courant)
+        if Medecin.objects.exclude(pk=medecin.pk).filter(email=email).exists():
+            messages.error(request, "Cet email est déjà utilisé par un autre médecin.")
+            return render(request, "admin_template/html/hos-edit-doctor.html", context)
+        # Vérification de la spécialité
+        try:
+            specialite = Specialite.objects.get(pk=specialite_id)
+        except Specialite.DoesNotExist:
+            messages.error(request, "Spécialité invalide.")
+            return render(request, "admin_template/html/hos-edit-doctor.html", context)
+        # Mot de passe : modifié uniquement si rempli et confirmation OK
+        if password or password_confirm:
+            if password != password_confirm:
+                messages.error(request, "Les mots de passe ne correspondent pas.")
+                return render(request, "admin_template/html/hos-edit-doctor.html", context)
+            medecin.mot_de_passe = password  # (Hash en prod !)
+
+        # Met à jour les infos
+        medecin.nom = nom
+        medecin.prenom = prenom
+        medecin.sexe = sexe
+        medecin.age = age
+        medecin.email = email
+        medecin.specialite = specialite
+        if photo:
+            medecin.photo = photo
+        medecin.save()
+        messages.success(request, "Le médecin a bien été modifié.")
+        return redirect('hos_all_doctors')
+
+    return render(request, "admin_template/html/hos-edit-doctor.html", context)
+
+
+# Vue pour supprimer un médecin
+def hos_delete_doctor(request, medecin_id):
+    medecin = get_object_or_404(Medecin, pk=medecin_id)
+    context = get_admin_context(request)  # Ajout du contexte global
+    context['medecin'] = medecin
+    if request.method == "POST":
+        medecin.delete()
+        messages.success(request, "Le médecin a été supprimé avec succès.")
+        return redirect('hos_all_doctors')
+    # Optionnel : page de confirmation
+    return render(request, 'admin_template/html/hos-confirm-delete-doctor.html', context)
 
 # modification patient
 def hos_edit_patient(request, patient_id):

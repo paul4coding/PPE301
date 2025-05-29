@@ -3,15 +3,75 @@ from .forms import ConnexionForm, InscriptionForm, MedecinForm
 from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-
+from .forms import RendezVousForm
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.utils.timezone import now
 from .models import RendezVous
 from django.contrib.auth.decorators import login_required
 
+def modifier_rendezvous(request, rdv_id):
+    rdv = get_object_or_404(RendezVous, id=rdv_id)
+
+    if request.method == 'POST':
+        form = RendezVousForm(request.POST, instance=rdv)
+        if form.is_valid():
+            form.save()
+            return redirect('liste_rendezvous')
+    else:
+        form = RendezVousForm(instance=rdv)
+
+    return render(request, 'admin_template/html/modifier_rendezvous.html', {'form': form})
+def supprimer_rendezvous(request, rdv_id):
+    rdv = get_object_or_404(RendezVous, id=rdv_id)
+    if request.method == 'POST':
+        rdv.delete()
+        return redirect('liste_rendezvous')
+
+    return render(request, 'admin_template/html/confirmer_suppression.html', {'rdv': rdv})
 
 
+def liste_rendezvous(request):
+    # Récupère tous les rendez-vous avec patients et médecins liés (optimisation)
+    rdvs = RendezVous.objects.select_related('patient', 'medecin').all().order_by('date', 'heure')
+    
+    context = {
+        'rendezvous': rdvs,
+    }
+    return render(request, "admin_template/html/liste_rendezvous.html", context)
+
+def hos_events(request):
+    context = get_admin_context(request)  # Ton contexte existant
+    context['patients'] = Patient.objects.all()
+    context['medecins'] = Medecin.objects.all()
+    return render(request, "admin_template/html/hos-events.html", context)
+
+def ajouter_rendezvous(request):
+    if request.method == "POST":
+        patient_id = request.POST.get("patient")
+        medecin_id = request.POST.get("medecin")
+        date = request.POST.get("date")
+        heure = request.POST.get("heure")
+        motif = request.POST.get("motif")
+
+        patient = Patient.objects.get(id=patient_id)
+        medecin = Medecin.objects.get(id=medecin_id)
+
+        RendezVous.objects.create(
+            patient=patient,
+            medecin=medecin,
+            date=date,
+            heure=heure,
+            motif=motif,
+        )
+        # Redirige vers la même page après l'ajout
+        return redirect('liste_rendezvous')
+
+def api_rendezvous(request):
+    # Exemple : retourner une liste vide pour le moment
+    return JsonResponse([], safe=False)
+def gerer_rendezvous(request):
+    return render(request, 'hos-events.html')
 
 def api_rendezvous_du_jour(request):
     utilisateur = request.user
@@ -530,8 +590,6 @@ def hos_delete_patient(request, patient_id):
         # Optionnel : page de confirmation
         return render(request, "admin_template/html/hos-confirm-delete-patient.html", {'patient': patient})
 
-def hos_events(request):
-    return render(request, "admin_template/html/hos-events.html", get_admin_context(request))
 def hos_faq(request):
     return render(request, "admin_template/html/hos-faq.html", get_admin_context(request))
 

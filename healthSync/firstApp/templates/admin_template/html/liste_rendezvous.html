@@ -1,0 +1,31 @@
+<h1>Liste des rendez-vous</h1>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>Patient</th>
+      <th>Médecin</th>
+      <th>Date</th>
+      <th>Heure</th>
+      <th>Motif</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rdv in rendezvous %}
+    <tr>
+      <td>{{ rdv.patient.nom }}</td>
+      <td>{{ rdv.medecin.nom }}</td>
+      <td>{{ rdv.date }}</td>
+      <td>{{ rdv.heure }}</td>
+      <td>{{ rdv.motif }}</td>
+      <td>
+        <a href="{% url 'modifier_rendezvous' rdv.id %}">Modifier</a> |
+        <a href="{% url 'supprimer_rendezvous' rdv.id %}">Supprimer</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Aucun rendez-vous trouvé.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

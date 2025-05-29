@@ -30,7 +30,7 @@
 
             {% if role == 'medecin' %}
             <li>
-                <a href="{% url 'hos_doctor_dash' %}">
+                <a href="{% url 'admin_home' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord médecin</span>
                 </a>
@@ -66,21 +66,28 @@
             </li>
             {% endif %}
 
-            {% if role == 'secretaire' %}
+            
             <li>
+            {% if role == 'secretaire'  or role == 'medecin' %}
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/6.png' %}" alt="" class="width-20"></i>
                     <span class="title">Rendez-vous</span>
                     <span class="arrow "></span>
                 </a>
-                <ul class="sub-menu">
-                    <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
-                    <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
-                </ul>
-            </li>
             {% endif %}
 
-            {% if role == 'secretaire' %}
+            {% if role == 'medecin' %}
+                <ul class="sub-menu">
+                    <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
+            {% endif %}
+            {% if role == 'secretaire'%}
+                    <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
+                </ul>
+            {% endif %}
+            </li>
+            
+
+            {% if role == 'secretaire'  or role == 'patient' %}
             <li>
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/7.png' %}" alt="" class="width-20"></i>

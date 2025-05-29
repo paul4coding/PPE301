@@ -5,8 +5,48 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 
 from django.db import IntegrityError
-
+from django.http import JsonResponse
+from django.utils.timezone import now
+from .models import RendezVous
 from django.contrib.auth.decorators import login_required
+
+
+
+
+def api_rendezvous_du_jour(request):
+    utilisateur = request.user
+
+    # Vérifie si l'utilisateur est authentifié
+    if not utilisateur.is_authenticated:
+        return JsonResponse({'error': 'Utilisateur non connecté'}, status=401)
+
+    today = now().date()
+
+    try:
+        if hasattr(utilisateur, 'patient'):
+            # Récupérer les rendez-vous du patient pour aujourd’hui
+            rendezvous = RendezVous.objects.filter(date=today, patient=utilisateur.patient)
+        elif hasattr(utilisateur, 'medecin'):
+            # Récupérer les rendez-vous du médecin pour aujourd’hui
+            rendezvous = RendezVous.objects.filter(date=today, medecin=utilisateur.medecin)
+        else:
+            # L'utilisateur n'a pas de rôle reconnu
+            return JsonResponse([], safe=False)
+
+        # Convertir en JSON
+        data = [{
+            'heure': rdv.heure.strftime('%H:%M'),
+            'motif': rdv.motif,
+            'avec': str(rdv.medecin) if hasattr(utilisateur, 'patient') else str(rdv.patient),
+        } for rdv in rendezvous]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):

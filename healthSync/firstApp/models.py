@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.utils import timezone
 
 class Utilisateur(models.Model):
     """Classe parent pour tous les types d'utilisateurs."""
@@ -45,4 +46,6 @@ class Secretaire(Utilisateur):
 class Admin(Utilisateur):
     """Classe pour les administrateurs."""
     pass
+
+
     

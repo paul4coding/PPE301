@@ -1,6 +1,6 @@
 from django import forms
 from .models import Utilisateur, Specialite,Medecin
-
+from .models import RendezVous, Patient
 class ConnexionForm(forms.Form):
     email = forms.EmailField()
     mot_de_passe = forms.CharField(widget=forms.PasswordInput)
@@ -65,3 +65,24 @@ class MedecinForm(forms.ModelForm):
             'photo': "Photo",
             'specialite': "Spécialité",
         }
+
+class RendezVousForm(forms.ModelForm):
+    class Meta:
+        model = RendezVous
+        fields = ['medecin', 'patient', 'date', 'heure', 'motif', 'statut']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'heure': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'motif': forms.TextInput(attrs={'class': 'form-control'}),
+            'statut': forms.Select(attrs={'class': 'form-control'}),
+            'medecin': forms.Select(attrs={'class': 'form-control'}),
+            'patient': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'medecin': "Médecin",
+            'patient': "Patient",
+            'date': "Date du rendez-vous",
+            'heure': "Heure du rendez-vous",
+            'motif': "Motif",
+            'statut': "Statut",
+        }       

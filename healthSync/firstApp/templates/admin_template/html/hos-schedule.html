@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 
 <!-- Mirrored from medash.netlify.app/html/hos-schedule by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 25 Mar 2025 12:28:57 GMT -->
 <!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
@@ -16,36 +16,28 @@
     <meta content="" name="author" />
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="../assets/images/favicon.png" type="image/x-icon" />
-    <!-- For iPhone -->
-    <link rel="apple-touch-icon-precomposed" href="../assets/images/apple-touch-icon-57-precomposed.png">
-    <!-- For iPhone 4 Retina display -->
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/images/apple-touch-icon-114-precomposed.png">
-    <!-- For iPad -->
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/images/apple-touch-icon-72-precomposed.png">
-    <!-- For iPad Retina display -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/images/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
 
-    <!-- CORE CSS FRAMEWORK - START -->
-    <link href="../assets/plugins/pace/pace-theme-flash.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/plugins/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/fonts/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/fonts/webfont/cryptocoins.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/css/animate.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/plugins/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS FRAMEWORK - END -->
+    <!-- CORE CSS FRAMEWORK -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
 
-    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - START -->
-    <link href="../assets/plugins/calendar/fullcalendar.css" rel="stylesheet" type="text/css" media="screen"/>
-    <link href="../assets/plugins/icheck/skins/minimal/minimal.css" rel="stylesheet" type="text/css" media="screen"/>
-    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - END -->
+    <!-- PAGE-LEVEL CSS -->
+    <link href="{% static 'admin/assets/plugins/calendar/fullcalendar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/icheck/skins/minimal/minimal.css' %}" rel="stylesheet" type="text/css" />
 
-    <!-- CORE CSS TEMPLATE - START -->
-    <link href="../assets/css/style.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS TEMPLATE - END -->
-
+    <!-- TEMPLATE CSS -->
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <!-- END HEAD -->
 
@@ -413,7 +405,7 @@
                     <li class="">
                         <a href="javascript:;">
                             <i class="img">
-                                <img src="../data/hos-dash/icons/2.png" alt="" class="width-20">
+                                <img src="{% static 'admin/assets/data/hos-dash/icons/2.png' %}" alt="" class="width-20">
                             </i>
                             <span class="title">Doctors</span>
                             <span class="arrow "></span>
@@ -863,6 +855,34 @@
 
                     
                 </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.medecin.label_tag }}
+                        {{ form.medecin }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.patient.label_tag }}
+                        {{ form.patient }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.date.label_tag }}
+                        {{ form.date }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.heure.label_tag }}
+                        {{ form.heure }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.motif.label_tag }}
+                        {{ form.motif }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.statut.label_tag }}
+                        {{ form.statut }}
+                    </div>
+                    <button type="submit" class="btn btn-success">📅 Planifier</button>
+</form>
 
                 
         <!-- MAIN CONTENT AREA ENDS -->
@@ -1043,30 +1063,41 @@
     <!-- END CONTAINER -->
     <!-- LOAD FILES AT PAGE END FOR FASTER LOADING -->
 
-    <!-- CORE JS FRAMEWORK - START -->
-    <script src="../assets/js/jquery.min.js"></script>
-    <script src="../assets/js/jquery.easing.min.js"></script>
-    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script src="../assets/plugins/pace/pace.min.js"></script>
-    <script src="../assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script src="../assets/plugins/viewport/viewportchecker.js"></script>
-    <script>
-        window.jQuery || document.write('<script src="../assets/js/jquery.min.js"><\/script>');
-    </script>
-    <!-- CORE JS FRAMEWORK - END -->
+<!-- CORE JS FRAMEWORK - START -->
+<script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+<script>
+    window.jQuery || document.write('<script src="{% static "admin/assets/js/jquery.min.js" %}"><\/script>');
+    document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/rendezvous-du-jour/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                data.forEach(rdv => {
+                    alert("📅 Vous avez un rendez-vous aujourd'hui à " + rdv.heure + " pour : " + rdv.motif + 
+                          "\nAvec : " + rdv.avec);
+                });
+            }
+        });
+});
+</script>
+<!-- CORE JS FRAMEWORK - END -->
 
-    <!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - START -->
-    <script src="../assets/plugins/calendar/moment.min.js"></script>
-    <script src="../assets/plugins/jquery-ui/smoothness/jquery-ui.min.js"></script>
-    <script src="../assets/plugins/calendar/fullcalendar.min.js"></script>
-    <script src="../assets/plugins/icheck/icheck.min.js"></script>
-    <script src="../data/calendars/hos-doc-schedule.js"></script>
+<!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - START -->
+<script src="{% static 'admin/assets/plugins/calendar/moment.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/jquery-ui/smoothness/jquery-ui.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/calendar/fullcalendar.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/icheck/icheck.min.js' %}"></script>
+<script src="{% static 'admin/data/calendars/hos-doc-schedule.js' %}"></script>
+<!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - END -->
 
-    <!-- OTHER SCRIPTS INCLUDED ON THIS PAGE - END -->
-
-    <!-- CORE TEMPLATE JS - START -->
-    <script src="../assets/js/scripts.js"></script>
-    <!-- END CORE TEMPLATE JS - END -->
+<!-- CORE TEMPLATE JS - START -->
+<script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+<!-- END CORE TEMPLATE JS - END -->
 
 </body>
 

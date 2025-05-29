@@ -47,5 +47,19 @@ class Admin(Utilisateur):
     """Classe pour les administrateurs."""
     pass
 
+class RendezVous(models.Model):
+    medecin = models.ForeignKey(Medecin, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    date = models.DateField()
+    heure = models.TimeField()
+    motif = models.CharField(max_length=255)
+    statut = models.CharField(max_length=20, choices=[
+        ('confirmé', 'Confirmé'),
+        ('annulé', 'Annulé'),
+        ('en_attente', 'En attente')
+    ], default='en_attente')
+    date_creation = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return f"{self.patient} avec {self.medecin} le {self.date} à {self.heure}"
     

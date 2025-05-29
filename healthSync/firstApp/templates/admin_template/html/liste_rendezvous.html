@@ -1,31 +1,99 @@
-<h1>Liste des rendez-vous</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Liste des Rendez-vous</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<table border="1">
-  <thead>
-    <tr>
-      <th>Patient</th>
-      <th>Médecin</th>
-      <th>Date</th>
-      <th>Heure</th>
-      <th>Motif</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for rdv in rendezvous %}
-    <tr>
-      <td>{{ rdv.patient.nom }}</td>
-      <td>{{ rdv.medecin.nom }}</td>
-      <td>{{ rdv.date }}</td>
-      <td>{{ rdv.heure }}</td>
-      <td>{{ rdv.motif }}</td>
-      <td>
-        <a href="{% url 'modifier_rendezvous' rdv.id %}">Modifier</a> |
-        <a href="{% url 'supprimer_rendezvous' rdv.id %}">Supprimer</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6">Aucun rendez-vous trouvé.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <!-- STYLES DE BASE -->
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" />
+
+    <!-- DATATABLES CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- HEADER -->
+    {% include "admin_template/partials/_header.html" %}
+    
+    <!-- CONTAINER -->
+    <div class="page-container row-fluid container-fluid">
+
+        <!-- SIDEBAR -->
+        {% include "admin_template/partials/_sidebar.html" %}
+
+        <!-- CONTENU PRINCIPAL -->
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+
+                <div class="col-12">
+                    <div class="page-title">
+                        <h1 class="title text-center">📋 Liste des Rendez-vous</h1>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-20">
+                    <section class="box">
+                        <div class="content-body">
+                            <div class="table-responsive">
+                                <table id="rendezvousTable" class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>👤 Patient</th>
+                                            <th>🩺 Médecin</th>
+                                            <th>📅 Date</th>
+                                            <th>⏰ Heure</th>
+                                            <th>📝 Motif</th>
+                                            <th>⚙️ Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for rdv in rendezvous %}
+                                        <tr>
+                                            <td>{{ rdv.patient.nom }}</td>
+                                            <td>{{ rdv.medecin.nom }}</td>
+                                            <td>{{ rdv.date }}</td>
+                                            <td>{{ rdv.heure }}</td>
+                                            <td>{{ rdv.motif }}</td>
+                                            <td>
+                                                <a href="{% url 'modifier_rendezvous' rdv.id %}" class="btn btn-sm btn-warning"><i class="fa fa-pencil"></i></a>
+                                                <a href="{% url 'supprimer_rendezvous' rdv.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Confirmer la suppression ?')"><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="6" class="text-center">Aucun rendez-vous trouvé.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+
+    <!-- DATATABLES JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#rendezvousTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

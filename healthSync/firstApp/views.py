@@ -41,10 +41,33 @@ def liste_rendezvous(request):
     return render(request, "admin_template/html/liste_rendezvous.html", context)
 
 def hos_events(request):
-    context = get_admin_context(request)  # Ton contexte existant
-    context['patients'] = Patient.objects.all()
-    context['medecins'] = Medecin.objects.all()
-    return render(request, "admin_template/html/hos-events.html", context)
+    """
+    Affiche le calendrier des rendez-vous selon le rôle de l'utilisateur connecté.
+    Médecin : ses rendez-vous, Patient : ses rendez-vous, Admin/Secrétaire : tous.
+    """
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    context = get_admin_context(request)
+    user = context.get('user')
+    if user is None:
+        return redirect('login')
+
+    if hasattr(user, 'medecin'):
+        rendezvous = RendezVous.objects.filter(medecin=user.medecin).select_related('patient', 'medecin')
+    elif hasattr(user, 'patient'):
+        rendezvous = RendezVous.objects.filter(patient=user.patient).select_related('patient', 'medecin')
+    else:
+        # Admin ou secrétaire → tout voir
+        rendezvous = RendezVous.objects.all().select_related('patient', 'medecin')
+
+    context.update({
+        'rendezvous': rendezvous,
+        'patients': Patient.objects.all(),
+        'medecins': Medecin.objects.all(),
+    })
+
+    return render(request, "admin_template/html/hos-schedule.html", context)
 
 def ajouter_rendezvous(request):
     if request.method == "POST":
@@ -54,9 +77,20 @@ def ajouter_rendezvous(request):
         heure = request.POST.get("heure")
         motif = request.POST.get("motif")
 
-        patient = Patient.objects.get(id=patient_id)
-        medecin = Medecin.objects.get(id=medecin_id)
+        # Vérification basique que les IDs existent
+        try:
+            patient = Patient.objects.get(id=patient_id)
+        except Patient.DoesNotExist:
+            messages.error(request, "Patient non trouvé.")
+            return redirect('ajouter_rendezvous')
 
+        try:
+            medecin = Medecin.objects.get(id=medecin_id)
+        except Medecin.DoesNotExist:
+            messages.error(request, "Médecin non trouvé.")
+            return redirect('ajouter_rendezvous')
+
+        # Création du rendez-vous
         RendezVous.objects.create(
             patient=patient,
             medecin=medecin,
@@ -64,8 +98,17 @@ def ajouter_rendezvous(request):
             heure=heure,
             motif=motif,
         )
-        # Redirige vers la même page après l'ajout
+        messages.success(request, "Rendez-vous ajouté avec succès.")
         return redirect('liste_rendezvous')
+
+    # Pour la méthode GET, il faut envoyer la liste des patients et médecins pour le formulaire
+    patients = Patient.objects.all()
+    medecins = Medecin.objects.all()
+    context = {
+        'patients': patients,
+        'medecins': medecins,
+    }
+    return render(request, 'admin_template/html/ajouter_rendezvous.html', context)
 
 def api_rendezvous(request):
     # Exemple : retourner une liste vide pour le moment

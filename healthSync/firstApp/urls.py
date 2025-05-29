@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/personnels_a_valider/', views.personnels_a_valider, name='personnels_a_valider'),
     path('admin/valider_personnel/<int:user_id>/', views.valider_personnel, name='valider_personnel'),
+    
     path('admin/rendezvous/liste/', views.liste_rendezvous, name='liste_rendezvous'),
     path('admin/rendezvous/modifier/<int:rdv_id>/', views.modifier_rendezvous, name='modifier_rendezvous'),
     path('admin/rendezvous/supprimer/<int:rdv_id>/', views.supprimer_rendezvous, name='supprimer_rendezvous'),

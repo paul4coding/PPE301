@@ -43,6 +43,11 @@
                     <div class="page-title">
                         <h1 class="title text-center">🗓️ Calendrier des Rendez-vous</h1>
                     </div>
+                    <div class="alert alert-info mt-3">
+    Nombre de rendez-vous chargés : {{ rendezvous|length }}
+
+
+</div>
                 </div>
 
                 <div class="col-12 mt-4">
@@ -61,32 +66,33 @@
     <!-- FULLCALENDAR JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/fr.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'fr',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                height: 'auto',
-                events: [
-                    {% for rdv in rendezvous %}
-                    {
-                        title: '{{ rdv.patient.nom }} avec {{ rdv.medecin.nom }} - {{ rdv.motif|escapejs }}',
-                        start: '{{ rdv.date }}T{{ rdv.heure|slice:":5" }}',
-                        color: '#007bff'
-                    },
-                    {% endfor %}
-                ]
-            });
-
-            calendar.render();
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'fr',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            height: 'auto',
+            events: [
+                {% for rdv in rendezvous %}
+                {
+                    "title": "{{ rdv.patient.nom|escapejs }} avec {{ rdv.medecin.nom|escapejs }} - {{ rdv.motif|escapejs }}",
+                    "start": "{{ rdv.date }}T{{ rdv.heure|slice:":5" }}",
+                    "color": "{% if user.medecin %}#007bff{% elif user.patient %}#28a745{% else %}#6c757d{% endif %}"
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
         });
-    </script>
+
+        calendar.render();
+        console.log("Événements FullCalendar :", calendar.getEvents());
+    });
+</script>
 </body>
 </html>

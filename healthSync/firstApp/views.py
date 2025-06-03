@@ -41,30 +41,29 @@ def liste_rendezvous(request):
     return render(request, "admin_template/html/liste_rendezvous.html", context)
 
 def hos_events(request):
-    """
-    Affiche le calendrier des rendez-vous selon le rôle de l'utilisateur connecté.
-    Médecin : ses rendez-vous, Patient : ses rendez-vous, Admin/Secrétaire : tous.
-    """
     if not request.user.is_authenticated:
         return redirect('login')
 
     context = get_admin_context(request)
     user = context.get('user')
+
     if user is None:
         return redirect('login')
 
     if hasattr(user, 'medecin'):
-        rendezvous = RendezVous.objects.filter(medecin=user.medecin).select_related('patient', 'medecin')
+        rendezvous = RendezVous.objects.filter(medecin=user.medecin)
     elif hasattr(user, 'patient'):
-        rendezvous = RendezVous.objects.filter(patient=user.patient).select_related('patient', 'medecin')
+        rendezvous = RendezVous.objects.filter(patient=user.patient)
     else:
-        # Admin ou secrétaire → tout voir
-        rendezvous = RendezVous.objects.all().select_related('patient', 'medecin')
+        rendezvous = RendezVous.objects.all()
+
+    # Détection des rendez-vous du jour
+    today = now().date()
+    has_today = rendezvous.filter(date=today).exists()
 
     context.update({
         'rendezvous': rendezvous,
-        'patients': Patient.objects.all(),
-        'medecins': Medecin.objects.all(),
+        'popup_message': "Vous avez un rendez-vous aujourd’hui !" if has_today else "",
     })
 
     return render(request, "admin_template/html/hos-schedule.html", context)

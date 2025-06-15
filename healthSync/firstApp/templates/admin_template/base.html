@@ -48,6 +48,9 @@
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
     <!-- CORE CSS TEMPLATE - END -->
+
+     {% block extra_css %}{% endblock %}
+
 </head>
 
 <!-- BEGIN BODY -->
@@ -931,6 +934,9 @@
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js ' %}"></script>
     <!-- END CORE TEMPLATE JS - END -->
+
+    {% block extra_js %}{% endblock %}
+
 
 </body>
 

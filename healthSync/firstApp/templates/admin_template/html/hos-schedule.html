@@ -3,18 +3,25 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <title>Calendrier des Rendez-vous</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- STYLES DE BASE -->
-    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
-    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
-    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" />
-    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" />
-
-    <!-- FULLCALENDAR CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Calendrier des Rendez-vous | Tableau de bord</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'js/main.min.css' %}" rel="stylesheet" />
     <style>
         #calendar {
             background: white;
@@ -25,102 +32,200 @@
     </style>
 </head>
 <body>
-
-    <!-- HEADER -->
     {% include "admin_template/partials/_header.html" %}
-
-    <!-- CONTAINER -->
     <div class="page-container row-fluid container-fluid">
-
-        <!-- SIDEBAR -->
         {% include "admin_template/partials/_sidebar.html" %}
-
+        <div class="modal fade" id="rdvDetailModal" tabindex="-1" role="dialog" aria-labelledby="rdvDetailModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-primary">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="rdvDetailModalLabel">Détail du rendez-vous</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-dark" id="rdvDetailContent"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
         {% if popup_message %}
-<!-- MODAL BOOTSTRAP -->
-<div class="modal fade" id="popupRdvModal" tabindex="-1" role="dialog" aria-labelledby="popupRdvModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content border-primary">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="popupRdvModalLabel">📅 Notification de Rendez-vous</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body text-dark">
-        {{ popup_message }}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">OK</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-    $(document).ready(function () {
-        $('#popupRdvModal').modal('show');
-    });
-</script>
-{% endif %}
-
-        <!-- CONTENU -->
-        <section id="main-content">
-            <div class="wrapper main-wrapper row">
-
-                <div class="col-12">
+        <div class="modal fade" id="popupRdvModal" tabindex="-1" role="dialog" aria-labelledby="popupRdvModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-primary">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="popupRdvModalLabel">📅 Notification de Rendez-vous</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-dark">
+                {{ popup_message }}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <section id="main-content" class="">
+            <div class="wrapper main-wrapper row" style="">
+                <div class="col-xs-12">
                     <div class="page-title">
-                        <h1 class="title text-center">🗓️ Calendrier des Rendez-vous</h1>
+                        <div class="pull-left">
+                            <h1 class="title">Calendrier des Rendez-vous</h1>
+                        </div>
+                        <div class="pull-right hidden-xs">
+                            <ol class="breadcrumb">
+                                <li>
+                                    <a href="{% url 'admin_home' %}"><i class="fa fa-home"></i>Accueil</a>
+                                </li>
+                                <li class="active">
+                                    <strong>Calendrier des Rendez-vous</strong>
+                                </li>
+                            </ol>
+                        </div>
                     </div>
-                    <div class="alert alert-info mt-3">
-    Nombre de rendez-vous chargés : {{ rendezvous|length }}
-
-
-</div>
                 </div>
-
-                <div class="col-12 mt-4">
+                <div class="clearfix"></div>
+                <div class="col-xs-12">
+                    <div class="alert alert-info mt-3" id="rdvCountInfo">
+                        Chargement des rendez-vous...
+                    </div>
+                </div>
+                <div class="col-xs-12 mt-4">
                     <div id="calendar"></div>
                 </div>
-
             </div>
         </section>
     </div>
-
-    <!-- SCRIPTS -->
-    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <!-- FIN CONTAINER -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/index.global.min.js' %}"></script>
+    <!-- <script src="{% static 'js/fr.global.min.js' %}"></script> -->
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-
-    <!-- FULLCALENDAR JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/fr.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
+// CSRF for Ajax (sécurité Django)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        }
+    }
+});
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'fr',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var rdvCountInfo = document.getElementById('rdvCountInfo');
+    if (!calendarEl) return;
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        height: 'auto',
+        events: {
+            url: "{% url 'api_rendezvous' %}",
+            failure: function() {
+                if (rdvCountInfo) {
+                    rdvCountInfo.textContent = "Impossible de charger les rendez-vous.";
+                    rdvCountInfo.className = "alert alert-danger mt-3";
+                }
             },
-            height: 'auto',
-            events: [
-                {% for rdv in rendezvous %}
-                {
-                    "title": "{{ rdv.patient.nom|escapejs }} avec {{ rdv.medecin.nom|escapejs }} - {{ rdv.motif|escapejs }}",
-                    "start": "{{ rdv.date }}T{{ rdv.heure|slice:":5" }}",
-                    "color": "{% if user.medecin %}#007bff{% elif user.patient %}#28a745{% else %}#6c757d{% endif %}"
-                }{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ]
-        });
-
-        calendar.render();
-        console.log("Événements FullCalendar :", calendar.getEvents());
+            success: function(data) {
+                if (rdvCountInfo) {
+                    rdvCountInfo.textContent = "Nombre de rendez-vous chargés : " + data.length;
+                    rdvCountInfo.className = "alert alert-info mt-3";
+                }
+            }
+        },
+        eventClick: function(info) {
+            var props = info.event.extendedProps;
+            var rdvId = info.event.id;
+            var statut = props.statut || '';
+            var statutDisplay = '';
+            if (statut === 'en_attente') statutDisplay = 'En attente';
+            else if (statut === 'confirmé') statutDisplay = 'Confirmé';
+            else if (statut === 'annulé') statutDisplay = 'Annulé';
+            else statutDisplay = statut || '-';
+            var content = `
+                <strong>Patient :</strong> ${props.patient}<br>
+                <strong>Médecin :</strong> ${props.medecin}<br>
+                <strong>Motif :</strong> ${props.motif}<br>
+                <strong>Statut :</strong> <span id="rdvStatutLabel">${statutDisplay}</span><br>
+                <strong>Date :</strong> ${props.date} à ${props.heure}<br>
+                <strong>Téléphone patient :</strong> ${props.patient_tel}<br><br>
+                <button class="btn btn-sm btn-success" id="changeStatutBtn" data-id="${rdvId}" data-next="confirmé">Marquer comme confirmé</button>
+            `;
+            $('#rdvDetailContent').html(content);
+            $('#rdvDetailModal').modal('show');
+        }
     });
+    calendar.render();
+    // Changement de statut AJAX
+    $(document).on('click', '#changeStatutBtn', function() {
+        var rdvId = $(this).data('id');
+        var nextStatut = "confirmé";
+        var $btn = $(this);
+        $btn.prop('disabled', true).text('Mise à jour...');
+        $.ajax({
+            url: "/admin/api/rendezvous/set_status/",
+            method: "POST",
+            data: {
+                id: rdvId,
+                statut: nextStatut
+            },
+            success: function(data) {
+                $('#rdvStatutLabel').text('Confirmé');
+                $btn.text('Statut mis à jour');
+                setTimeout(function() {
+                    $('#rdvDetailModal').modal('hide');
+                    calendar.refetchEvents();
+                }, 800);
+            },
+            error: function(xhr) {
+                if (xhr.status === 403) {
+                    alert("Vous n'êtes pas autorisé à modifier ce rendez-vous.");
+                } else if (xhr.status === 302) {
+                    alert("Votre session a expiré, veuillez vous reconnecter.");
+                    window.location.href = "/admin/login/?next=/admin/api/rendezvous/set_status/";
+                } else {
+                    alert("Erreur lors de la mise à jour.");
+                }
+                $btn.prop('disabled', false).text('Réessayer');
+            }
+        });
+    });
+    {% if popup_message %}
+    $('#popupRdvModal').modal('show');
+    {% endif %}
+});
 </script>
 </body>
 </html>

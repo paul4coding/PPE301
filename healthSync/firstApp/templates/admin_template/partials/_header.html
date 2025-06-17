@@ -152,48 +152,57 @@
                     </ul>
                 </li>
                 <li class="profile">
-                    <a href="#" data-toggle="dropdown" class="toggle">
-                        {% if user.photo %}
-                            <img src="{{ user.photo.url }}" alt="user-image" class="img-circle img-inline">
-                        {% else %}
-                            {% if role == "medecin" %}
-                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                            {% elif role == "secretaire" %}
-                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                            {% elif role == "laborantin" %}
-                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                            {% elif role == "patient" %}
-                                <img src="{% static 'admin/data/profile/1430504.jpg' %}" alt="user-image" class="img-circle img-inline">
+                    {% comment %} Sécurisation de l'affichage du profil utilisateur {% endcomment %}
+                    {% if user %}
+                        <a href="#" data-toggle="dropdown" class="toggle">
+                            {% if user.photo %}
+                                <img src="{{ user.photo.url }}" alt="user-image" class="img-circle img-inline">
                             {% else %}
-                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% if role == "medecin" %}
+                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% elif role == "secretaire" %}
+                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% elif role == "laborantin" %}
+                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% elif role == "patient" %}
+                                    <img src="{% static 'admin/data/profile/1430504.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% else %}
+                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                        <span>{{ user.prenom }} {{ user.nom }} <i class="fa fa-angle-down"></i></span>
-                    </a>
-                    <ul class="dropdown-menu profile animated fadeIn">
-                        <li>
-                            <a href='hos-faq.html'>
-                                <i class="fa fa-wrench"></i> Paramètres
-                            </a>
-                        </li>
-                        <li>
-                            <a href='hos-doctor-profile.html'>
-                                <i class="fa fa-user"></i> Profil
-                            </a>
-                        </li>
-                        <li>
-                            <a href='hos-support.html'>
-                                <i class="fa fa-info"></i> Aide
-                            </a>
-                        </li>
-                        <li class="last">
-                            <a href='ui-login.html'>
-                                <i class="fa fa-lock"></i> Déconnexion
-                            </a>
-                        </li>
-                    </ul>
+                            <span>
+                                {{ user.prenom|default:"" }} {{ user.nom|default:"" }} <i class="fa fa-angle-down"></i>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu profile animated fadeIn">
+                            <li>
+                                <a href='hos-faq.html'>
+                                    <i class="fa fa-wrench"></i> Paramètres
+                                </a>
+                            </li>
+                            <li>
+                                <a href='hos-doctor-profile.html'>
+                                    <i class="fa fa-user"></i> Profil
+                                </a>
+                            </li>
+                            <li>
+                                <a href='hos-support.html'>
+                                    <i class="fa fa-info"></i> Aide
+                                </a>
+                            </li>
+                            <li class="last">
+                                <a href='ui-login.html'>
+                                    <i class="fa fa-lock"></i> Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <a href="#" class="toggle">
+                            <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
+                            <span>Utilisateur inconnu <i class="fa fa-angle-down"></i></span>
+                        </a>
+                    {% endif %}
                 </li>
-
             </ul>
         </div>
     </div>

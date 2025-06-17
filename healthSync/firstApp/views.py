@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.utils.timezone import now
 from .models import RendezVous
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponseForbidden
 
 def modifier_rendezvous(request, rdv_id):
     rdv = get_object_or_404(RendezVous, id=rdv_id)
@@ -30,14 +31,19 @@ def supprimer_rendezvous(request, rdv_id):
 
     return render(request, 'admin_template/html/confirmer_suppression.html', {'rdv': rdv})
 
-
+# Liste des rendez vous 
 def liste_rendezvous(request):
-    # Récupère tous les rendez-vous avec patients et médecins liés (optimisation)
+    # Ajoute les variables user et role dans le contexte grâce à get_admin_context
+    context = get_admin_context(request)
+    # Récupère tous les rendez-vous, patients et médecins liés (optimisation)
     rdvs = RendezVous.objects.select_related('patient', 'medecin').all().order_by('date', 'heure')
-    
-    context = {
-        'rendezvous': rdvs,
-    }
+    context['rendezvous'] = rdvs
+
+    # Optionnel : gestion d'un message popup depuis l'URL
+    popup_message = request.GET.get("popup_message")
+    if popup_message:
+        context["popup_message"] = popup_message
+
     return render(request, "admin_template/html/liste_rendezvous.html", context)
 
 def hos_events(request):
@@ -109,46 +115,61 @@ def ajouter_rendezvous(request):
     }
     return render(request, 'admin_template/html/ajouter_rendezvous.html', context)
 
+
+
+
+
 def api_rendezvous(request):
-    # Exemple : retourner une liste vide pour le moment
-    return JsonResponse([], safe=False)
-def gerer_rendezvous(request):
-    return render(request, 'hos-events.html')
+    rdvs = RendezVous.objects.select_related('patient', 'medecin').all()
+    data = []
+    for rdv in rdvs:
+        event = {
+            "id": rdv.id,
+            "title": f"{rdv.patient.nom} avec {rdv.medecin.nom} - {rdv.motif}",
+            "start": f"{rdv.date}T{str(rdv.heure)[:5]}",
+            "color": (
+                "#28a745" if rdv.statut == "confirmé" else
+                "#dc3545" if rdv.statut == "annulé" else
+                "#007bff" if rdv.statut == "recu" else
+                "#ffc107"
+            ),
+            "extendedProps": {
+                "patient": rdv.patient.nom,
+                "patient_tel": getattr(rdv.patient, "telephone", ""),
+                "medecin": rdv.medecin.nom,
+                "motif": rdv.motif,
+                "statut": rdv.get_statut_display(),
+                "date": str(rdv.date),
+                "heure": str(rdv.heure)[:5],
+            }
+        }
+        data.append(event)
+    return JsonResponse(data, safe=False)
 
-def api_rendezvous_du_jour(request):
-    utilisateur = request.user
+# bouton mettre a jour statut rendez vous dzns tableau 
+@login_required
+@require_POST
+def set_rdv_status(request):
+    rdv_id = request.POST.get("id")
+    statut = request.POST.get("statut")
 
-    # Vérifie si l'utilisateur est authentifié
-    if not utilisateur.is_authenticated:
-        return JsonResponse({'error': 'Utilisateur non connecté'}, status=401)
-
-    today = now().date()
+    # Sécurité : on ne laisse passer que les statuts autorisés
+    if statut not in ['en_attente', 'confirmé', 'annulé']:
+        return JsonResponse({"ok": False, "error": "Statut invalide"}, status=400)
 
     try:
-        if hasattr(utilisateur, 'patient'):
-            # Récupérer les rendez-vous du patient pour aujourd’hui
-            rendezvous = RendezVous.objects.filter(date=today, patient=utilisateur.patient)
-        elif hasattr(utilisateur, 'medecin'):
-            # Récupérer les rendez-vous du médecin pour aujourd’hui
-            rendezvous = RendezVous.objects.filter(date=today, medecin=utilisateur.medecin)
-        else:
-            # L'utilisateur n'a pas de rôle reconnu
-            return JsonResponse([], safe=False)
+        rdv = RendezVous.objects.get(id=rdv_id)
+    except RendezVous.DoesNotExist:
+        return JsonResponse({"ok": False, "error": "Not found"}, status=404)
 
-        # Convertir en JSON
-        data = [{
-            'heure': rdv.heure.strftime('%H:%M'),
-            'motif': rdv.motif,
-            'avec': str(rdv.medecin) if hasattr(utilisateur, 'patient') else str(rdv.patient),
-        } for rdv in rendezvous]
-
-        return JsonResponse(data, safe=False)
-
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-
+    # Vérifie que le user connecté est bien le médecin du rendez-vous
+    if hasattr(rdv, "medecin") and hasattr(request.user, "medecin") and rdv.medecin == request.user.medecin:
+        rdv.statut = statut
+        rdv.save()
+        return JsonResponse({"ok": True})
+    else:
+        # Non autorisé si ce n'est pas le bon médecin
+        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier ce rendez-vous.")
 
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):
@@ -329,9 +350,12 @@ def get_admin_context(request):
     user = None
     role = None
     if user_id:
-        user = Utilisateur.objects.get(id=user_id)
-        # Utilise ta fonction pour déterminer le rôle :
-        role = get_user_role(user)
+        try:
+            user = Utilisateur.objects.get(id=user_id)
+            role = get_user_role(user)
+        except Utilisateur.DoesNotExist:
+            user = None
+            role = None
     return {
         'user': user,
         'role': role,
@@ -499,8 +523,22 @@ def hos_all_patients(request):
     context['patients'] = Patient.objects.all()
     return render(request, "admin_template/html/hos-all-patients.html", context)
 
+
+#Ajout rendez-vous
 def hos_book_appointment(request):
-    return render(request, "admin_template/html/hos-book-appointment.html", get_admin_context(request))
+    context = get_admin_context(request)
+    if request.method == "POST":
+        form = RendezVousForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Rendez-vous enregistré avec succès !")
+            return redirect('hos_book_appointment')
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
+    else:
+        form = RendezVousForm()
+    context["form"] = form
+    return render(request, "admin_template/html/hos-book-appointment.html", context)
 
 
 

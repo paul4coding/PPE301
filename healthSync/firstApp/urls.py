@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from .views import set_rdv_status
 
 urlpatterns = [
     # === AUTHENTIFICATION ===
@@ -21,14 +22,16 @@ urlpatterns = [
 
 
     # === RENDEZ-VOUS ===
-    path('admin/rendezvous/', views.gerer_rendezvous, name='gerer_rendezvous'),  # Gestion par le personnel
+    #path('admin/rendezvous/', views.gerer_rendezvous, name='gerer_rendezvous'),  # Gestion par le personnel
     path('admin/rendezvous/ajouter/', views.ajouter_rendezvous, name='ajouter_rendezvous'),
     path('admin/rendezvous/calendrier/', views.hos_events, name='hos_events'),
 
 
     # API Rendez-vous (FullCalendar, notifications, etc.)
-    path('api/rendezvous/', views.api_rendezvous, name='rendezvous_api'),  # Calendrier interactif
-    path('api/rendezvous-du-jour/', views.api_rendezvous_du_jour, name='rendezvous_du_jour'),  # Notifications du jour
+    #path('api/rendezvous/', views.api_rendezvous, name='rendezvous_api'),  # Calendrier interactif
+    #path('api/rendezvous-du-jour/', views.api_rendezvous_du_jour, name='rendezvous_du_jour'),  # Notifications du jour
+    
+    path("admin/api/rendezvous/set_status/", views.set_rdv_status, name="set_rdv_status"),
 
     # === CHARTS ===
     path('charts/chartjs/bar/', views.charts_chartjs_bar, name='charts_chartjs_bar'),
@@ -75,6 +78,9 @@ urlpatterns = [
     path('hos/patients/', views.hos_patients, name='hos_patients'),
     path('hos/payment/', views.hos_payment, name='hos_payment'),
     path('hos/schedule/', views.hos_schedule, name='hos_schedule'),
+    
+    path('api/rendezvous/', views.api_rendezvous, name='api_rendezvous'),
+    
     path('hos/staff-profile/', views.hos_staff_profile, name='hos_staff_profile'),
     path('hos/support/', views.hos_support, name='hos_support'),
 

@@ -74,13 +74,12 @@
                     <span class="title">Rendez-vous</span>
                     <span class="arrow "></span>
                 </a>
-            {% endif %}
+            
 
-            {% if role == 'medecin' %}
+            
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
-            {% endif %}
-            {% if role == 'secretaire'%}
+
                     <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
                 </ul>
             {% endif %}

@@ -35,42 +35,6 @@
     {% include "admin_template/partials/_header.html" %}
     <div class="page-container row-fluid container-fluid">
         {% include "admin_template/partials/_sidebar.html" %}
-        <div class="modal fade" id="rdvDetailModal" tabindex="-1" role="dialog" aria-labelledby="rdvDetailModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-primary">
-              <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="rdvDetailModalLabel">Détail du rendez-vous</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body text-dark" id="rdvDetailContent"></div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fermer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% if popup_message %}
-        <div class="modal fade" id="popupRdvModal" tabindex="-1" role="dialog" aria-labelledby="popupRdvModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-primary">
-              <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="popupRdvModalLabel">📅 Notification de Rendez-vous</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body text-dark">
-                {{ popup_message }}
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">OK</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
         <section id="main-content" class="">
             <div class="wrapper main-wrapper row" style="">
                 <div class="col-xs-12">
@@ -92,6 +56,16 @@
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-xs-12">
+                    {% if messages %}
+                      {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                          {{ message }}
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
                     <div class="alert alert-info mt-3" id="rdvCountInfo">
                         Chargement des rendez-vous...
                     </div>
@@ -102,41 +76,68 @@
             </div>
         </section>
     </div>
-    <!-- FIN CONTAINER -->
+
+    <!-- Modal pour le détail et modification du rendez-vous -->
+    <div class="modal fade" id="rdvDetailModal" tabindex="-1" role="dialog" aria-labelledby="rdvDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-primary">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="rdvDetailModalLabel">Détail du rendez-vous</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-dark" id="rdvDetailContent">
+            <!-- Le contenu sera injecté dynamiquement -->
+          </div>
+          <div class="modal-footer">
+            <form id="rdvStatutForm" class="form-inline" method="post" action="{% url 'set_rdv_status' %}" style="width:100%;display:none;">
+              {% csrf_token %}
+              <input type="hidden" id="rdvIdInput" name="rdv_id" value="">
+              <label for="statutSelect" class="mr-2">Changer le statut :</label>
+              <select id="statutSelect" name="statut" class="form-control mr-2">
+                <option value="en_attente">En attente</option>
+                <option value="confirmé">Confirmé</option>
+                <option value="annulé">Annulé</option>
+              </select>
+              <button type="submit" class="btn btn-success">Sauvegarder</button>
+            </form>
+            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if popup_message %}
+    <div class="modal fade" id="popupRdvModal" tabindex="-1" role="dialog" aria-labelledby="popupRdvModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-primary">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="popupRdvModalLabel">📅 Notification de Rendez-vous</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-dark">
+            {{ popup_message }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/index.global.min.js' %}"></script>
-    <!-- <script src="{% static 'js/fr.global.min.js' %}"></script> -->
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
 <script>
-// CSRF for Ajax (sécurité Django)
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-const csrftoken = getCookie('csrftoken');
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!/^GET|HEAD|OPTIONS|TRACE$/i.test(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader('X-CSRFToken', csrftoken);
-        }
-    }
-});
-
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var rdvCountInfo = document.getElementById('rdvCountInfo');
@@ -168,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: function(info) {
             var props = info.event.extendedProps;
             var rdvId = info.event.id;
-            var statut = props.statut || '';
+            var statut = props.statut || 'en_attente';
             var statutDisplay = '';
             if (statut === 'en_attente') statutDisplay = 'En attente';
             else if (statut === 'confirmé') statutDisplay = 'Confirmé';
@@ -178,50 +179,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 <strong>Patient :</strong> ${props.patient}<br>
                 <strong>Médecin :</strong> ${props.medecin}<br>
                 <strong>Motif :</strong> ${props.motif}<br>
-                <strong>Statut :</strong> <span id="rdvStatutLabel">${statutDisplay}</span><br>
+                <strong>Statut actuel :</strong> <span id="rdvStatutLabel">${statutDisplay}</span><br>
                 <strong>Date :</strong> ${props.date} à ${props.heure}<br>
-                <strong>Téléphone patient :</strong> ${props.patient_tel}<br><br>
-                <button class="btn btn-sm btn-success" id="changeStatutBtn" data-id="${rdvId}" data-next="confirmé">Marquer comme confirmé</button>
+                <strong>Téléphone patient :</strong> ${props.patient_tel}<br>
             `;
             $('#rdvDetailContent').html(content);
+            $('#rdvIdInput').val(rdvId);
+            $('#statutSelect').val(statut);
+            $('#rdvStatutForm').show();
             $('#rdvDetailModal').modal('show');
         }
     });
     calendar.render();
-    // Changement de statut AJAX
-    $(document).on('click', '#changeStatutBtn', function() {
-        var rdvId = $(this).data('id');
-        var nextStatut = "confirmé";
-        var $btn = $(this);
-        $btn.prop('disabled', true).text('Mise à jour...');
-        $.ajax({
-            url: "/admin/api/rendezvous/set_status/",
-            method: "POST",
-            data: {
-                id: rdvId,
-                statut: nextStatut
-            },
-            success: function(data) {
-                $('#rdvStatutLabel').text('Confirmé');
-                $btn.text('Statut mis à jour');
-                setTimeout(function() {
-                    $('#rdvDetailModal').modal('hide');
-                    calendar.refetchEvents();
-                }, 800);
-            },
-            error: function(xhr) {
-                if (xhr.status === 403) {
-                    alert("Vous n'êtes pas autorisé à modifier ce rendez-vous.");
-                } else if (xhr.status === 302) {
-                    alert("Votre session a expiré, veuillez vous reconnecter.");
-                    window.location.href = "/admin/login/?next=/admin/api/rendezvous/set_status/";
-                } else {
-                    alert("Erreur lors de la mise à jour.");
-                }
-                $btn.prop('disabled', false).text('Réessayer');
-            }
-        });
+
+    // Afficher/Masquer le formulaire à la fermeture de la modale
+    $('#rdvDetailModal').on('hidden.bs.modal', function () {
+        $('#rdvStatutForm').hide();
+        $('#rdvStatutForm')[0].reset();
     });
+
     {% if popup_message %}
     $('#popupRdvModal').modal('show');
     {% endif %}

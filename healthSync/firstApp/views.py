@@ -10,6 +10,7 @@ from django.utils.timezone import now
 from .models import RendezVous
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
+from django.views.decorators.csrf import csrf_exempt
 
 # Liste des dossiers patients (accessible secrétaire et médecin)
 def liste_dossiers_patients(request):
@@ -226,29 +227,16 @@ def api_rendezvous(request):
     return JsonResponse(data, safe=False)
 
 # bouton mettre a jour statut rendez vous dzns tableau 
-@login_required
-@require_POST
 def set_rdv_status(request):
-    rdv_id = request.POST.get("id")
-    statut = request.POST.get("statut")
-
-    # Sécurité : on ne laisse passer que les statuts autorisés
-    if statut not in ['en_attente', 'confirmé', 'annulé']:
-        return JsonResponse({"ok": False, "error": "Statut invalide"}, status=400)
-
-    try:
-        rdv = RendezVous.objects.get(id=rdv_id)
-    except RendezVous.DoesNotExist:
-        return JsonResponse({"ok": False, "error": "Not found"}, status=404)
-
-    # Vérifie que le user connecté est bien le médecin du rendez-vous
-    if hasattr(rdv, "medecin") and hasattr(request.user, "medecin") and rdv.medecin == request.user.medecin:
+    if request.method == "POST":
+        rdv_id = request.POST.get("rdv_id")
+        statut = request.POST.get("statut")
+        rdv = get_object_or_404(RendezVous, id=rdv_id)
         rdv.statut = statut
         rdv.save()
-        return JsonResponse({"ok": True})
-    else:
-        # Non autorisé si ce n'est pas le bon médecin
-        return HttpResponseForbidden("Vous n'êtes pas autorisé à modifier ce rendez-vous.")
+        messages.success(request, "Statut du rendez-vous modifié !")
+        return redirect('hos_schedule')  # nom de ta vue, pas le nom du template !
+    return redirect('hos_schedule')
 
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
 def get_user_role(user):

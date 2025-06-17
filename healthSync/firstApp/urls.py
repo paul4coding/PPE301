@@ -45,7 +45,7 @@ urlpatterns = [
     #path('api/rendezvous/', views.api_rendezvous, name='rendezvous_api'),  # Calendrier interactif
     #path('api/rendezvous-du-jour/', views.api_rendezvous_du_jour, name='rendezvous_du_jour'),  # Notifications du jour
     
-    path("admin/api/rendezvous/set_status/", views.set_rdv_status, name="set_rdv_status"),
+    path('changer-statut/', views.set_rdv_status, name='set_rdv_status'),
 
     # === CHARTS ===
     path('charts/chartjs/bar/', views.charts_chartjs_bar, name='charts_chartjs_bar'),

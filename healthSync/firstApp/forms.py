@@ -71,8 +71,8 @@ class RendezVousForm(forms.ModelForm):
         model = RendezVous
         fields = ['medecin', 'patient', 'date', 'heure', 'motif', 'statut']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'heure': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+            'heure': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}, format='%H:%M'),
             'motif': forms.TextInput(attrs={'class': 'form-control'}),
             'statut': forms.Select(attrs={'class': 'form-control'}),
             'medecin': forms.Select(attrs={'class': 'form-control'}),
@@ -85,4 +85,10 @@ class RendezVousForm(forms.ModelForm):
             'heure': "Heure du rendez-vous",
             'motif': "Motif",
             'statut': "Statut",
-        }       
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Pour forcer le format de la date dans le champ (important pour la modification !)
+        self.fields['date'].input_formats = ['%Y-%m-%d']
+        self.fields['heure'].input_formats = ['%H:%M']

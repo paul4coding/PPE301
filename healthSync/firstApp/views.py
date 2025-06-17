@@ -91,25 +91,36 @@ def hos_patient_profile(request, patient_id):
     })
     return render(request, 'admin_template/html/hos-patient-profile.html', context)
 
-def modifier_rendezvous(request, rdv_id):
-    rdv = get_object_or_404(RendezVous, id=rdv_id)
 
-    if request.method == 'POST':
+# modifier rendez vous 
+def modifier_rendezvous(request, rdv_id):
+    context = get_admin_context(request)
+    rdv = get_object_or_404(RendezVous, id=rdv_id)
+    context['rdv'] = rdv
+
+    if request.method == "POST":
         form = RendezVousForm(request.POST, instance=rdv)
+        context['form'] = form
         if form.is_valid():
             form.save()
+            messages.success(request, "Le rendez-vous a bien été modifié !")
             return redirect('liste_rendezvous')
+        else:
+            messages.error(request, "Merci de corriger les erreurs dans le formulaire.")
     else:
         form = RendezVousForm(instance=rdv)
+        context['form'] = form
 
-    return render(request, 'admin_template/html/modifier_rendezvous.html', {'form': form})
+    return render(request, "admin_template/html/modifier_rendezvous.html", context)
+
+
+#supprimer rendez vous
 def supprimer_rendezvous(request, rdv_id):
-    rdv = get_object_or_404(RendezVous, id=rdv_id)
-    if request.method == 'POST':
+    if request.method == "POST":
+        rdv = get_object_or_404(RendezVous, id=rdv_id)
         rdv.delete()
-        return redirect('liste_rendezvous')
-
-    return render(request, 'admin_template/html/confirmer_suppression.html', {'rdv': rdv})
+        messages.success(request, "Le rendez-vous a été supprimé avec succès !")
+    return redirect('liste_rendezvous')
 
 # Liste des rendez vous 
 def liste_rendezvous(request):

@@ -32,7 +32,7 @@ urlpatterns = [
     
     path('admin/rendezvous/liste/', views.liste_rendezvous, name='liste_rendezvous'),
     path('admin/rendezvous/modifier/<int:rdv_id>/', views.modifier_rendezvous, name='modifier_rendezvous'),
-    path('admin/rendezvous/supprimer/<int:rdv_id>/', views.supprimer_rendezvous, name='supprimer_rendezvous'),
+    path('supprimer/<int:rdv_id>/', views.supprimer_rendezvous, name='supprimer_rendezvous'),
 
 
     # === RENDEZ-VOUS ===

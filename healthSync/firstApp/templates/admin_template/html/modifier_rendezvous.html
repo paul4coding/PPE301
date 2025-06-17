@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Modifier un rendez-vous | Tableau de bord</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <!-- (mêmes liens CSS qu'avant) -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <!-- HEADER -->
+    {% include "admin_template/partials/_header.html" %}
+    <!-- SIDEBAR -->
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+
+        <!-- CONTENU PRINCIPAL -->
+        <section id="main-content" class="">
+            <div class="wrapper main-wrapper row" style="">
+                <div class="col-xs-12">
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Modifier un rendez-vous</h1>
+                        </div>
+                        <div class="pull-right hidden-xs">
+                            <ol class="breadcrumb">
+                                <li>
+                                    <a href="{% url 'admin_home' %}"><i class="fa fa-home"></i>Accueil</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'liste_rendezvous' %}">Rendez-vous</a>
+                                </li>
+                                <li class="active">
+                                    <strong>Modifier un rendez-vous</strong>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+                <!-- Affichage des messages Django -->
+                {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                  {% endfor %}
+                {% endif %}
+
+                <div class="col-xs-12 mb-30">
+                    <div class="add-header-wrapper gradient-blue curved-section text-center">
+                        <h2 class="uppercase bold w-text">Modifier la consultation</h2>
+                        <div class="before-text">Modification de rendez-vous</div>
+                        <p class="g-text">Modifiez les champs puis validez pour enregistrer les changements.</p>
+                    </div>
+
+                    <div class="bg-w">
+                        <div class="col-lg-10 col-lg-offset-1 col-xs-12">
+                            <section class="box ">
+                                <header class="panel_header">
+                                    <h2 class="title pull-left">Informations du rendez-vous</h2>
+                                    <div class="actions panel_actions pull-right">
+                                        <a class="box_toggle fa fa-chevron-down"></a>
+                                        <a class="box_setting fa fa-cog" data-toggle="modal" href="#section-settings"></a>
+                                        <a class="box_close fa fa-times"></a>
+                                    </div>
+                                </header>
+                                <div class="content-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <form method="post" novalidate>
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    {{ form.medecin.label_tag }}
+                                                    {{ form.medecin }}
+                                                    {% if form.medecin.errors %}
+                                                        <div class="text-danger">{{ form.medecin.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ form.patient.label_tag }}
+                                                    {{ form.patient }}
+                                                    {% if form.patient.errors %}
+                                                        <div class="text-danger">{{ form.patient.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ form.date.label_tag }}
+                                                    {{ form.date }}
+                                                    {% if form.date.errors %}
+                                                        <div class="text-danger">{{ form.date.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ form.heure.label_tag }}
+                                                    {{ form.heure }}
+                                                    {% if form.heure.errors %}
+                                                        <div class="text-danger">{{ form.heure.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ form.motif.label_tag }}
+                                                    {{ form.motif }}
+                                                    {% if form.motif.errors %}
+                                                        <div class="text-danger">{{ form.motif.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ form.statut.label_tag }}
+                                                    {{ form.statut }}
+                                                    {% if form.statut.errors %}
+                                                        <div class="text-danger">{{ form.statut.errors }}</div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="padding-bottom-30">
+                                                    <div class="text-left">
+                                                        <button type="submit" class="btn btn-primary gradient-blue">Enregistrer les modifications</button>
+                                                        <a href="{% url 'liste_rendezvous' %}" class="btn">Annuler</a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- FIN CONTENU PRINCIPAL -->
+    </div>
+    <!-- FIN CONTAINER -->
+
+    <!-- SCRIPTS JS -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+</body>
+</html>

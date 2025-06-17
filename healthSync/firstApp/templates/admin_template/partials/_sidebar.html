@@ -61,12 +61,43 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
                     <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
-
                 </ul>
             </li>
             {% endif %}
 
-            
+            <!-- Dossiers Patients Section -->
+            {% if role == 'secretaire' or role == 'medecin' %}
+            <li>
+                <a href="javascript:;">
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/15.png' %}" alt="" class="width-20"></i>
+                    <span class="title">Dossiers Patients</span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    {% if role == 'secretaire' %}
+                    <li>
+                        <a href="{% url 'creer_dossier_patient' %}">
+                            <i class="fa fa-plus"></i> Créer un dossier patient
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'liste_dossiers_patients' %}">
+                            <i class="fa fa-folder-open"></i> Liste des dossiers patients
+                        </a>
+                    </li>
+                    {% if role == 'secretaire' %}
+                    <li>
+                        <a href="#">
+                            </i> Éditer un dossier patient
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            {% endif %}
+            <!-- Fin Dossiers Patients Section -->
+
             <li>
             {% if role == 'secretaire'  or role == 'medecin' %}
                 <a href="javascript:;">

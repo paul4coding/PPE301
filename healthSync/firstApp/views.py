@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ConnexionForm, InscriptionForm, MedecinForm
-from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite
+from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite , DossierPatient, PageDossierPatient
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .forms import RendezVousForm
@@ -10,6 +10,85 @@ from django.utils.timezone import now
 from .models import RendezVous
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
+
+# Liste des dossiers patients (accessible secrétaire et médecin)
+def liste_dossiers_patients(request):
+    context = get_admin_context(request)
+    context['dossiers'] = DossierPatient.objects.select_related('patient').all()
+    return render(request, 'admin_template/html/liste_dossiers_patients.html', context)
+
+# Création d'un dossier patient (secrétaire uniquement)
+def creer_dossier_patient(request):
+    context = get_admin_context(request)
+    context['patients'] = Patient.objects.filter(dossier__isnull=True)
+    if request.method == 'POST':
+        patient_id = request.POST.get('patient_id')
+        patient = get_object_or_404(Patient, id=patient_id)
+        DossierPatient.objects.create(patient=patient)
+        messages.success(request, "Dossier créé avec succès.")
+        return redirect('liste_dossiers_patients')
+    return render(request, 'admin_template/html/creer_dossier_patient.html', context)
+
+# Modifier un dossier patient (allergies, vaccins, antécédents)
+def edit_dossier_patient(request, dossier_id):
+    context = get_admin_context(request)
+    dossier = get_object_or_404(DossierPatient, id=dossier_id)
+    context['dossier'] = dossier
+    if request.method == 'POST':
+        dossier.liste_allergie = request.POST.get('liste_allergie', '')
+        dossier.list_vaccin = request.POST.get('list_vaccin', '')
+        dossier.antecedant_medicaux = request.POST.get('antecedant_medicaux', '')
+        dossier.save()
+        messages.success(request, "Dossier modifié avec succès.")
+        return redirect('hos_patient_profile', patient_id=dossier.patient.id)
+    return render(request, 'admin_template/html/edit_dossier_patient.html', context)
+
+# Ajouter une page (jour) au dossier patient
+def add_page_dossier_patient(request, dossier_id):
+    context = get_admin_context(request)
+    dossier = get_object_or_404(DossierPatient, id=dossier_id)
+    context['dossier'] = dossier
+    if request.method == 'POST':
+        temperature = request.POST.get('temperature')
+        medicaments = request.POST.get('medicaments', '')
+        PageDossierPatient.objects.create(
+            dossier=dossier,
+            temperature=temperature,
+            medicaments=medicaments
+        )
+        messages.success(request, "Nouvelle page ajoutée.")
+        return redirect('hos_patient_profile', patient_id=dossier.patient.id)
+    return render(request, 'admin_template/html/add_page_dossier_patient.html', context)
+
+# Modifier une page (jour) du dossier patient
+def edit_page_dossier_patient(request, page_id):
+    context = get_admin_context(request)
+    page = get_object_or_404(PageDossierPatient, id=page_id)
+    context['page'] = page
+    role = context.get('role')
+    if request.method == 'POST':
+        if role == 'secretaire':
+            page.temperature = request.POST.get('temperature')
+        elif role == 'medecin':
+            page.medicaments = request.POST.get('medicaments', '')
+        page.save()
+        messages.success(request, "Page modifiée avec succès.")
+        return redirect('hos_patient_profile', patient_id=page.dossier.patient.id)
+    return render(request, 'admin_template/html/edit_page_dossier_patient.html', context)
+
+# Affichage du profil/dossier patient
+def hos_patient_profile(request, patient_id):
+    context = get_admin_context(request)
+    patient = get_object_or_404(Patient, id=patient_id)
+    dossier = getattr(patient, 'dossier', None)
+    context.update({
+        'patient': patient,
+        'dossier': dossier,
+        'can_edit_dossier': context['role'] in ['secretaire', 'medecin'],
+        'can_add_page': context['role'] in ['secretaire', 'medecin'],
+        'can_edit_page': context['role'] in ['secretaire', 'medecin'],
+    })
+    return render(request, 'admin_template/html/hos-patient-profile.html', context)
 
 def modifier_rendezvous(request, rdv_id):
     rdv = get_object_or_404(RendezVous, id=rdv_id)
@@ -687,13 +766,6 @@ def hos_patient_dash(request):
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))
 
-#profile du patient
-def hos_patient_profile(request, id):
-    patient = get_object_or_404(Patient, id=id)
-    context = {
-        'patient': patient,
-    }
-    return render(request, "admin_template/html/hos-patient-profile.html", context)
 
 def hos_patients(request):
     return render(request, "admin_template/html/hos-patients.html", get_admin_context(request))

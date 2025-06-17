@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Liste des dossiers patients</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+
+    <!-- CORE CSS FRAMEWORK - START -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS FRAMEWORK - END -->
+
+    <!-- CORE CSS TEMPLATE - START -->
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS TEMPLATE - END -->
+
+</head>
+<!-- END HEAD -->
+
+<body class=" ">
+
+    <!-- START TOPBAR -->
+    {% include "admin_template/partials/_header.html" %}
+    <!-- END TOPBAR -->
+
+    <!-- START CONTAINER -->
+    <div class="page-container row-fluid container-fluid">
+
+        <!-- SIDEBAR - START -->
+        {% include "admin_template/partials/_sidebar.html" %}
+        <!--  SIDEBAR - END -->
+
+        <!-- START CONTENT -->
+        <section id="main-content" class=" ">
+            <div class="wrapper main-wrapper row">
+
+                <div class='col-xs-12'>
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Liste des dossiers patients</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div class="col-xs-12">
+                    <section class="box">
+                        <div class="content-body p">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Allergies</th>
+                                        <th>Vaccins</th>
+                                        <th>Antécédents</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dossier in dossiers %}
+                                    <tr>
+                                        <td>{{ dossier.patient.nom }} {{ dossier.patient.prenom }}</td>
+                                        <td>{{ dossier.liste_allergie|default:"-" }}</td>
+                                        <td>{{ dossier.list_vaccin|default:"-" }}</td>
+                                        <td>{{ dossier.antecedant_medicaux|default:"-" }}</td>
+                                        <td>
+                                            <a href="{% url 'edit_dossier_patient' dossier.id %}" class="btn btn-warning btn-xs">Éditer</a>
+                                            <a href="{% url 'hos_patient_profile' dossier.patient.id %}" class="btn btn-info btn-xs">Voir</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">Aucun dossier patient trouvé.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </section>
+        <!-- END CONTENT -->
+
+        <div class="page-chatapi hideit">
+            <!-- ... -->
+        </div>
+        <div class="chatapi-windows "></div>
+    </div>
+    <!-- END CONTAINER -->
+
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <!-- CORE TEMPLATE JS - START -->
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <!-- END CORE TEMPLATE JS - END -->
+</body>
+</html>

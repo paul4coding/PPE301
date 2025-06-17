@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Modifier le dossier patient</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <!-- CORE CSS FRAMEWORK - START -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS FRAMEWORK - END -->
+    <!-- CORE CSS TEMPLATE - START -->
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS TEMPLATE - END -->
+</head>
+<body>
+    {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="page-title">
+                        <h1 class="title">Modifier le dossier de {{ dossier.patient.nom }} {{ dossier.patient.prenom }}</h1>
+                    </div>
+                    <section class="box">
+                        <div class="content-body p">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="liste_allergie">Allergies</label>
+                                    <textarea name="liste_allergie" id="liste_allergie" class="form-control" rows="2">{{ dossier.liste_allergie }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="list_vaccin">Vaccins</label>
+                                    <textarea name="list_vaccin" id="list_vaccin" class="form-control" rows="2">{{ dossier.list_vaccin }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="antecedant_medicaux">Antécédents médicaux</label>
+                                    <textarea name="antecedant_medicaux" id="antecedant_medicaux" class="form-control" rows="2">{{ dossier.antecedant_medicaux }}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                                <a href="{% url 'liste_dossiers_patients' %}" class="btn btn-default">Annuler</a>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <!-- CORE TEMPLATE JS - START -->
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <!-- END CORE TEMPLATE JS - END -->
+</body>
+</html>

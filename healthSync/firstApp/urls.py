@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from . import views
 from .views import set_rdv_status
 
@@ -9,6 +10,19 @@ urlpatterns = [
     path('inscription/', views.inscription, name='inscription'),
     path('connexion/', views.connexion, name='connexion'),
     path('welcome/', views.welcome_view, name='welcome'),
+
+    
+    # Dossiers patients
+    path('dossiers/', views.liste_dossiers_patients, name='liste_dossiers_patients'),
+    path('dossier/creer/', views.creer_dossier_patient, name='creer_dossier_patient'),
+    path('dossier/<int:dossier_id>/edit/', views.edit_dossier_patient, name='edit_dossier_patient'),
+
+    # Pages (journalières) du dossier patient
+    path('dossier/<int:dossier_id>/page/ajouter/', views.add_page_dossier_patient, name='add_page_dossier_patient'),
+    path('dossier/page/<int:page_id>/edit/', views.edit_page_dossier_patient, name='edit_page_dossier_patient'),
+
+    # Profil patient (affichage du dossier)
+    path('patient/<int:patient_id>/profil/', views.hos_patient_profile, name='hos_patient_profile'),
 
     # === ADMIN ===
     path('admin_home/', views.admin_home, name='admin_home'),
@@ -74,7 +88,7 @@ urlpatterns = [
     path('hos/faq/', views.hos_faq, name='hos_faq'),
     path('hos/patient-dash/', views.hos_patient_dash, name='hos_patient_dash'),
     path('hos/patient-invoice/', views.hos_patient_invoice, name='hos_patient_invoice'),
-    path('hos/patient-profile/<int:id>/', views.hos_patient_profile, name='hos_patient_profile'),
+    path('hos/patient-profile/<int:patient_id>/', views.hos_patient_profile, name='hos_patient_profile'),
     path('hos/patients/', views.hos_patients, name='hos_patients'),
     path('hos/payment/', views.hos_payment, name='hos_payment'),
     path('hos/schedule/', views.hos_schedule, name='hos_schedule'),

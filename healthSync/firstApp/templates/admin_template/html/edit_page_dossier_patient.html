@@ -49,6 +49,10 @@
                                         <label for="medicaments">Médicaments (ajoutés par le médecin)</label>
                                         <textarea id="medicaments" class="form-control" disabled>{{ page.medicaments }}</textarea>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Résumé de la consultation</label>
+                                        <textarea class="form-control" disabled>{{ page.resume_consultation }}</textarea>
+                                    </div>
                                 {% elif role == 'medecin' %}
                                     <div class="form-group">
                                         <label for="temperature">Température (ajoutée par la secrétaire)</label>
@@ -57,6 +61,10 @@
                                     <div class="form-group">
                                         <label for="medicaments">Médicaments</label>
                                         <textarea name="medicaments" id="medicaments" class="form-control" required>{{ page.medicaments }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="resume_consultation">Résumé de la consultation</label>
+                                        <textarea name="resume_consultation" id="resume_consultation" class="form-control">{{ page.resume_consultation }}</textarea>
                                     </div>
                                 {% endif %}
                                 <button type="submit" class="btn btn-primary">Enregistrer</button>
@@ -81,6 +89,4 @@
     <!-- CORE JS FRAMEWORK - END -->
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-    <!-- END CORE TEMPLATE JS - END -->
-</body>
-</html>
+    <!-- END CORE TEMPLATE JS - END

@@ -72,6 +72,7 @@ def edit_page_dossier_patient(request, page_id):
             page.temperature = request.POST.get('temperature')
         elif role == 'medecin':
             page.medicaments = request.POST.get('medicaments', '')
+            page.resume_consultation = request.POST.get('resume_consultation', '')
         page.save()
         messages.success(request, "Page modifiée avec succès.")
         return redirect('hos_patient_profile', patient_id=page.dossier.patient.id)

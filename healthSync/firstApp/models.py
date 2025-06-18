@@ -65,7 +65,7 @@ class RendezVous(models.Model):
     
 
 
-# ...existing code...
+
 
 class DossierPatient(models.Model):
     patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name='dossier')
@@ -80,7 +80,8 @@ class PageDossierPatient(models.Model):
     dossier = models.ForeignKey(DossierPatient, on_delete=models.CASCADE, related_name='pages')
     date = models.DateField(default=timezone.now)
     temperature = models.FloatField(null=True, blank=True)
-    medicaments = models.TextField(blank=True)  # Liste des médicaments pour ce jour
+    medicaments = models.TextField(blank=True)
+    resume_consultation = models.TextField(blank=True, null=True)  
 
     def __str__(self):
         return f"Page du {self.date} pour {self.dossier.patient}"
@@ -119,4 +120,3 @@ class Message(models.Model):
     def __str__(self):
         return f"De {self.expediteur} à {self.date_envoi.strftime('%d/%m/%Y %H:%M')}"
 
-# ...existing code...

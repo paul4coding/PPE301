@@ -140,6 +140,14 @@
                                                         {% endif %}
                                                     </td>
                                                 </tr>
+                                                {% if role == 'medecin' and page.resume_consultation %}
+                                                <tr>
+                                                    <td colspan="5" style="background:#f5f8fa">
+                                                        <strong>Résumé de la consultation :</strong>
+                                                        <div>{{ page.resume_consultation }}</div>
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
                                                 {% endfor %}
                                             </tbody>
                                         </table>

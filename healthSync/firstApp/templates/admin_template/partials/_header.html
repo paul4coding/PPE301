@@ -152,23 +152,15 @@
                     </ul>
                 </li>
                 <li class="profile">
-                    {% comment %} Sécurisation de l'affichage du profil utilisateur {% endcomment %}
+                    {% comment %} Affichage dynamique de la photo de profil {% endcomment %}
                     {% if user %}
                         <a href="#" data-toggle="dropdown" class="toggle">
-                            {% if user.photo %}
+                            {% if role == "patient" and patient and patient.photo %}
+                                <img src="{{ patient.photo.url }}" alt="user-image" class="img-circle img-inline">
+                            {% elif user.photo %}
                                 <img src="{{ user.photo.url }}" alt="user-image" class="img-circle img-inline">
                             {% else %}
-                                {% if role == "medecin" %}
-                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                                {% elif role == "secretaire" %}
-                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                                {% elif role == "laborantin" %}
-                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                                {% elif role == "patient" %}
-                                    <img src="{% static 'admin/data/profile/1430504.jpg' %}" alt="user-image" class="img-circle img-inline">
-                                {% else %}
-                                    <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
-                                {% endif %}
+                                <img src="{% static 'admin/data/profile/profilDefault.jpg' %}" alt="user-image" class="img-circle img-inline">
                             {% endif %}
                             <span>
                                 {{ user.prenom|default:"" }} {{ user.nom|default:"" }} <i class="fa fa-angle-down"></i>

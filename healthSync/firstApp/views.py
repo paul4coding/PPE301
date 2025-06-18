@@ -92,7 +92,6 @@ def hos_patient_profile(request, patient_id):
     })
     return render(request, 'admin_template/html/hos-patient-profile.html', context)
 
-
 # modifier rendez vous 
 def modifier_rendezvous(request, rdv_id):
     context = get_admin_context(request)
@@ -752,16 +751,24 @@ def hos_delete_patient(request, patient_id):
 def hos_faq(request):
     return render(request, "admin_template/html/hos-faq.html", get_admin_context(request))
 
-
+# vue pour le dahboard du patient  ane pas confondre avec celui des medecins 
 def hos_patient_dash(request):
     user_id = request.session.get('user_id')
     patient = None
+    dossier = None
     if user_id:
         try:
             patient = Patient.objects.get(id=user_id)
+            dossier = getattr(patient, 'dossier', None)
         except Patient.DoesNotExist:
             patient = None
-    return render(request, "admin_template/html/hos-patient-dash.html", {"patient": patient})
+            dossier = None
+    context = {
+        "patient": patient,
+        "dossier": dossier,
+        "role": "patient",
+    }
+    return render(request, "admin_template/html/hos-patient-dash.html", context)
 
 def hos_patient_invoice(request):
     return render(request, "admin_template/html/hos-patient-invoice.html", get_admin_context(request))

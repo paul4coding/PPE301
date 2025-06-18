@@ -84,5 +84,39 @@ class PageDossierPatient(models.Model):
 
     def __str__(self):
         return f"Page du {self.date} pour {self.dossier.patient}"
+    
+# --- Notifications ---
+class Notification(models.Model):
+    destinataire = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='notifications')
+    message = models.CharField(max_length=255)
+    lien = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateTimeField(default=timezone.now)
+    lu = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, default='info')  # 'rendezvous', 'message', etc.
+
+    def __str__(self):
+        return f"{self.destinataire} - {self.message[:30]}"
+
+# --- Messagerie ---
+class Conversation(models.Model):
+    participants = models.ManyToManyField(Utilisateur, related_name='conversations')
+    is_group = models.BooleanField(default=False)
+    nom_groupe = models.CharField(max_length=100, blank=True, null=True)
+    date_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        if self.is_group and self.nom_groupe:
+            return self.nom_groupe
+        return " & ".join([str(u) for u in self.participants.all()])
+
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    expediteur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
+    texte = models.TextField()
+    date_envoi = models.DateTimeField(default=timezone.now)
+    lu_par = models.ManyToManyField(Utilisateur, related_name='messages_lus', blank=True)
+
+    def __str__(self):
+        return f"De {self.expediteur} à {self.date_envoi.strftime('%d/%m/%Y %H:%M')}"
 
 # ...existing code...

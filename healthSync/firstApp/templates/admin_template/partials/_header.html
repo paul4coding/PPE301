@@ -41,81 +41,66 @@
         </div>
         <div class='pull-right'>
             <ul class="info-menu right-links list-inline list-unstyled">
+                <!-- NOTIFICATIONS -->
                 <li class="notify-toggle-wrapper spec">
                     <a href="#" data-toggle="dropdown" class="toggle">
                         <i class="fa fa-bell"></i>
-                        <span class="badge badge-accent">3</span>
+                        {% if notifications and notifications|length > 0 %}
+                            <span class="badge badge-accent">{{ notifications|length }}</span>
+                        {% endif %}
                     </a>
                     <ul class="dropdown-menu notifications animated fadeIn">
                         <li class="total">
                             <span class="small">
-                                Vous avez <strong>3</strong> nouvelles notifications.
-                                <a href="javascript:;" class="pull-right">Tout marquer comme lu</a>
+                                {% if notifications and notifications|length > 0 %}
+                                    Vous avez <strong>{{ notifications|length }}</strong> nouvelles notifications.
+                                    <a href="javascript:;" class="pull-right">Tout marquer comme lu</a>
+                                {% else %}
+                                    Pas de nouvelles notifications.
+                                {% endif %}
                             </span>
                         </li>
                         <li class="list">
                             <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-                                <li class="unread available">
-                                    <a href="javascript:;">
-                                        <div class="notice-icon">
-                                            <i class="fa fa-check"></i>
-                                        </div>
-                                        <div>
-                                            <span class="name">
-                                                <strong>Facture payée avec succès #1683</strong>
-                                                <span class="time small">il y a 15 min</span>
-                                            </span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="unread away">
-                                    <a href="javascript:;">
-                                        <div class="notice-icon">
-                                            <i class="fa fa-clock-o"></i>
-                                        </div>
-                                        <div>
-                                            <span class="name">
-                                                <strong>Visite confirmée du Dr Jack Welly</strong>
-                                                <span class="time small">il y a 45 min</span>
-                                            </span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="busy">
-                                    <a href="javascript:;">
-                                        <div class="notice-icon">
-                                            <i class="fa fa-times"></i>
-                                        </div>
-                                        <div>
-                                            <span class="name">
-                                                <strong>Rendez-vous annulé à 13h00</strong>
-                                                <span class="time small">il y a 1 heure</span>
-                                            </span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="available">
-                                    <a href="javascript:;">
-                                        <div class="notice-icon">
-                                            <i class="fa fa-check"></i>
-                                        </div>
-                                        <div>
-                                            <span class="name">
-                                                <strong>Notification de vitesse 1.34 LTC</strong>
-                                                <span class="time small">14 mars</span>
-                                            </span>
-                                        </div>
-                                    </a>
-                                </li>
+                                {% for notification in notifications %}
+                                    <li class="{% if not notification.lu %}unread{% endif %}">
+                                        <a href="{{ notification.lien|default:'#' }}">
+                                            <div class="notice-icon">
+                                                <i class="fa 
+                                                    {% if notification.type == 'info' %}fa-info-circle
+                                                    {% elif notification.type == 'rendezvous' %}fa-calendar
+                                                    {% elif notification.type == 'message' %}fa-envelope
+                                                    {% else %}fa-bell
+                                                    {% endif %}">
+                                                </i>
+                                            </div>
+                                            <div>
+                                                <span class="name">
+                                                    <strong>{{ notification.message }}</strong>
+                                                    <span class="time small">{{ notification.date|timesince }} ago</span>
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                {% empty %}
+                                    <li>
+                                        <a href="javascript:;">
+                                            <div>
+                                                <span class="name">Aucune notification</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </li>
                         <li class="external">
-                            <a href="javascript:;">
+                            <a href="{% url 'all_notifications' %}">
                                 <span>Voir toutes les notifications</span>
                             </a>
                         </li>
                     </ul>
                 </li>
+                <!-- FIN NOTIFICATIONS -->
                 <li class="message-toggle-wrapper spec">
                     <a href="#" data-toggle="dropdown" class="toggle mr-15">
                         <i class="fa fa-envelope"></i>

@@ -46,6 +46,8 @@ urlpatterns = [
     #path('api/rendezvous-du-jour/', views.api_rendezvous_du_jour, name='rendezvous_du_jour'),  # Notifications du jour
     
     path('changer-statut/', views.set_rdv_status, name='set_rdv_status'),
+    
+    path('notifications/', views.all_notifications, name='all_notifications'),
 
     # === CHARTS ===
     path('charts/chartjs/bar/', views.charts_chartjs_bar, name='charts_chartjs_bar'),

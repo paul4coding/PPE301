@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ConnexionForm, InscriptionForm, MedecinForm
-from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite , DossierPatient, PageDossierPatient
+from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite , DossierPatient, PageDossierPatient, Notification
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .forms import RendezVousForm
@@ -850,3 +850,12 @@ def ui_tooltips(request):
     return render(request, "admin_template/html/ui-tooltips.html", get_admin_context(request))
 def ui_typography(request):
     return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
+
+def all_notifications(request):
+    if request.user.is_authenticated:
+        notifications = Notification.objects.filter(destinataire=request.user).order_by('-date')
+    else:
+        notifications = []
+    context = get_admin_context(request)  # sans argument supplémentaire
+    context['notifications'] = notifications
+    return render(request, "admin_template/html/all_notifications.html", context)

@@ -852,10 +852,7 @@ def ui_typography(request):
     return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
 
 def all_notifications(request):
-    if request.user.is_authenticated:
-        notifications = Notification.objects.filter(destinataire=request.user).order_by('-date')
-    else:
-        notifications = []
-    context = get_admin_context(request)  # sans argument supplémentaire
+    notifications = Notification.objects.all().order_by('-date')
+    context = get_admin_context(request)
     context['notifications'] = notifications
     return render(request, "admin_template/html/all_notifications.html", context)

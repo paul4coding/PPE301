@@ -1,4 +1,5 @@
 {% load static %}
+{% load notifications_tags %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <div class='page-topbar gradient-blue1'>
     <div class='logo-area crypto'>
@@ -43,6 +44,7 @@
             <ul class="info-menu right-links list-inline list-unstyled">
                 <!-- NOTIFICATIONS -->
                 <li class="notify-toggle-wrapper spec">
+                    {% get_notifications as notifications %}
                     <a href="#" data-toggle="dropdown" class="toggle">
                         <i class="fa fa-bell"></i>
                         {% if notifications and notifications|length > 0 %}

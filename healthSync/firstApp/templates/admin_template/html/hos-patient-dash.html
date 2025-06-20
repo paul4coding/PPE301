@@ -1,23 +1,44 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Profil Patient</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <!-- For iPhone -->
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <!-- For iPhone 4 Retina display -->
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <!-- For iPad -->
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <!-- For iPad Retina display -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <!-- CORE CSS FRAMEWORK - START -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS FRAMEWORK - END -->
+    <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS TEMPLATE - END -->
 </head>
 <body>
     {% include "admin_template/partials/_header.html" %}
     <div class="page-container row-fluid container-fluid">
         {% include "admin_template/partials/_sidebar.html" %}
-        <section id="main-content" class=" ">
-            <div class="wrapper main-wrapper row" style=''>
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
                 <div class="col-lg-4 col-md-6">
-                    <section class="box ">
+                    <section class="box">
                         <div class="content-body p">
                             <div class="row">
                                 <div class="doctors-list patient relative">
@@ -33,7 +54,7 @@
                                         <h3 class="header w-text relative bold">Nom : {{ patient.nom }} {{ patient.prenom }}</h3>
                                     </div>
                                     <div class="row">
-                                        <div class="patients-info relative" >
+                                        <div class="patients-info relative">
                                             <div class="col-sm-6 col-xs-12">
                                                 <div class="patient-card has-shadow2">
                                                     <div class="doc-info-wrap">
@@ -69,9 +90,61 @@
                         </div>
                     </section>
                 </div>
+                <div class="col-lg-8 col-md-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <section class="box gradient-blue" style="padding:20px">
+                                <h4 class="w-text">Allergies :</h4>
+                                <p class="mb-0 g-text">{{ dossier.liste_allergie|default:"Aucune" }}</p>
+                                <h4 class="w-text">Vaccins :</h4>
+                                <p class="mb-0 g-text">{{ dossier.list_vaccin|default:"Aucun" }}</p>
+                                <h4 class="w-text">Antécédents médicaux :</h4>
+                                <p class="mb-0 g-text">{{ dossier.antecedant_medicaux|default:"Aucun" }}</p>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <section class="box">
+                                <header class="panel_header">
+                                    <h2 class="title pull-left">Historique journalier </h2>
+                                </header>
+                                <div class="content-body">
+                                    {% if dossier.pages.exists %}
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Date</th>
+                                                    <th>Température</th>
+                                                    <th>Médicaments</th>
+                                                    <th>Résumé consultation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for page in dossier.pages.all %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ page.date }}</td>
+                                                    <td>{{ page.temperature|default:"-" }}</td>
+                                                    <td>{{ page.medicaments|default:"-" }}</td>
+                                                    <td>{{ page.resume_consultation|default:"-" }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% else %}
+                                        <div class="alert alert-info">Aucune page de dossier enregistrée pour ce patient.</div>
+                                    {% endif %}
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
+    <!-- CORE JS FRAMEWORK - START -->
     <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
@@ -79,8 +152,9 @@
     <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
     <script>
-        window.jQuery || document.write('<script src="{% static "admin/assets/js/jquery.min.js" %}"><\/script>');
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-</body>
-</html>
+    <!-- END CORE TEMPLATE JS - END

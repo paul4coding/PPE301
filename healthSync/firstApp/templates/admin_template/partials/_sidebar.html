@@ -108,8 +108,12 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
+                    {% if role == 'medecin' %}
                     <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
+                    {% endif %}
+                    {% if role == 'secretaire' %}
                     <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
+                    {% endif %}
                 </ul>
             {% endif %}
             </li>

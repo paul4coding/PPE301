@@ -22,6 +22,13 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <style>
+        .bilan-section { margin-bottom: 30px; }
+        .bilan-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
+        .bilan-title { font-size: 1.2em; color: #007bff; margin-bottom: 10px; }
+        .bilan-label { font-weight: bold; }
+        .bilan-hr { border-top: 2px solid #e0e0e0; margin: 30px 0 20px 0; }
+    </style>
 </head>
 <body>
     {% include "admin_template/partials/_header.html" %}
@@ -45,8 +52,6 @@
                                         <th>Description</th>
                                         <th>Service</th>
                                         <th>Prix</th>
-                                        <th>Résultat</th>
-                                        <th>Prescription &amp; Posologie</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -57,44 +62,6 @@
                                         <td>{{ ligne.service }}</td>
                                         <td>{{ ligne.prix }} fcfa</td>
                                         <td>
-                                            {% if ligne.resultats.all %}
-                                                {% for resultat in ligne.resultats.all %}
-                                                    <div>
-                                                        <strong>Résultat :</strong> {{ resultat.resultat|linebreaksbr }}
-                                                        {% if role == 'laborantin' %}
-                                                            <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
-                                                        {% endif %}
-                                                    </div>
-                                                    <hr>
-                                                {% endfor %}
-                                            {% else %}
-                                                {% if role == 'laborantin' %}
-                                                    <a href="{% url 'ajouter_resultat' ligne.id %}" class="btn btn-sm btn-warning">Ajouter résultat</a>
-                                                {% endif %}
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if ligne.resultats.all %}
-                                                {% for resultat in ligne.resultats.all %}
-                                                    {% for prescription in resultat.prescriptions.all %}
-                                                        <div class="mt-2 ml-3">
-                                                            <strong>Prescription :</strong> {{ prescription.liste_medicaments|linebreaksbr }}<br>
-                                                            <strong>Posologie :</strong> {{ prescription.posologie|linebreaksbr }}
-                                                            {% if role == 'medecin' %}
-                                                                <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
-                                                            {% endif %}
-                                                        </div>
-                                                    {% empty %}
-                                                        <div class="ml-3 text-muted">Aucune prescription</div>
-                                                    {% endfor %}
-                                                    {% if role == 'medecin' %}
-                                                        <a href="{% url 'ajouter_prescription' resultat.id %}" class="btn btn-xs btn-success ml-2">Ajouter prescription</a>
-                                                    {% endif %}
-                                                    <hr>
-                                                {% endfor %}
-                                            {% endif %}
-                                        </td>
-                                        <td>
                                             <!-- Ajoute ici d'autres actions si besoin -->
                                         </td>
                                     </tr>
@@ -102,6 +69,45 @@
                                 </tbody>
                             </table>
                             <a href="{% url 'ajouter_ligne_facture' facture.id %}" class="btn btn-primary">Ajouter une ligne</a>
+
+                            <hr class="bilan-hr">
+
+                            <!-- Résultats et prescriptions joliment affichés -->
+                            <div class="bilan-section">
+                                <div class="bilan-title"><i class="fa fa-vials"></i> Résultats &amp; Prescriptions</div>
+                                {% for ligne in lignes %}
+                                    {% if ligne.resultats.all %}
+                                        {% for resultat in ligne.resultats.all %}
+                                            <div class="bilan-card">
+                                                <span class="bilan-label">Service :</span> {{ ligne.service }}<br>
+                                                <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
+                                                {% if role == 'laborantin' %}
+                                                    <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                {% endif %}
+                                                <hr>
+                                                <span class="bilan-label">Prescriptions :</span>
+                                                {% if resultat.prescriptions.all %}
+                                                    {% for prescription in resultat.prescriptions.all %}
+                                                        <div style="margin-left:15px;">
+                                                            <span class="bilan-label">Médicaments :</span> {{ prescription.liste_medicaments|linebreaksbr }}<br>
+                                                            <span class="bilan-label">Posologie :</span> {{ prescription.posologie|linebreaksbr }}
+                                                            {% if role == 'medecin' %}
+                                                                <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                            {% endif %}
+                                                        </div>
+                                                        <hr>
+                                                    {% empty %}
+                                                        <div class="ml-3 text-muted">Aucune prescription</div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if role == 'medecin' %}
+                                                    <a href="{% url 'ajouter_prescription' resultat.id %}" class="btn btn-xs btn-success ml-2">Ajouter prescription</a>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         </div>
                     </section>
                 </div>

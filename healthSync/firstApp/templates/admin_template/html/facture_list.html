@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Liste des factures</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Favicon et CSS -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="page-title">
+                        <h1 class="title">Liste des factures</h1>
+                    </div>
+                    <section class="box">
+                        <div class="content-body p">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Patient</th>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for facture in factures %}
+                                    <tr>
+                                        <td>{{ facture.id }}</td>
+                                        <td>{{ facture.patient }}</td>
+                                        <td>{{ facture.date }}</td>
+                                        <td>{{ facture.frais }} fcfa</td>
+                                        <td>
+                                            
+                                            <a href="{% url 'detail_facture' facture.id %}" class="btn btn-info btn-sm">Détail</a>
+                                            <a href="{% url 'edit_facture' facture.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                                            <a href="{% url 'delete_facture' facture.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5">Aucune facture trouvée.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+</body>
+</html>

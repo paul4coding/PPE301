@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Détail de la facture</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- Favicon et CSS (identiques à la liste) -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="page-title">
+                        <h1 class="title">Détail de la facture #{{ facture.id }}</h1>
+                    </div>
+                    <section class="box">
+                        <div class="content-body p">
+                            <p><strong>Patient :</strong> {{ facture.patient }}</p>
+                            <p><strong>Date :</strong> {{ facture.date }}</p>
+                            <p><strong>Montant total :</strong> {{ total }} fcfa</p>
+                            <h3>Lignes de facture</h3>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Service</th>
+                                        <th>Prix</th>
+                                        <th>Résultat</th>
+                                        <th>Prescription &amp; Posologie</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ligne in lignes %}
+                                    <tr>
+                                        <td>{{ ligne.description }}</td>
+                                        <td>{{ ligne.service }}</td>
+                                        <td>{{ ligne.prix }} fcfa</td>
+                                        <td>
+                                            {% if ligne.resultats.all %}
+                                                {% for resultat in ligne.resultats.all %}
+                                                    <div>
+                                                        <strong>Résultat :</strong> {{ resultat.resultat|linebreaksbr }}
+                                                        {% if role == 'laborantin' %}
+                                                            <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                        {% endif %}
+                                                    </div>
+                                                    <hr>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% if role == 'laborantin' %}
+                                                    <a href="{% url 'ajouter_resultat' ligne.id %}" class="btn btn-sm btn-warning">Ajouter résultat</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if ligne.resultats.all %}
+                                                {% for resultat in ligne.resultats.all %}
+                                                    {% for prescription in resultat.prescriptions.all %}
+                                                        <div class="mt-2 ml-3">
+                                                            <strong>Prescription :</strong> {{ prescription.liste_medicaments|linebreaksbr }}<br>
+                                                            <strong>Posologie :</strong> {{ prescription.posologie|linebreaksbr }}
+                                                            {% if role == 'medecin' %}
+                                                                <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% empty %}
+                                                        <div class="ml-3 text-muted">Aucune prescription</div>
+                                                    {% endfor %}
+                                                    {% if role == 'medecin' %}
+                                                        <a href="{% url 'ajouter_prescription' resultat.id %}" class="btn btn-xs btn-success ml-2">Ajouter prescription</a>
+                                                    {% endif %}
+                                                    <hr>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <!-- Ajoute ici d'autres actions si besoin -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <a href="{% url 'ajouter_ligne_facture' facture.id %}" class="btn btn-primary">Ajouter une ligne</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Mon Bilan Médical</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    <!-- CORE CSS FRAMEWORK - START -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS FRAMEWORK - END -->
+    <!-- CORE CSS TEMPLATE - START -->
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS TEMPLATE - END -->
+    <style>
+        .bilan-section { margin-bottom: 30px; }
+        .bilan-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
+        .bilan-title { font-size: 1.3em; color: #007bff; margin-bottom: 10px; }
+        .bilan-label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+                <div class='col-xs-12'>
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Mon Bilan Médical</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+                <div class="col-lg-4">
+                    <section class="box">
+                        <div class="content-body p">
+                            <div class="row">
+                                <div class="doctors-list patient relative">
+                                    <div class="doctors-head relative text-center">
+                                        <div class="patient-img img-circle">
+                                            {% if patient.photo %}
+                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="">
+                                            {% else %}
+                                                <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="">
+                                            {% endif %}
+                                            <div class="stutas"></div>
+                                        </div>
+                                        <h3 class="header w-text relative bold">Nom : {{ patient.nom }} {{ patient.prenom }}</h3>
+                                        <p class="desc g-text relative">{{ patient.email }}</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="patients-info relative">
+                                            <div class="col-sm-6 col-xs-12">
+                                                <div class="patient-card has-shadow2">
+                                                    <div class="doc-info-wrap">
+                                                        <div class="patient-info">
+                                                            <h5 class="bold">
+                                                                {% if patient.sexe == "M" %}Masculin{% elif patient.sexe == "F" %}Féminin{% else %}{{ patient.sexe }}{% endif %}
+                                                            </h5>
+                                                            <h6>Genre</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xs-12">
+                                                <div class="patient-card has-shadow2">
+                                                    <div class="doc-info-wrap">
+                                                        <div class="patient-info">
+                                                            <h5 class="bold">Age: {{ patient.age }}</h5>
+                                                            <h6>Ans</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end row -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-lg-8 col-md-12">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <section class="box bilan-section">
+                                <div class="bilan-title"><i class="fa fa-vials"></i> Mes Résultats</div>
+                                {% if resultats %}
+                                    {% for resultat in resultats %}
+                                        <div class="bilan-card">
+                                            <span class="bilan-label">Date :</span> {{ resultat.ligne_facture.facture.date }}<br>
+                                            <span class="bilan-label">Service :</span> {{ resultat.ligne_facture.service }}<br>
+                                            <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info">Aucun résultat disponible.</div>
+                                {% endif %}
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <section class="box bilan-section">
+                                <div class="bilan-title"><i class="fa fa-prescription-bottle-alt"></i> Mes Prescriptions</div>
+                                {% if prescriptions %}
+                                    {% for prescription in prescriptions %}
+                                        <div class="bilan-card">
+                                            <span class="bilan-label">Date :</span> {{ prescription.resultat.ligne_facture.facture.date }}<br>
+                                            <span class="bilan-label">Service :</span> {{ prescription.resultat.ligne_facture.service }}<br>
+                                            <span class="bilan-label">Médicaments :</span> {{ prescription.liste_medicaments|linebreaksbr }}<br>
+                                            <span class="bilan-label">Posologie :</span> {{ prescription.posologie|linebreaksbr }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-info">Aucune prescription disponible.</div>
+                                {% endif %}
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </section>
+    </div>
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <!-- CORE TEMPLATE JS - START -->
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <!-- END CORE TEMPLATE JS - END -->
+</body>
+</html>

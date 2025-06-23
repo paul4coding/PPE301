@@ -3,10 +3,7 @@
 <!-- SIDEBAR - START -->
 
 <div class="page-sidebar fixedscroll">
-
-    <!-- MAIN MENU - START -->
     <div class="page-sidebar-wrapper" id="main-menu-wrapper">
-
         <ul class='wraplist'>
             <li class='menusection'>Principal</li>
 
@@ -24,6 +21,12 @@
                 <a href="{% url 'hos_patient_dash' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/3.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord patient</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'bilan_patient' %}">
+                    <i class="fas fa-file-medical-alt"></i>
+                    <span class="title">Mon Bilan</span>
                 </a>
             </li>
             {% endif %}
@@ -47,6 +50,8 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_doctors' %}">Tous les médecins</a></li>
                     <li><a href="{% url 'hos_add_doctor' %}">Ajouter un médecin</a></li>
+                    <li><a href="{% url 'hos_edit_doctor' medecin_id=0 %}">Modifier un médecin</a></li>
+                    <li><a href="{% url 'hos_delete_doctor' medecin_id=0 %}">Supprimer un médecin</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -61,6 +66,8 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
                     <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
+                    <li><a href="{% url 'hos_edit_patient' patient_id=0 %}">Modifier un patient</a></li>
+                    <li><a href="{% url 'hos_delete_patient' patient_id=0 %}">Supprimer un patient</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -86,13 +93,8 @@
                             <i class="fa fa-folder-open"></i> Liste des dossiers patients
                         </a>
                     </li>
-                    {% if role == 'secretaire' %}
-                    <li>
-                        <a href="#">
-                            </i> Éditer un dossier patient
-                        </a>
-                    </li>
-                    {% endif %}
+                    <li><a href="{% url 'edit_dossier_patient' dossier_id=0 %}">Modifier un dossier patient</a></li>
+                    <li><a href="{% url 'delete_dossier_patient' dossier_id=0 %}">Supprimer un dossier patient</a></li>
                 </ul>
             </li>
             {% endif %}
@@ -105,19 +107,15 @@
                     <span class="title">Rendez-vous</span>
                     <span class="arrow "></span>
                 </a>
-            
-
-            
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
-
                     <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
                 </ul>
             {% endif %}
             </li>
-            
 
-            {% if role == 'secretaire'  or role == 'medecin' %}
+            {# FACTURATION POUR TOUS LES RÔLES CONCERNÉS #}
+            {% if role == 'secretaire' or role == 'medecin' or role == 'laborantin' %}
             <li>
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/7.png' %}" alt="" class="width-20"></i>
@@ -125,10 +123,50 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% url 'hos_payment' %}">Paiements</a></li>
-                    <li><a href="{% url 'hos_add_payment' %}">Ajouter un paiement</a></li>
-                    <li><a href="{% url 'hos_patient_invoice' %}">Facture du patient</a></li>
+                    <li><a href="{% url 'liste_factures' %}">Liste des factures</a></li>
+                    {% if role == 'secretaire' or role == 'medecin' %}
+                        <li><a href="{% url 'creer_facture' %}">Créer une facture</a></li>
+                    {% endif %}
                 </ul>
+            </li>
+            {% endif %}
+
+            {# Résultats et prescriptions #}
+            {% if role == 'laborantin' or role == 'medecin' %}
+            <li>
+                <a href="javascript:;">
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/8.png' %}" alt="" class="width-20"></i>
+                    <span class="title">Résultats &amp; Prescriptions</span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    {% if role == 'laborantin' %}
+                        <li><a href="{% url 'liste_factures' %}">Ajouter/Modifier un résultat</a></li>
+                        {% if resultat_id %}
+                            <li><a href="{% url 'edit_resultat' resultat_id %}">Modifier un résultat</a></li>
+                        {% endif %}
+                        {% if resultat_id %}
+                            <li><a href="{% url 'delete_resultat' resultat_id %}">Supprimer un résultat</a></li>
+                        {% endif %}
+                    {% endif %}
+                    {% if role == 'medecin' %}
+                        <li><a href="{% url 'liste_factures' %}">Voir les résultats</a></li>
+                        <li><a href="{% url 'liste_factures' %}">Voir les prescriptions</a></li>
+                        {% if prescription_id %}
+                            <li><a href="{% url 'edit_prescription' prescription_id %}">Modifier une prescription</a></li>
+                            <li><a href="{% url 'delete_prescription' prescription_id %}">Supprimer une prescription</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </li>
+            {% endif %}
+
+            {% if role == 'patient' %}
+            <li>
+                <a href="{% url 'bilan_patient' %}">
+                    <i class="fas fa-file-medical-alt"></i>
+                    <span class="title">Mon Bilan</span>
+                </a>
             </li>
             {% endif %}
 
@@ -138,7 +176,6 @@
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/9.png' %}" alt="" class="width-20"></i>
                     <span class="title">Gestion des événements</span>
                 </a>
-
                 <a href="{% url 'liste_rendezvous' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20"></i>
                     <span class="title">Liste des Rendez-vous</span>
@@ -146,7 +183,6 @@
             </li>
             {% endif %}
 
-            {# Utilisation des variables de contexte pour les tests 'in' #}
             {% if role in roles_pages_acces %}
             <li>
                 <a href="javascript:;">
@@ -187,9 +223,6 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'charts_echart_line' %}">Graphiques en ligne</a></li>
                     <li><a href="{% url 'charts_echart_bar' %}">Graphiques en barres</a></li>
-                    {# A compléter si tu ajoutes charts-echart-pie et doughnut dans tes vues/urls.py #}
-                    {# <li><a href="{% url 'charts_echart_pie' %}">Graphiques en secteurs</a></li> #}
-                    {# <li><a href="{% url 'charts_echart_doughnut' %}">Graphiques en anneaux</a></li> #}
                 </ul>
             </li>
 
@@ -203,8 +236,6 @@
                     <li><a href="{% url 'charts_morris_line' %}">Graphiques en ligne</a></li>
                     <li><a href="{% url 'charts_morris_bar' %}">Graphiques en barres</a></li>
                     <li><a href="{% url 'charts_morris_area' %}">Graphiques en aires</a></li>
-                    {# A compléter si tu ajoutes charts-morris-donut dans tes vues/urls.py #}
-                    {# <li><a href="{% url 'charts_morris_donut' %}">Graphiques en beignets</a></li> #}
                 </ul>
             </li>
 
@@ -215,21 +246,12 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    {# Ces vues ne sont pas dans la liste que tu m'as donnée, à créer si besoin ! #}
-                    {# <li><a href="{% url 'charts_js_line' %}">Graphiques en ligne</a></li> #}
-                    {# <li><a href="{% url 'charts_js_bar' %}">Graphiques en barres</a></li> #}
-                    {# <li><a href="{% url 'charts_js_radar' %}">Graphiques radar</a></li> #}
-                    {# <li><a href="{% url 'charts_js_polar' %}">Graphiques polaires</a></li> #}
-                    {# <li><a href="{% url 'charts_js_pie' %}">Graphiques en secteurs</a></li> #}
-                    {# <li><a href="{% url 'charts_js_doughnut' %}">Graphiques en anneaux</a></li> #}
+                    {# À compléter si besoin #}
                 </ul>
             </li>
             {% endif %}
         </ul>
-
     </div>
     <!-- MAIN MENU - END -->
-
 </div>
-
 <!--  SIDEBAR - END -->

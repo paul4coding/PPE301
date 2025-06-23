@@ -11,11 +11,14 @@ urlpatterns = [
     path('connexion/', views.connexion, name='connexion'),
     path('welcome/', views.welcome_view, name='welcome'),
 
-    
+    path('patient/bilan/', views.bilan_patient, name='bilan_patient'),
+    path('prescription/<int:prescription_id>/edit/', views.edit_prescription, name='edit_prescription'),
+    path('prescription/<int:prescription_id>/delete/', views.delete_prescription, name='delete_prescription'),
     # Dossiers patients
     path('dossiers/', views.liste_dossiers_patients, name='liste_dossiers_patients'),
     path('dossier/creer/', views.creer_dossier_patient, name='creer_dossier_patient'),
     path('dossier/<int:dossier_id>/edit/', views.edit_dossier_patient, name='edit_dossier_patient'),
+    path('dossier/<int:dossier_id>/delete/', views.delete_dossier_patient, name='delete_dossier_patient'),
 
     # Pages (journalières) du dossier patient
     path('dossier/<int:dossier_id>/page/ajouter/', views.add_page_dossier_patient, name='add_page_dossier_patient'),
@@ -65,6 +68,19 @@ urlpatterns = [
     path('charts/sparkline/bar/', views.charts_sparkline_bar, name='charts_sparkline_bar'),
     path('charts/sparkline/composite/', views.charts_sparkline_composite, name='charts_sparkline_composite'),
     path('charts/sparkline/line/', views.charts_sparkline_line, name='charts_sparkline_line'),
+
+    # === facture et resultat  ===
+    path('factures/', views.liste_factures, name='liste_factures'),
+    path('facture/<int:facture_id>/', views.detail_facture, name='detail_facture'),
+    path('facture/<int:facture_id>/edit/', views.edit_facture, name='edit_facture'),
+    path('facture/<int:facture_id>/delete/', views.delete_facture, name='delete_facture'),
+
+    path('facture/creer/', views.creer_facture, name='creer_facture'),
+    path('facture/<int:facture_id>/ajouter-ligne/', views.ajouter_ligne_facture, name='ajouter_ligne_facture'),
+    path('ligne/<int:ligne_id>/ajouter-resultat/', views.ajouter_resultat, name='ajouter_resultat'),
+    path('resultat/<int:resultat_id>/ajouter-prescription/', views.ajouter_prescription, name='ajouter_prescription'),
+    path('resultat/<int:resultat_id>/edit/', views.edit_resultat, name='edit_resultat'),
+    path('resultat/<int:resultat_id>/delete/', views.delete_resultat, name='delete_resultat'),
 
     # === FORMULAIRES ===
     path('form/elements/grid/', views.form_elements_grid, name='form_elements_grid'),

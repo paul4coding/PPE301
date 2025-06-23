@@ -1,6 +1,6 @@
 from django import forms
 from .models import Utilisateur, Specialite,Medecin
-from .models import RendezVous, Patient
+from .models import RendezVous, Patient,Facture, LigneFacture, Resultat, Prescription
 class ConnexionForm(forms.Form):
     email = forms.EmailField()
     mot_de_passe = forms.CharField(widget=forms.PasswordInput)
@@ -92,3 +92,23 @@ class RendezVousForm(forms.ModelForm):
         # Pour forcer le format de la date dans le champ (important pour la modification !)
         self.fields['date'].input_formats = ['%Y-%m-%d']
         self.fields['heure'].input_formats = ['%H:%M']
+
+class FactureForm(forms.ModelForm):
+    class Meta:
+        model = Facture
+        fields = ['type_facture', 'frais', 'date']      
+
+class LigneFactureForm(forms.ModelForm):
+    class Meta:
+        model = LigneFacture
+        fields = ['service', 'description', 'prix']
+
+class ResultatForm(forms.ModelForm):
+    class Meta:
+        model = Resultat
+        fields = ['resultat']
+
+class PrescriptionForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['liste_medicaments', 'posologie']        

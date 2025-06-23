@@ -120,3 +120,55 @@ class Message(models.Model):
     def __str__(self):
         return f"De {self.expediteur} à {self.date_envoi.strftime('%d/%m/%Y %H:%M')}"
 
+
+# ...existing code...
+
+class TypeFacture(models.Model):
+    intitule = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.intitule
+
+class Service(models.Model):
+    type_analyse = models.CharField(max_length=255, blank=True)
+    soins = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.type_analyse or self.soins
+
+class Facture(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='factures_patient')
+    agent = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True, related_name='factures_agent')
+    type_facture = models.ForeignKey(TypeFacture, on_delete=models.SET_NULL, null=True)
+    frais = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(default=timezone.now)
+    services = models.ManyToManyField(Service, through='LigneFacture')
+
+    def __str__(self):
+        return f"Facture {self.id} - {self.patient}"
+
+class LigneFacture(models.Model):
+    facture = models.ForeignKey(Facture, on_delete=models.CASCADE, related_name='lignes')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.description} ({self.prix} fcfa)"
+    
+class Resultat(models.Model):
+    ligne_facture = models.ForeignKey(LigneFacture, on_delete=models.CASCADE, related_name='resultats')
+    resultat = models.TextField()
+
+    def __str__(self):
+        return f"Résultat pour {self.ligne_facture}"
+
+class Prescription(models.Model):
+    resultat = models.ForeignKey(Resultat, on_delete=models.CASCADE, related_name='prescriptions')
+    liste_medicaments = models.TextField()
+    posologie = models.TextField()
+
+    def __str__(self):
+        return f"Prescription pour {self.resultat}"
+

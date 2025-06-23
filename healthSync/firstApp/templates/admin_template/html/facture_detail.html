@@ -42,8 +42,12 @@
                     </div>
                     <section class="box">
                         <div class="content-body p">
+                            {% if messages %}
+                              <ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+                            {% endif %}
                             <p><strong>Patient :</strong> {{ facture.patient }}</p>
                             <p><strong>Date :</strong> {{ facture.date }}</p>
+                            <p><strong>Statut :</strong> {{ facture.get_statut_display }}</p>
                             <p><strong>Montant total :</strong> {{ total }} fcfa</p>
                             <h3>Lignes de facture</h3>
                             <table class="table table-bordered">
@@ -62,50 +66,87 @@
                                         <td>{{ ligne.service }}</td>
                                         <td>{{ ligne.prix }} fcfa</td>
                                         <td>
-                                            <!-- Ajoute ici d'autres actions si besoin -->
+                                            <a href="{% url 'ajouter_resultat' ligne.id %}" class="btn btn-xs btn-info">Résultat</a>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            {% if role == "secretaire" and facture.statut == "brouillon" %}
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}">
+                              {% csrf_token %}
+                              <button name="action" value="valider" class="btn btn-success">Valider la facture</button>
+                            </form>
+                            {% endif %}
+                            {% if role == "medecin" and facture.statut == "validee" %}
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}">
+                              {% csrf_token %}
+                              <button name="action" value="transfert_secretaire" class="btn btn-primary">Transférer à la secrétaire</button>
+                            </form>
+                            {% endif %}
+                            {% if role == "secretaire" and facture.statut == "attente_secretaire" %}
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}">
+                              {% csrf_token %}
+                              <button name="action" value="transfert_laborantin" class="btn btn-warning">Transférer au laborantin</button>
+                            </form>
+                            {% endif %}
+                            {% if role == "laborantin" and facture.statut == "attente_laborantin" %}
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}">
+                              {% csrf_token %}
+                              <button name="action" value="transfert_medecin" class="btn btn-info">Transférer au médecin</button>
+                            </form>
+                            {% endif %}
+                            {% if role == "medecin" and facture.statut == "attente_medecin" %}
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}">
+                              {% csrf_token %}
+                              <button name="action" value="cloturer" class="btn btn-danger">Clôturer la facture</button>
+                            </form>
+                            <!-- Bouton pour renvoyer à la secrétaire pour analyse complémentaire ou ajout de ligne -->
+                            <form method="post" action="{% url 'changer_statut_facture' facture.id %}" style="display:inline;">
+                              {% csrf_token %}
+                              <button name="action" value="transfert_secretaire" class="btn btn-primary">
+                                Renvoyer à la secrétaire 
+                              </button>
+                            </form>
+                            {% endif %}
                             <a href="{% url 'ajouter_ligne_facture' facture.id %}" class="btn btn-primary">Ajouter une ligne</a>
-
+                            <a href="{% url 'liste_factures' %}" class="btn btn-default">Retour à la liste des factures</a>
                             <hr class="bilan-hr">
 
                             <!-- Résultats et prescriptions joliment affichés -->
                             <div class="bilan-section">
                                 <div class="bilan-title"><i class="fa fa-vials"></i> Résultats &amp; Prescriptions</div>
                                 {% for ligne in lignes %}
-                                    {% if ligne.resultats.all %}
-                                        {% for resultat in ligne.resultats.all %}
-                                            <div class="bilan-card">
-                                                <span class="bilan-label">Service :</span> {{ ligne.service }}<br>
-                                                <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
-                                                {% if role == 'laborantin' %}
-                                                    <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
-                                                {% endif %}
+                                    {% for resultat in ligne.resultats.all %}
+                                        <div class="bilan-card">
+                                            <span class="bilan-label">Service :</span> {{ ligne.service }}<br>
+                                            <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
+                                            {% if role == 'laborantin' %}
+                                                <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                <a href="{% url 'delete_resultat' resultat.id %}" class="btn btn-xs btn-danger ml-2">Supprimer</a>
+                                            {% endif %}
+                                            <hr>
+                                            <span class="bilan-label">Prescriptions :</span>
+                                            {% for prescription in resultat.prescriptions.all %}
+                                                <div style="margin-left:15px;">
+                                                    <span class="bilan-label">Médicaments :</span> {{ prescription.liste_medicaments|linebreaksbr }}<br>
+                                                    <span class="bilan-label">Posologie :</span> {{ prescription.posologie|linebreaksbr }}
+                                                    {% if role == 'medecin' %}
+                                                        <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
+                                                        <a href="{% url 'delete_prescription' prescription.id %}" class="btn btn-xs btn-danger ml-2">Supprimer</a>
+                                                    {% endif %}
+                                                </div>
                                                 <hr>
-                                                <span class="bilan-label">Prescriptions :</span>
-                                                {% if resultat.prescriptions.all %}
-                                                    {% for prescription in resultat.prescriptions.all %}
-                                                        <div style="margin-left:15px;">
-                                                            <span class="bilan-label">Médicaments :</span> {{ prescription.liste_medicaments|linebreaksbr }}<br>
-                                                            <span class="bilan-label">Posologie :</span> {{ prescription.posologie|linebreaksbr }}
-                                                            {% if role == 'medecin' %}
-                                                                <a href="{% url 'edit_prescription' prescription.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
-                                                            {% endif %}
-                                                        </div>
-                                                        <hr>
-                                                    {% empty %}
-                                                        <div class="ml-3 text-muted">Aucune prescription</div>
-                                                    {% endfor %}
-                                                {% endif %}
-                                                {% if role == 'medecin' %}
-                                                    <a href="{% url 'ajouter_prescription' resultat.id %}" class="btn btn-xs btn-success ml-2">Ajouter prescription</a>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    {% endif %}
+                                            {% empty %}
+                                                <div class="ml-3 text-muted">Aucune prescription</div>
+                                            {% endfor %}
+                                            {% if role == 'medecin' and facture.statut == 'attente_medecin' %}
+                                                <a href="{% url 'ajouter_prescription' resultat.id %}" class="btn btn-xs btn-success ml-2">Ajouter prescription</a>
+                                            {% endif %}
+                                        </div>
+                                    {% empty %}
+                                        <div class="ml-3 text-muted">Aucun résultat</div>
+                                    {% endfor %}
                                 {% endfor %}
                             </div>
                         </div>

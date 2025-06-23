@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <title>Accès refusé</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Prescription</title>
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
     <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
@@ -20,39 +20,22 @@
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
-<body>
-{% include "admin_template/partials/_header.html" %}
-<div class="page-container row-fluid container-fluid">
-    {% include "admin_template/partials/_sidebar.html" %}
-    <section id="main-content">
-        <div class="wrapper main-wrapper row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="page-title">
-                    <h1 class="title">Prescription pour le résultat #{{ resultat.id }}</h1>
-                </div>
-                <section class="box">
-                    <div class="content-body p">
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-success">Enregistrer</button>
-                        </form>
-                        <a href="{% url 'detail_facture' resultat.ligne_facture.facture.id %}" class="btn btn-default">Retour à la facture</a>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </section>
-</div>
-<script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
-<script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
-<script>
-    window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
-</script>
-<script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-</body>
-</html>
+<body style="background:#f8f9fa;">
+    <div class="container text-center" style="margin-top:100px;">
+        <h2 class="text-danger">Accès refusé</h2>
+        <p>{{ message|default:"Vous n'avez pas l'autorisation d'accéder à cette page." }}</p>
+        <a href="{% url home_url %}" class="btn btn-primary">Retour à l'accueil</a>
+        <a href="javascript:history.back()" class="btn btn-default">Page précédente</a>
+    </div>
+    <!-- CORE JS FRAMEWORK - START -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <!-- CORE JS FRAMEWORK - END -->
+    <script src="{% static 'admin/assets/js/scripts.js'

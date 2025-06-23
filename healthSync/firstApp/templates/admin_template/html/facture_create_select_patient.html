@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Créer une facture</title>
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
-    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
-        <!-- Favicon et CSS (identiques à la liste) -->
-    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
     <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
@@ -25,51 +21,44 @@
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    {% include "admin_template/partials/_header.html" %}
-    <div class="page-container row-fluid container-fluid">
-        {% include "admin_template/partials/_sidebar.html" %}
-        <section id="main-content">
-            <div class="wrapper main-wrapper row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="page-title">
-                        <h1 class="title">Créer une facture</h1>
-                    </div>
-                    <section class="box">
-                        <div class="content-body p">
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="patient">Choisir un patient</label>
-                                    <select name="patient" id="patient" class="form-control" required>
-                                        <option value="">Sélectionner un patient</option>
-                                        {% for patient in patients %}
-                                            <option value="{{ patient.id }}">{{ patient.nom }} {{ patient.prenom }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                {{ form.as_p }}
-                                <button type="submit" class="btn btn-success">Créer la facture</button>
-                            </form>
-                        </div>
-                    </section>
+{% include "admin_template/partials/_header.html" %}
+<div class="page-container row-fluid container-fluid">
+    {% include "admin_template/partials/_sidebar.html" %}
+    <section id="main-content">
+        <div class="wrapper main-wrapper row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="page-title">
+                    <h1 class="title">Créer une facture</h1>
                 </div>
+                <section class="box">
+                    <div class="content-body p">
+                        <form method="post">
+                            {% csrf_token %}
+                            <label>Patient :</label>
+                            <select name="patient" required class="form-control">
+                                {% for patient in patients %}
+                                  <option value="{{ patient.id }}">{{ patient }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-success">Créer</button>
+                        </form>
+                        <a href="{% url 'liste_factures' %}" class="btn btn-default">Retour</a>
+                    </div>
+                </section>
             </div>
-        </section>
-    </div>
-        <!-- CORE JS FRAMEWORK - START -->
-    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
-    <script>
-        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
-    </script>
-    <!-- CORE JS FRAMEWORK - END -->
-    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+        </div>
+    </section>
+</div>
+<script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+<script>
+    window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+</script>
+<script src="{% static 'admin/assets/js/scripts.js' %}"></script>
 </body>
 </html>

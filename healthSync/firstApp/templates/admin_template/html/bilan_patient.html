@@ -12,7 +12,6 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
-    <!-- CORE CSS FRAMEWORK - START -->
     <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
@@ -20,11 +19,8 @@
     <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS FRAMEWORK - END -->
-    <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS TEMPLATE - END -->
     <style>
         .bilan-section { margin-bottom: 30px; }
         .bilan-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
@@ -107,6 +103,15 @@
                                             <span class="bilan-label">Date :</span> {{ resultat.ligne_facture.facture.date }}<br>
                                             <span class="bilan-label">Service :</span> {{ resultat.ligne_facture.service }}<br>
                                             <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
+                                            {% if resultat.prescriptions.all %}
+                                                <div class="bilan-label mt-2">Prescriptions associées :</div>
+                                                {% for prescription in resultat.prescriptions.all %}
+                                                    <div style="margin-left:15px;">
+                                                        <span class="bilan-label">Médicaments :</span> {{ prescription.liste_medicaments|linebreaksbr }}<br>
+                                                        <span class="bilan-label">Posologie :</span> {{ prescription.posologie|linebreaksbr }}
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 {% else %}
@@ -150,8 +155,6 @@
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
     <!-- CORE JS FRAMEWORK - END -->
-    <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-    <!-- END CORE TEMPLATE JS - END -->
 </body>
 </html>

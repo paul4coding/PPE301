@@ -51,7 +51,7 @@
                                         <td>{{ facture.id }}</td>
                                         <td>{{ facture.patient }}</td>
                                         <td>{{ facture.date }}</td>
-                                        <td>{{ facture.frais }} fcfa</td>
+                                        <td>{{ facture.total_lignes }} fcfa</td>
                                         <td>
                                             
                                             <a href="{% url 'detail_facture' facture.id %}" class="btn btn-info btn-sm">Détail</a>

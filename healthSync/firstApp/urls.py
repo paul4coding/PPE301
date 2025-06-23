@@ -11,20 +11,20 @@ urlpatterns = [
     path('connexion/', views.connexion, name='connexion'),
     path('welcome/', views.welcome_view, name='welcome'),
 
+    # === PATIENT ===
     path('patient/bilan/', views.bilan_patient, name='bilan_patient'),
+
+    # === PRESCRIPTION ===
     path('prescription/<int:prescription_id>/edit/', views.edit_prescription, name='edit_prescription'),
     path('prescription/<int:prescription_id>/delete/', views.delete_prescription, name='delete_prescription'),
-    # Dossiers patients
+
+    # === DOSSIERS PATIENTS ===
     path('dossiers/', views.liste_dossiers_patients, name='liste_dossiers_patients'),
     path('dossier/creer/', views.creer_dossier_patient, name='creer_dossier_patient'),
     path('dossier/<int:dossier_id>/edit/', views.edit_dossier_patient, name='edit_dossier_patient'),
     path('dossier/<int:dossier_id>/delete/', views.delete_dossier_patient, name='delete_dossier_patient'),
-
-    # Pages (journalières) du dossier patient
     path('dossier/<int:dossier_id>/page/ajouter/', views.add_page_dossier_patient, name='add_page_dossier_patient'),
     path('dossier/page/<int:page_id>/edit/', views.edit_page_dossier_patient, name='edit_page_dossier_patient'),
-
-    # Profil patient (affichage du dossier)
     path('patient/<int:patient_id>/profil/', views.hos_patient_profile, name='hos_patient_profile'),
 
     # === ADMIN ===
@@ -32,25 +32,31 @@ urlpatterns = [
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/personnels_a_valider/', views.personnels_a_valider, name='personnels_a_valider'),
     path('admin/valider_personnel/<int:user_id>/', views.valider_personnel, name='valider_personnel'),
-    
+
+    # === RENDEZ-VOUS ===
     path('admin/rendezvous/liste/', views.liste_rendezvous, name='liste_rendezvous'),
     path('admin/rendezvous/modifier/<int:rdv_id>/', views.modifier_rendezvous, name='modifier_rendezvous'),
     path('supprimer/<int:rdv_id>/', views.supprimer_rendezvous, name='supprimer_rendezvous'),
-
-
-    # === RENDEZ-VOUS ===
-    #path('admin/rendezvous/', views.gerer_rendezvous, name='gerer_rendezvous'),  # Gestion par le personnel
     path('admin/rendezvous/ajouter/', views.ajouter_rendezvous, name='ajouter_rendezvous'),
     path('admin/rendezvous/calendrier/', views.hos_events, name='hos_events'),
-
-
-    # API Rendez-vous (FullCalendar, notifications, etc.)
-    #path('api/rendezvous/', views.api_rendezvous, name='rendezvous_api'),  # Calendrier interactif
-    #path('api/rendezvous-du-jour/', views.api_rendezvous_du_jour, name='rendezvous_du_jour'),  # Notifications du jour
-    
     path('changer-statut/', views.set_rdv_status, name='set_rdv_status'),
-    
+
+    # === NOTIFICATIONS ===
     path('notifications/', views.all_notifications, name='all_notifications'),
+
+    # === FACTURE ET RESULTAT (WORKFLOW) ===
+    path('factures/', views.liste_factures, name='liste_factures'),
+    path('facture/<int:facture_id>/', views.detail_facture, name='detail_facture'),
+    path('facture/<int:facture_id>/edit/', views.edit_facture, name='edit_facture'),
+    path('facture/<int:facture_id>/delete/', views.delete_facture, name='delete_facture'),
+    path('facture/creer/', views.creer_facture, name='creer_facture'),
+    path('facture/<int:facture_id>/ajouter-ligne/', views.ajouter_ligne_facture, name='ajouter_ligne_facture'),
+    path('facture/<int:facture_id>/changer-statut/', views.changer_statut_facture, name='changer_statut_facture'),
+
+    path('ligne/<int:ligne_id>/ajouter-resultat/', views.ajouter_resultat, name='ajouter_resultat'),
+    path('resultat/<int:resultat_id>/ajouter-prescription/', views.ajouter_prescription, name='ajouter_prescription'),
+    path('resultat/<int:resultat_id>/edit/', views.edit_resultat, name='edit_resultat'),
+    path('resultat/<int:resultat_id>/delete/', views.delete_resultat, name='delete_resultat'),
 
     # === CHARTS ===
     path('charts/chartjs/bar/', views.charts_chartjs_bar, name='charts_chartjs_bar'),
@@ -68,19 +74,6 @@ urlpatterns = [
     path('charts/sparkline/bar/', views.charts_sparkline_bar, name='charts_sparkline_bar'),
     path('charts/sparkline/composite/', views.charts_sparkline_composite, name='charts_sparkline_composite'),
     path('charts/sparkline/line/', views.charts_sparkline_line, name='charts_sparkline_line'),
-
-    # === facture et resultat  ===
-    path('factures/', views.liste_factures, name='liste_factures'),
-    path('facture/<int:facture_id>/', views.detail_facture, name='detail_facture'),
-    path('facture/<int:facture_id>/edit/', views.edit_facture, name='edit_facture'),
-    path('facture/<int:facture_id>/delete/', views.delete_facture, name='delete_facture'),
-
-    path('facture/creer/', views.creer_facture, name='creer_facture'),
-    path('facture/<int:facture_id>/ajouter-ligne/', views.ajouter_ligne_facture, name='ajouter_ligne_facture'),
-    path('ligne/<int:ligne_id>/ajouter-resultat/', views.ajouter_resultat, name='ajouter_resultat'),
-    path('resultat/<int:resultat_id>/ajouter-prescription/', views.ajouter_prescription, name='ajouter_prescription'),
-    path('resultat/<int:resultat_id>/edit/', views.edit_resultat, name='edit_resultat'),
-    path('resultat/<int:resultat_id>/delete/', views.delete_resultat, name='delete_resultat'),
 
     # === FORMULAIRES ===
     path('form/elements/grid/', views.form_elements_grid, name='form_elements_grid'),
@@ -110,9 +103,7 @@ urlpatterns = [
     path('hos/patients/', views.hos_patients, name='hos_patients'),
     path('hos/payment/', views.hos_payment, name='hos_payment'),
     path('hos/schedule/', views.hos_schedule, name='hos_schedule'),
-    
     path('api/rendezvous/', views.api_rendezvous, name='api_rendezvous'),
-    
     path('hos/staff-profile/', views.hos_staff_profile, name='hos_staff_profile'),
     path('hos/support/', views.hos_support, name='hos_support'),
 

@@ -123,12 +123,46 @@ class Message(models.Model):
 
 # ...existing code...
 
+
 class TypeFacture(models.Model):
     intitule = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 
     def __str__(self):
         return self.intitule
+    
+class Facture(models.Model):
+    STATUT_CHOICES = [
+        ('brouillon', 'Brouillon (secrétaire)'),
+        ('validee', 'Validée (médecin)'),
+        ('attente_secretaire', 'En attente secrétaire'),
+        ('attente_laborantin', 'En attente laborantin'),
+        ('attente_medecin', 'En attente médecin'),
+        ('cloturee', 'Clôturée'),
+    ]
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='factures_patient')
+    agent = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True, related_name='factures_agent')
+    type_facture = models.ForeignKey(TypeFacture, on_delete=models.SET_NULL, null=True)
+    frais = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(default=timezone.now)
+    services = models.ManyToManyField('Service', through='LigneFacture')
+    statut = models.CharField(max_length=30, choices=STATUT_CHOICES, default='brouillon')
+
+    def __str__(self):
+        return f"Facture {self.id} - {self.patient}"
+
+    @property
+    def total_lignes(self):
+        return sum(ligne.prix for ligne in self.lignes.all())
+
+class LigneFacture(models.Model):
+    facture = models.ForeignKey(Facture, on_delete=models.CASCADE, related_name='lignes')
+    service = models.ForeignKey('Service', on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.description} ({self.prix} fcfa)"
 
 class Service(models.Model):
     type_analyse = models.CharField(max_length=255, blank=True)
@@ -137,26 +171,7 @@ class Service(models.Model):
     def __str__(self):
         return self.type_analyse or self.soins
 
-class Facture(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='factures_patient')
-    agent = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True, related_name='factures_agent')
-    type_facture = models.ForeignKey(TypeFacture, on_delete=models.SET_NULL, null=True)
-    frais = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(default=timezone.now)
-    services = models.ManyToManyField(Service, through='LigneFacture')
 
-    def __str__(self):
-        return f"Facture {self.id} - {self.patient}"
-
-class LigneFacture(models.Model):
-    facture = models.ForeignKey(Facture, on_delete=models.CASCADE, related_name='lignes')
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    description = models.CharField(max_length=255)
-    prix = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.description} ({self.prix} fcfa)"
-    
 class Resultat(models.Model):
     ligne_facture = models.ForeignKey(LigneFacture, on_delete=models.CASCADE, related_name='resultats')
     resultat = models.TextField()

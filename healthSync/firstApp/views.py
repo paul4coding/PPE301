@@ -12,21 +12,125 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 
+# --- WORKFLOW FACTURE ---
+
+@require_POST
+def changer_statut_facture(request, facture_id):
+    facture = get_object_or_404(Facture, id=facture_id)
+    role = get_admin_context(request)['role']
+    action = request.POST.get('action')
+
+    if action == 'valider' and role == 'secretaire' and facture.statut == 'brouillon':
+        facture.statut = 'validee'
+    elif action == 'transfert_secretaire' and role == 'medecin' and facture.statut == 'validee':
+        facture.statut = 'attente_secretaire'
+    elif action == 'transfert_laborantin' and role == 'secretaire' and facture.statut == 'attente_secretaire':
+        facture.statut = 'attente_laborantin'
+    elif action == 'transfert_medecin' and role == 'laborantin' and facture.statut == 'attente_laborantin':
+        facture.statut = 'attente_medecin'
+    elif action == 'cloturer' and role == 'medecin' and facture.statut == 'attente_medecin':
+        facture.statut = 'cloturee'
+    else:
+        # Affiche une page d'accès refusé avec bouton retour accueil
+        return render(
+            request,
+            'admin_template/html/access_forbidden.html',
+            {
+                'message': "Action non autorisée.",
+                'home_url': 'admin_home',  # adapte selon ton url d'accueil
+            }
+        )
+
+    facture.save()
+    return redirect('detail_facture', facture_id=facture.id)
+
+def detail_facture(request, facture_id):
+    context = get_admin_context(request)
+    facture = get_object_or_404(Facture, id=facture_id)
+    user = context['user']
+    role = context['role']
+
+    # Contrôle d'accès selon le statut de la facture
+    if facture.statut == 'brouillon' and role != 'secretaire':
+        return HttpResponseForbidden("Facture non validée par le secrétaire.")
+    if facture.statut == 'validee' and role != 'medecin':
+        return HttpResponseForbidden("Facture en attente de validation par le médecin.")
+    if facture.statut == 'attente_secretaire' and role != 'secretaire':
+        return HttpResponseForbidden("Facture en attente de traitement par le secrétaire.")
+    if facture.statut == 'attente_laborantin' and role != 'laborantin':
+        return HttpResponseForbidden("Facture en attente de traitement par le laborantin.")
+    if facture.statut == 'attente_medecin' and role != 'medecin':
+        return HttpResponseForbidden("Facture en attente de traitement par le médecin.")
+    if facture.statut == 'cloturee' and role not in ['medecin', 'patient']:
+        return HttpResponseForbidden("Facture clôturée.")
+
+    lignes = facture.lignes.all()
+    total = sum(ligne.prix for ligne in lignes)
+    context['facture'] = facture
+    context['lignes'] = lignes
+    context['total'] = total
+    return render(request, 'admin_template/html/facture_detail.html', context)
+
+def creer_facture(request):
+    context = get_admin_context(request)
+    context['patients'] = Patient.objects.filter(dossier__isnull=False).distinct()
+    if request.method == 'POST':
+        form = FactureForm(request.POST)
+        patient_id = request.POST.get('patient')
+        if form.is_valid() and patient_id:
+            patient = get_object_or_404(Patient, id=patient_id)
+            facture = form.save(commit=False)
+            facture.patient = patient
+            facture.statut = 'brouillon'
+            user_id = request.session.get('user_id')
+            if user_id:
+                from .models import Utilisateur
+                facture.agent = Utilisateur.objects.get(id=user_id)
+            else:
+                facture.agent = None
+            facture.save()
+            return redirect('detail_facture', facture_id=facture.id)
+    else:
+        form = FactureForm()
+    context['form'] = form
+    return render(request, 'admin_template/html/facture_create_select_patient.html', context)
+
+def ajouter_ligne_facture(request, facture_id):
+    context = get_admin_context(request)
+    facture = get_object_or_404(Facture, id=facture_id)
+    role = context['role']
+    # Secrétaire peut ajouter en brouillon, médecin peut ajouter en 'validee' ou 'attente_medecin'
+    if not (
+        (role == 'secretaire' and facture.statut == 'brouillon') or
+        (role == 'medecin' and facture.statut in ['validee', 'attente_medecin'])
+    ):
+        return HttpResponseForbidden("Vous ne pouvez pas ajouter de ligne à cette étape.")
+
+    context['facture'] = facture
+    if request.method == 'POST':
+        form = LigneFactureForm(request.POST)
+        if form.is_valid():
+            ligne = form.save(commit=False)
+            ligne.facture = facture
+            ligne.save()
+            return redirect('detail_facture', facture_id=facture.id)
+    else:
+        form = LigneFactureForm()
+    context['form'] = form
+    return render(request, 'admin_template/html/ligne_facture_form.html', context)
+
+# --- FIN WORKFLOW FACTURE ---
 
 def bilan_patient(request):
     context = get_admin_context(request)
     user = context.get('user')
-    # Vérifie que l'utilisateur est bien un patient
     try:
         patient = user.patient
     except AttributeError:
         context['error'] = "Accès réservé aux patients."
         return render(request, 'admin_template/html/bilan_patient.html', context)
-
-    # Récupère tous les résultats et prescriptions liés à ce patient
     resultats = Resultat.objects.filter(ligne_facture__facture__patient=patient)
     prescriptions = Prescription.objects.filter(resultat__ligne_facture__facture__patient=patient)
-
     context['resultats'] = resultats
     context['prescriptions'] = prescriptions
     context['patient'] = patient
@@ -35,7 +139,6 @@ def bilan_patient(request):
 def delete_resultat(request, resultat_id):
     context = get_admin_context(request)
     resultat = get_object_or_404(Resultat, id=resultat_id)
-    # Sécurisation de la récupération de l'id de la facture liée
     ligne = getattr(resultat, 'ligne_facture', None)
     facture = getattr(ligne, 'facture', None) if ligne else None
     facture_id = getattr(facture, 'id', None)
@@ -55,11 +158,8 @@ def edit_resultat(request, resultat_id):
     resultat = get_object_or_404(Resultat, id=resultat_id)
     user = context['user']
     role = context['role']
-
-    # Seul le laborantin peut modifier un résultat
     if role != 'laborantin':
         return HttpResponseForbidden("Seul le laborantin peut modifier le résultat.")
-
     if request.method == 'POST':
         form = ResultatForm(request.POST, instance=resultat)
         if form.is_valid():
@@ -75,38 +175,6 @@ def edit_resultat(request, resultat_id):
                 return redirect('liste_factures')
     else:
         form = ResultatForm(instance=resultat)
-
-    context['form'] = form
-    context['resultat'] = resultat
-    return render(request, 'admin_template/html/resultat_form.html', context)
-
-# modifier un resultat possible que par le laborantin 
-def edit_resultat(request, resultat_id):
-    context = get_admin_context(request)
-    resultat = get_object_or_404(Resultat, id=resultat_id)
-    user = context['user']
-    role = context['role']
-
-    # Seul le laborantin peut modifier un résultat
-    if role != 'laborantin':
-        return HttpResponseForbidden("Seul le laborantin peut modifier le résultat.")
-
-    if request.method == 'POST':
-        form = ResultatForm(request.POST, instance=resultat)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Résultat modifié avec succès.")
-            # Sécurisation de la récupération de l'id de la facture liée
-            facture = getattr(getattr(resultat, 'ligne_facture', None), 'facture', None)
-            facture_id = getattr(facture, 'id', None)
-            if facture_id:
-                return redirect('detail_facture', facture_id=facture_id)
-            else:
-                messages.error(request, "Impossible de retrouver la facture liée à ce résultat.")
-                return redirect('liste_factures')
-    else:
-        form = ResultatForm(instance=resultat)
-
     context['form'] = form
     context['resultat'] = resultat
     return render(request, 'admin_template/html/resultat_form.html', context)
@@ -141,17 +209,13 @@ def edit_prescription(request, prescription_id):
     prescription = get_object_or_404(Prescription, id=prescription_id)
     user = context['user']
     role = context['role']
-
-    # Seul le médecin peut modifier une prescription
     if role != 'medecin':
         return HttpResponseForbidden("Seul le médecin peut modifier la prescription.")
-
     if request.method == 'POST':
         form = PrescriptionForm(request.POST, instance=prescription)
         if form.is_valid():
             form.save()
             messages.success(request, "Prescription modifiée avec succès.")
-            # Redirection vers la facture liée
             resultat = getattr(prescription, 'resultat', None)
             ligne = getattr(resultat, 'ligne_facture', None) if resultat else None
             facture = getattr(ligne, 'facture', None) if ligne else None
@@ -162,17 +226,30 @@ def edit_prescription(request, prescription_id):
                 return redirect('liste_factures')
     else:
         form = PrescriptionForm(instance=prescription)
-
     context['form'] = form
     context['prescription'] = prescription
     return render(request, 'admin_template/html/prescription_form.html', context)
 
 def delete_prescription(request, prescription_id):
-    # À compléter selon ton besoin
-    pass
+    context = get_admin_context(request)
+    prescription = get_object_or_404(Prescription, id=prescription_id)
+    user = context['user']
+    role = context['role']
+    # Seul le médecin peut supprimer une prescription
+    if role != 'medecin':
+        return HttpResponseForbidden("Seul le médecin peut supprimer la prescription.")
+    resultat = prescription.resultat
+    facture_id = resultat.ligne_facture.facture.id if resultat and resultat.ligne_facture and resultat.ligne_facture.facture else None
+    if request.method == 'POST':
+        prescription.delete()
+        messages.success(request, "Prescription supprimée avec succès.")
+        if facture_id:
+            return redirect('detail_facture', facture_id=facture_id)
+        else:
+            return redirect('liste_factures')
+    context['prescription'] = prescription
+    return render(request, 'admin_template/html/confirm_delete_prescription.html', context)
 
-
-# Liste des factures (accessible selon le rôle)
 def liste_factures(request):
     context = get_admin_context(request)
     user = context['user']
@@ -187,87 +264,17 @@ def liste_factures(request):
     context['total_general'] = sum(f.frais for f in factures)
     return render(request, 'admin_template/html/facture_list.html', context)
 
-# Détail d'une facture
-def detail_facture(request, facture_id):
-    context = get_admin_context(request)
-    facture = get_object_or_404(Facture, id=facture_id)
-    lignes = facture.lignes.all()
-    total = sum(ligne.prix for ligne in lignes)
-    context['facture'] = facture
-    context['lignes'] = lignes
-    context['total'] = total
-    return render(request, 'admin_template/html/facture_detail.html', context)
-
-# Création d'une facture
-def creer_facture(request):
-    context = get_admin_context(request)
-    context['patients'] = Patient.objects.filter(dossier__isnull=False).distinct()
-    if request.method == 'POST':
-        form = FactureForm(request.POST)
-        patient_id = request.POST.get('patient')
-        if form.is_valid() and patient_id:
-            patient = get_object_or_404(Patient, id=patient_id)
-            facture = form.save(commit=False)
-            facture.patient = patient
-            # Correction ici : récupère l'utilisateur depuis la session
-            user_id = request.session.get('user_id')
-            if user_id:
-                from .models import Utilisateur
-                facture.agent = Utilisateur.objects.get(id=user_id)
-            else:
-                facture.agent = None  # ou gère le cas non connecté
-            facture.save()
-            return redirect('detail_facture', facture_id=facture.id)
-    else:
-        form = FactureForm()
-    context['form'] = form
-    return render(request, 'admin_template/html/facture_create_select_patient.html', context)
-
-def ajouter_ligne_facture(request, facture_id):
-    context = get_admin_context(request)
-    facture = get_object_or_404(Facture, id=facture_id)
-    context['facture'] = facture
-    if request.method == 'POST':
-        # Si le médecin clique sur "analyse complémentaire"
-        if request.POST.get("service_type") == "analyse_complementaire":
-            service = Service.objects.filter(type_analyse__isnull=False).first()
-            if service:
-                LigneFacture.objects.create(
-                    facture=facture,
-                    service=service,
-                    description="Analyse complémentaire",
-                    prix=0  # ou le prix par défaut
-                )
-                messages.success(request, "Analyse complémentaire ajoutée à la facture.")
-                return redirect('detail_facture', facture_id=facture.id)
-        # Sinon, formulaire classique
-        form = LigneFactureForm(request.POST)
-        if form.is_valid():
-            ligne = form.save(commit=False)
-            ligne.facture = facture
-            ligne.save()
-            return redirect('detail_facture', facture_id=facture.id)
-    else:
-        form = LigneFactureForm()
-    context['form'] = form
-    return render(request, 'admin_template/html/ligne_facture_form.html', context)
-
-# Ajout d'un résultat à une ligne de facture
 def ajouter_resultat(request, ligne_id):
     context = get_admin_context(request)
     ligne = get_object_or_404(LigneFacture, id=ligne_id)
     context['ligne'] = ligne
     user = context['user']
     role = context['role']
-
-    # Droits d'accès : laborantin (modif), medecin/patient concerné/laborantin (lecture)
     is_patient_concerne = (
         role == 'patient' and ligne.facture.patient == user
     )
     if not (role == 'laborantin' or role == 'medecin' or is_patient_concerne):
         return HttpResponseForbidden("Accès refusé.")
-
-    # Seul le laborantin peut modifier/ajouter
     if request.method == 'POST':
         if role != 'laborantin':
             return HttpResponseForbidden("Seul le laborantin peut modifier le résultat.")
@@ -278,29 +285,23 @@ def ajouter_resultat(request, ligne_id):
             resultat.save()
             return redirect('detail_facture', facture_id=ligne.facture.id)
     else:
-        # Si un résultat existe déjà, on le passe au template pour affichage
         resultat = getattr(ligne, 'resultat', None)
         form = ResultatForm(instance=resultat) if role == 'laborantin' else None
         context['resultat'] = resultat
     context['form'] = form if role == 'laborantin' else None
     return render(request, 'admin_template/html/resultat_form.html', context)
 
-# Ajout d'une prescription à un résultat
 def ajouter_prescription(request, resultat_id):
     context = get_admin_context(request)
     resultat = get_object_or_404(Resultat, id=resultat_id)
     context['resultat'] = resultat
     user = context['user']
     role = context['role']
-
-    # Seuls le médecin ou le patient concerné peuvent voir la prescription
     is_patient_concerne = (
         role == 'patient' and resultat.ligne_facture.facture.patient == user
     )
     if not (role == 'medecin' or is_patient_concerne):
         return HttpResponseForbidden("Accès refusé.")
-
-    # Seul le médecin peut modifier/ajouter
     if request.method == 'POST':
         if role != 'medecin':
             return HttpResponseForbidden("Seul le médecin peut modifier la prescription.")
@@ -311,7 +312,6 @@ def ajouter_prescription(request, resultat_id):
             prescription.save()
             return redirect('detail_facture', facture_id=resultat.ligne_facture.facture.id)
     else:
-        # Si une prescription existe déjà, on la passe au template pour affichage au patient
         prescription = getattr(resultat, 'prescription', None)
         form = PrescriptionForm(instance=prescription) if role == 'medecin' else None
         context['prescription'] = prescription

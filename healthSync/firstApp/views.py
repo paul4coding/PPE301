@@ -1203,18 +1203,23 @@ def messagerie_conversation(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id, participants=user)
     autres_participants = conversation.participants.exclude(id=user.id)
 
-    # Envoi du message sans AJAX (POST)
+    # Marquer tous les messages reçus comme lus pour l'utilisateur courant
+    messages_a_lire = conversation.messages.exclude(expediteur=user).exclude(lu_par=user)
+    for m in messages_a_lire:
+        m.lu_par.add(user)
+
+    # Envoi du message
     if request.method == "POST":
         texte = request.POST.get("texte", "").strip()
         if texte:
             m = Message.objects.create(
                 conversation=conversation,
-                expediteur=user,  # Utilise bien 'expediteur' comme dans ton modèle !
+                expediteur=user,
                 texte=texte
             )
             m.lu_par.add(user)
             m.save()
-            return redirect('messagerie_conversation', conversation_id=conversation.id)  # Pour vider le champ
+            return redirect('messagerie_conversation', conversation_id=conversation.id)
 
     context['conversation'] = conversation
     context['autres_participants'] = autres_participants
@@ -1273,18 +1278,27 @@ def api_recherche_utilisateurs(request):
     ]
     return JsonResponse({"results": data})
 
+def get_or_create_conversation(user1, user2):
+    conversation = (
+        Conversation.objects
+        .annotate(pcount=Count('participants'))
+        .filter(participants=user1)
+        .filter(participants=user2)
+        .filter(pcount=2)
+        .first()
+    )
+    if conversation:
+        return conversation
+    conversation = Conversation.objects.create()
+    conversation.participants.add(user1, user2)
+    return conversation
+
 def messagerie_commencer_conversation(request, user_id):
     current_user = get_admin_context(request)['user']
     destinataire = get_object_or_404(Utilisateur, id=user_id)
     if destinataire.id == current_user.id:
         return redirect('messagerie_inbox')
-    conv = Conversation.objects.filter(participants=current_user).filter(participants=destinataire).distinct()
-    if conv.exists():
-        conversation = conv.first()
-    else:
-        conversation = Conversation.objects.create()
-        conversation.participants.add(current_user, destinataire)
-        conversation.save()
+    conversation = get_or_create_conversation(current_user, destinataire)
     return redirect('messagerie_conversation', conversation_id=conversation.id)
 
 # API pour le chat temps réel

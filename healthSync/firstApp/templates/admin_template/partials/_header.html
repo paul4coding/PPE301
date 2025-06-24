@@ -2,8 +2,7 @@
 {% load notifications_tags %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <div class='page-topbar gradient-blue1'>
-    <div class='logo-area crypto'>
-    </div>
+    <div class='logo-area crypto'></div>
     <div class='quick-area'>
         <div class='pull-left'>
             <ul class="info-menu left-links list-inline list-unstyled">
@@ -103,41 +102,16 @@
                     </ul>
                 </li>
                 <!-- FIN NOTIFICATIONS -->
+                
+                <!-- MESSAGES : Simple lien vers la boîte de réception -->
                 <li class="message-toggle-wrapper spec">
-                    <a href="#" data-toggle="dropdown" class="toggle mr-15">
+                    <a href="{% url 'messagerie_inbox' %}" class="toggle mr-15">
                         <i class="fa fa-envelope"></i>
-                        <span class="badge badge-accent">7</span>
+                        <span class="badge badge-accent">{{ nb_messages_non_lus|default:"0" }}</span>
                     </a>
-                    <ul class="dropdown-menu messages animated fadeIn">
-                        <li class="list">
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-                                <li class="unread status-available">
-                                    <a href="javascript:;">
-                                        <div class="user-img">
-                                            <img src="{% static 'admin/data/profile/avatar-1.png' %}" alt="user-image" class="img-circle img-inline">
-                                        </div>
-                                        <div>
-                                            <span class="name">
-                                                <strong>Clarine Vassar</strong>
-                                                <span class="time small">- il y a 15 min</span>
-                                                <span class="profile-status available pull-right"></span>
-                                            </span>
-                                            <span class="desc small">
-                                                Lorem ipsum dolor sit amet, fugiat molest.
-                                            </span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <!-- autres messages à traduire de la même manière -->
-                            </ul>
-                        </li>
-                        <li class="external">
-                            <a href="javascript:;">
-                                <span>Voir tous les messages</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
+                <!-- FIN MESSAGES -->
+
                 <li class="profile">
                     {% comment %} Affichage dynamique de la photo de profil {% endcomment %}
                     {% if user %}

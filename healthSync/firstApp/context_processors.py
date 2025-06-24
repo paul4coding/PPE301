@@ -2,6 +2,7 @@
 
 from .models import Utilisateur
 from .models import Notification
+from firstApp.models import Message
 
 def utilisateur_connecte(request):
     user_id = request.session.get('user_id')
@@ -21,3 +22,24 @@ def notifications_processor(request):
     else:
         notifications = []
     return {'notifications': notifications}
+
+
+
+
+def messages_non_lus(request):
+    user = getattr(request, "user", None)
+    if not user or not user.is_authenticated:
+        return {"messages_non_lus": [], "nb_messages_non_lus": 0}
+    qs = Message.objects.filter(
+        conversation__participants=user
+    ).exclude(
+        expediteur=user
+    ).exclude(
+        lu_par=user
+    )
+    messages = qs.order_by('-date_envoi')[:5]
+    nb_messages_non_lus = qs.count()
+    return {
+        "messages_non_lus": messages,
+        "nb_messages_non_lus": nb_messages_non_lus,
+    }

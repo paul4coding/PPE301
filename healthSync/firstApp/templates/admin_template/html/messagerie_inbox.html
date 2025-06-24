@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Multipurpose Dashboard</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+
+    <!-- CORE CSS FRAMEWORK - START -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+</head>
+
+<body class=" ">
+
+    {% include "admin_template/partials/_header.html" %}
+
+    <div class="page-container row-fluid container-fluid">
+
+        {% include "admin_template/partials/_sidebar.html" %}
+
+        <section id="main-content" class=" ">
+            <div class="wrapper main-wrapper row" style=''>
+
+                <div class='col-xs-12'>
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Mes Conversations</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right" style="margin-bottom:20px;">
+                    <a href="{% url 'messagerie_nouvelle_conversation' %}" class="btn btn-success">
+                        <i class="fa fa-plus"></i> Nouvelle conversation
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        {% if conversations %}
+                            <ul class="list-group">
+                                {% for conv in conversations %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" style="display:flex;justify-content:space-between;align-items:center;">
+                                    <a href="{% url 'messagerie_conversation' conv.id %}">
+                                        {% for p in conv.participants.all %}
+                                            {% if p != user %}
+                                                {{ p.prenom }} {{ p.nom }}{% if not forloop.last %}, {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </a>
+                                    {% if conv.nb_non_lus > 0 %}
+                                        <span class="badge badge-danger" style="background:#d9534f;color:white;">{{ conv.nb_non_lus }}</span>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-info mt-3 text-center">Aucune conversation pour le moment.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <div class="page-chatapi hideit">
+            <!-- ... le reste ... -->
+        </div>
+        <div class="chatapi-windows "></div>
+    </div>
+
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+</body>
+</html>

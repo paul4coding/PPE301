@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ConnexionForm, InscriptionForm, MedecinForm
-from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite , DossierPatient, PageDossierPatient, Notification
+from .models import Utilisateur, Patient, Laborantin, Medecin, Secretaire, Specialite , DossierPatient, PageDossierPatient, Notification, Conversation, Message
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .forms import FactureForm, LigneFactureForm, ResultatForm, PrescriptionForm
@@ -11,6 +11,7 @@ from .models import RendezVous,Facture, LigneFacture, Resultat, Prescription, Pa
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q, Count
 
 # --- WORKFLOW FACTURE ---
 
@@ -748,10 +749,16 @@ def get_admin_context(request):
     user_id = request.session.get('user_id')
     user = None
     role = None
+    nb_messages_non_lus = 0
     if user_id:
         try:
             user = Utilisateur.objects.get(id=user_id)
             role = get_user_role(user)
+            # Calcul du nombre de messages non lus
+            from .models import Message
+            nb_messages_non_lus = Message.objects.filter(
+                conversation__participants=user
+            ).exclude(lu_par=user).count()
         except Utilisateur.DoesNotExist:
             user = None
             role = None
@@ -760,6 +767,7 @@ def get_admin_context(request):
         'role': role,
         'roles_pages_acces': ROLES_PAGES_ACCES,
         'roles_support': ROLES_SUPPORT,
+        'nb_messages_non_lus': nb_messages_non_lus,  # <--- AJOUT ICI
     }
 
 # --- CHARTS ---
@@ -1177,3 +1185,145 @@ def all_notifications(request):
     context = get_admin_context(request)
     context['notifications'] = notifications
     return render(request, "admin_template/html/all_notifications.html", context)
+
+
+def messagerie_inbox(request):
+    context = get_admin_context(request)
+    user = context['user']
+
+    conversations = Conversation.objects.filter(participants=user).annotate(
+        nb_non_lus=Count('messages', filter=~Q(messages__lu_par=user))
+    ).distinct().order_by('-messages__date_envoi')
+    context['conversations'] = conversations
+    return render(request, 'admin_template/html/messagerie_inbox.html', context)
+
+def messagerie_conversation(request, conversation_id):
+    context = get_admin_context(request)
+    user = context['user']
+    conversation = get_object_or_404(Conversation, id=conversation_id, participants=user)
+    autres_participants = conversation.participants.exclude(id=user.id)
+
+    # Envoi du message sans AJAX (POST)
+    if request.method == "POST":
+        texte = request.POST.get("texte", "").strip()
+        if texte:
+            m = Message.objects.create(
+                conversation=conversation,
+                expediteur=user,  # Utilise bien 'expediteur' comme dans ton modèle !
+                texte=texte
+            )
+            m.lu_par.add(user)
+            m.save()
+            return redirect('messagerie_conversation', conversation_id=conversation.id)  # Pour vider le champ
+
+    context['conversation'] = conversation
+    context['autres_participants'] = autres_participants
+    context['messages'] = conversation.messages.order_by('date_envoi')
+    return render(request, 'admin_template/html/messagerie_conversation.html', context)
+
+def messagerie_nouvelle_conversation(request):
+    context = get_admin_context(request)
+    context['medecins'] = Medecin.objects.all()
+    context['laborantins'] = Laborantin.objects.all()
+    context['secretaires'] = Secretaire.objects.all()
+    context['patients'] = Patient.objects.all()
+
+    if request.method == "POST":
+        for champ, model in [
+            ('destinataire_medecin', Medecin),
+            ('destinataire_laborantin', Laborantin),
+            ('destinataire_secretaire', Secretaire),
+            ('destinataire_patient', Patient),
+        ]:
+            destinataire_id = request.POST.get(champ)
+            if destinataire_id:
+                destinataire = model.objects.get(id=destinataire_id)
+                conv = Conversation.objects.filter(participants=context['user']).filter(participants=destinataire).distinct()
+                if conv.exists():
+                    conversation = conv.first()
+                else:
+                    conversation = Conversation.objects.create()
+                    conversation.participants.add(context['user'], destinataire)
+                return redirect('messagerie_conversation', conversation_id=conversation.id)
+    return render(request, 'admin_template/html/messagerie_nouvelle_conversation.html', context)
+
+def api_recherche_utilisateurs(request):
+    role = request.GET.get('role')
+    q = request.GET.get('q', '').strip()
+    user = get_admin_context(request)['user']
+    users = Utilisateur.objects.exclude(id=user.id)
+    # Correction ici : filtrer selon le champ booléen correspondant
+    if role:
+        if role in ['medecin', 'laborantin', 'secretaire', 'patient']:
+            users = users.filter(**{role: True})
+    if q:
+        users = users.filter(
+            Q(prenom__icontains=q) |
+            Q(nom__icontains=q) |
+            Q(email__icontains=q)
+        )
+    data = [
+        {
+            "id": u.id,
+            "nom": u.nom,
+            "prenom": u.prenom,
+            "email": u.email,
+        }
+        for u in users[:10]
+    ]
+    return JsonResponse({"results": data})
+
+def messagerie_commencer_conversation(request, user_id):
+    current_user = get_admin_context(request)['user']
+    destinataire = get_object_or_404(Utilisateur, id=user_id)
+    if destinataire.id == current_user.id:
+        return redirect('messagerie_inbox')
+    conv = Conversation.objects.filter(participants=current_user).filter(participants=destinataire).distinct()
+    if conv.exists():
+        conversation = conv.first()
+    else:
+        conversation = Conversation.objects.create()
+        conversation.participants.add(current_user, destinataire)
+        conversation.save()
+    return redirect('messagerie_conversation', conversation_id=conversation.id)
+
+# API pour le chat temps réel
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+
+def api_get_messages(request, conversation_id):
+    user = get_admin_context(request)['user']
+    conversation = get_object_or_404(Conversation, id=conversation_id, participants=user)
+    messages_objs = conversation.messages.order_by('date_envoi')
+    data = []
+    for m in messages_objs:
+        data.append({
+            "id": m.id,
+            "auteur": f"{m.auteur.prenom} {m.auteur.nom}",
+            "texte": m.texte,
+            "date": m.date_envoi.strftime("%d/%m/%Y %H:%M"),
+            "is_me": m.auteur == user,
+        })
+    # Marquer messages comme lus
+    conversation.messages.exclude(lu_par=user).filter(~Q(auteur=user)).update(lu_par=user)
+    return JsonResponse({"messages": data})
+
+@csrf_exempt
+def api_send_message(request, conversation_id):
+    if request.method == "POST":
+        user = get_admin_context(request)['user']
+        conversation = get_object_or_404(Conversation, id=conversation_id, participants=user)
+        texte = request.POST.get("texte", "").strip()
+        if texte:
+            m = Message.objects.create(
+                conversation=conversation,
+                auteur=user,
+                texte=texte,
+                date_envoi=timezone.now()
+            )
+            m.lu_par.add(user)
+            m.save()
+            return JsonResponse({"success": True})
+    return JsonResponse({"success": False})
+
+

@@ -141,4 +141,17 @@ urlpatterns = [
     path('ui/timeline-left/', views.ui_timeline_left, name='ui_timeline_left'),
     path('ui/tooltips/', views.ui_tooltips, name='ui_tooltips'),
     path('ui/typography/', views.ui_typography, name='ui_typography'),
+    
+    
+    path('messages/', views.messagerie_inbox, name='messagerie_inbox'),
+    path('messages/conversation/<int:conversation_id>/', views.messagerie_conversation, name='messagerie_conversation'),
+    path('messages/nouveau/', views.messagerie_nouvelle_conversation, name='messagerie_nouvelle_conversation'),
+    path('messages/commencer/<int:user_id>/', views.messagerie_commencer_conversation, name='messagerie_commencer_conversation'),
+    path('api/recherche_utilisateurs/', views.api_recherche_utilisateurs, name='api_recherche_utilisateurs'),
+    path('api/get_messages/<int:conversation_id>/', views.api_get_messages, name='api_get_messages'),
+    path('api/send_message/<int:conversation_id>/', views.api_send_message, name='api_send_message'),
+    
+    
+    
+    
 ]

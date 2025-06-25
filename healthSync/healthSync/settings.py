@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'firstApp.context_processors.notifications_processor',
                 'firstApp.context_processors.messages_non_lus',
+                'firstApp.context_processors.notif_marquees_lues',
             ],
         },
     },

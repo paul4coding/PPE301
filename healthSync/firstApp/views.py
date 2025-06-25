@@ -495,7 +495,6 @@ def ajouter_rendezvous(request):
         heure = request.POST.get("heure")
         motif = request.POST.get("motif")
 
-        # Vérification basique que les IDs existent
         try:
             patient = Patient.objects.get(id=patient_id)
         except Patient.DoesNotExist:
@@ -508,13 +507,23 @@ def ajouter_rendezvous(request):
             messages.error(request, "Médecin non trouvé.")
             return redirect('ajouter_rendezvous')
 
-        # Création du rendez-vous
-        RendezVous.objects.create(
+        rdv = RendezVous.objects.create(
             patient=patient,
             medecin=medecin,
             date=date,
             heure=heure,
             motif=motif,
+        )
+        # --- NOTIFICATIONS ---
+        Notification.objects.create(
+            destinataire=medecin,
+            message=f"Un nouveau rendez-vous a été planifié avec le patient {patient.prenom} {patient.nom} le {date} à {heure}.",
+            type="rendezvous"
+        )
+        Notification.objects.create(
+            destinataire=patient,
+            message=f"Votre rendez-vous avec le Dr {medecin.prenom} {medecin.nom} a été planifié pour le {date} à {heure}.",
+            type="rendezvous"
         )
         messages.success(request, "Rendez-vous ajouté avec succès.")
         return redirect('liste_rendezvous')
@@ -566,9 +575,9 @@ def set_rdv_status(request):
         statut = request.POST.get("statut")
         rdv = get_object_or_404(RendezVous, id=rdv_id)
         rdv.statut = statut
-        rdv.save()
+        rdv.save()  # Le signal post_save va gérer les notifications !
         messages.success(request, "Statut du rendez-vous modifié !")
-        return redirect('hos_schedule')  # nom de ta vue, pas le nom du template !
+        return redirect('hos_schedule')
     return redirect('hos_schedule')
 
 # Fonction utilitaire pour déterminer le rôle d'un utilisateur
@@ -1181,8 +1190,8 @@ def ui_typography(request):
     return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
 
 def all_notifications(request):
-    notifications = Notification.objects.all().order_by('-date')
     context = get_admin_context(request)
+    notifications = Notification.objects.all().order_by('-date')
     context['notifications'] = notifications
     return render(request, "admin_template/html/all_notifications.html", context)
 
@@ -1341,3 +1350,8 @@ def api_send_message(request, conversation_id):
     return JsonResponse({"success": False})
 
 
+def marquer_tout_comme_lu(request):
+    if request.method == "POST":
+        request.session['notifications_marquees_lues'] = True
+        return JsonResponse({"success": True})
+    return JsonResponse({"error": "Requête invalide"}, status=400)

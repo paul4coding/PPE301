@@ -17,11 +17,28 @@ def utilisateur_connecte(request):
 
 
 def notifications_processor(request):
+    notifications = []
     if request.user.is_authenticated:
-        notifications = Notification.objects.filter(destinataire=request.user).order_by('-date')[:10]
-    else:
-        notifications = []
+        # Détection du vrai profil
+        user_obj = None
+        if hasattr(request.user, 'patient'):
+            user_obj = request.user.patient
+        elif hasattr(request.user, 'medecin'):
+            user_obj = request.user.medecin
+        elif hasattr(request.user, 'secretaire'):
+            user_obj = request.user.secretaire
+        elif hasattr(request.user, 'laborantin'):
+            user_obj = request.user.laborantin
+        else:
+            user_obj = request.user
+        notifications = Notification.objects.filter(destinataire=user_obj).order_by('-date')[:10]
     return {'notifications': notifications}
+
+
+def notif_marquees_lues(request):
+    return {
+        'notif_marquees_lues': request.session.get('notifications_marquees_lues', False)
+    }
 
 
 
@@ -43,3 +60,5 @@ def messages_non_lus(request):
         "messages_non_lus": messages,
         "nb_messages_non_lus": nb_messages_non_lus,
     }
+    
+    

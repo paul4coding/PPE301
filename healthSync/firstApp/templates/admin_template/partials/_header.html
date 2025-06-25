@@ -46,28 +46,26 @@
                     {% get_notifications as notifications %}
                     <a href="#" data-toggle="dropdown" class="toggle">
                         <i class="fa fa-bell"></i>
-                        {% if notifications and notifications|length > 0 %}
-                            <span class="badge badge-accent">{{ notifications|length }}</span>
-                        {% endif %}
+                        <span class="badge badge-accent" id="notif-badge">{% if notifications and notifications|length > 0 %}{{ notifications|length }}{% else %}0{% endif %}</span>
                     </a>
                     <ul class="dropdown-menu notifications animated fadeIn">
                         <li class="total">
                             <span class="small">
                                 {% if notifications and notifications|length > 0 %}
-                                    Vous avez <strong>{{ notifications|length }}</strong> nouvelles notifications.
-                                    <a href="javascript:;" class="pull-right">Tout marquer comme lu</a>
+                                    Vous avez <strong id="notif-count">{{ notifications|length }}</strong> nouvelles notifications.
+                                    <a href="#" id="mark-all-notifications-read" class="pull-right">Tout marquer comme lu</a>
                                 {% else %}
                                     Pas de nouvelles notifications.
                                 {% endif %}
                             </span>
                         </li>
                         <li class="list">
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
+                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar" id="notif-list">
                                 {% for notification in notifications %}
                                     <li class="{% if not notification.lu %}unread{% endif %}">
                                         <a href="{{ notification.lien|default:'#' }}">
                                             <div class="notice-icon">
-                                                <i class="fa 
+                                                <i class="fa
                                                     {% if notification.type == 'info' %}fa-info-circle
                                                     {% elif notification.type == 'rendezvous' %}fa-calendar
                                                     {% elif notification.type == 'message' %}fa-envelope
@@ -102,7 +100,7 @@
                     </ul>
                 </li>
                 <!-- FIN NOTIFICATIONS -->
-                
+
                 <!-- MESSAGES : Simple lien vers la boîte de réception -->
                 <li class="message-toggle-wrapper spec">
                     <a href="{% url 'messagerie_inbox' %}" class="toggle mr-15">
@@ -113,7 +111,6 @@
                 <!-- FIN MESSAGES -->
 
                 <li class="profile">
-                    {% comment %} Affichage dynamique de la photo de profil {% endcomment %}
                     {% if user %}
                         <a href="#" data-toggle="dropdown" class="toggle">
                             {% if role == "patient" and patient and patient.photo %}
@@ -129,22 +126,30 @@
                         </a>
                         <ul class="dropdown-menu profile animated fadeIn">
                             <li>
-                                <a href='hos-faq.html'>
+                                <a href="{% url 'hos_faq' %}">
                                     <i class="fa fa-wrench"></i> Paramètres
                                 </a>
                             </li>
+                            {% if role == "medecin" %}
                             <li>
-                                <a href='hos-doctor-profile.html'>
+                                <a href="{% url 'hos_doctor_profile' user.id %}">
                                     <i class="fa fa-user"></i> Profil
                                 </a>
                             </li>
+                            {% elif role == "patient" %}
                             <li>
-                                <a href='hos-support.html'>
+                                <a href="{% url 'hos_patient_profile' user.id %}">
+                                    <i class="fa fa-user"></i> Profil
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'hos_support' %}">
                                     <i class="fa fa-info"></i> Aide
                                 </a>
                             </li>
                             <li class="last">
-                                <a href='ui-login.html'>
+                                <a href="{% url 'ui_login' %}">
                                     <i class="fa fa-lock"></i> Déconnexion
                                 </a>
                             </li>
@@ -161,3 +166,25 @@
     </div>
 </div>
 <!-- END TOPBAR -->
+
+<!-- JS POUR MASQUER VISUELLEMENT LES NOTIFS -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('mark-all-notifications-read');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Met à 0 le badge et le compteur
+            var badge = document.getElementById('notif-badge');
+            var count = document.getElementById('notif-count');
+            if (badge) { badge.textContent = "0"; }
+            if (count) { count.textContent = "0"; }
+            btn.style.display = "none";
+            // Masque toutes les notifications visuellement
+            document.querySelectorAll('.dropdown-menu-list li').forEach(function(el) {
+                el.style.display = "none";
+            });
+        });
+    }
+});
+</script>

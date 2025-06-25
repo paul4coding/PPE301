@@ -152,6 +152,10 @@ urlpatterns = [
     path('api/send_message/<int:conversation_id>/', views.api_send_message, name='api_send_message'),
     
     
+
+    path('notifications/mark-all-read/', views.marquer_tout_comme_lu, name='marquer_tout_comme_lu'),
+    
+    
     
     
 ]

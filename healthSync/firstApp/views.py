@@ -23,14 +23,19 @@ def changer_statut_facture(request, facture_id):
 
     if action == 'valider' and role == 'secretaire' and facture.statut == 'brouillon':
         facture.statut = 'validee'
+        messages.info(request, "La facture a été validée et est maintenant disponible pour le médecin.")
     elif action == 'transfert_secretaire' and role == 'medecin' and facture.statut == 'validee':
         facture.statut = 'attente_secretaire'
+        messages.info(request, "La facture est de retour chez la secrétaire pour traitement.")
     elif action == 'transfert_laborantin' and role == 'secretaire' and facture.statut == 'attente_secretaire':
         facture.statut = 'attente_laborantin'
+        messages.info(request, "La facture est maintenant disponible pour le laborantin.")
     elif action == 'transfert_medecin' and role == 'laborantin' and facture.statut == 'attente_laborantin':
         facture.statut = 'attente_medecin'
+        messages.info(request, "La facture est maintenant disponible pour le médecin.")
     elif action == 'cloturer' and role == 'medecin' and facture.statut == 'attente_medecin':
         facture.statut = 'cloturee'
+        messages.info(request, "La facture a été clôturée.")
     else:
         # Affiche une page d'accès refusé avec bouton retour accueil
         return render(
@@ -38,7 +43,7 @@ def changer_statut_facture(request, facture_id):
             'admin_template/html/access_forbidden.html',
             {
                 'message': "Action non autorisée.",
-                'home_url': 'admin_home',  # adapte selon ton url d'accueil
+                'home_url': 'admin_home',
             }
         )
 
@@ -51,19 +56,67 @@ def detail_facture(request, facture_id):
     user = context['user']
     role = context['role']
 
-    # Contrôle d'accès selon le statut de la facture
+    # Contrôle d'accès selon le statut de la facture avec affichage d'une page d'attente personnalisée
     if facture.statut == 'brouillon' and role != 'secretaire':
-        return HttpResponseForbidden("Facture non validée par le secrétaire.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "La facture est en cours de préparation par la secrétaire. Veuillez patienter.",
+                'facture': facture,
+                'role': role,
+            }
+        )
     if facture.statut == 'validee' and role != 'medecin':
-        return HttpResponseForbidden("Facture en attente de validation par le médecin.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "La facture est en attente de validation par le médecin. Veuillez patienter.",
+                'facture': facture,
+                'role': role,
+            }
+        )
     if facture.statut == 'attente_secretaire' and role != 'secretaire':
-        return HttpResponseForbidden("Facture en attente de traitement par le secrétaire.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Votre facture a été transmise à la secrétaire. Merci de patienter.",
+                'facture': facture,
+                'role': role,
+            }
+        )
     if facture.statut == 'attente_laborantin' and role != 'laborantin':
-        return HttpResponseForbidden("Facture en attente de traitement par le laborantin.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "La facture est en attente d'analyse par le laborantin. Merci de patienter.",
+                'facture': facture,
+                'role': role,
+            }
+        )
     if facture.statut == 'attente_medecin' and role != 'medecin':
-        return HttpResponseForbidden("Facture en attente de traitement par le médecin.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "La facture est en cours de traitement par le médecin. Merci de patienter.",
+                'facture': facture,
+                'role': role,
+            }
+        )
     if facture.statut == 'cloturee' and role not in ['medecin', 'patient']:
-        return HttpResponseForbidden("Facture clôturée.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "La facture a été clôturée. Vous n'avez plus accès à son détail.",
+                'facture': facture,
+                'role': role,
+            }
+        )
 
     lignes = facture.lignes.all()
     total = sum(ligne.prix for ligne in lignes)
@@ -105,7 +158,15 @@ def ajouter_ligne_facture(request, facture_id):
         (role == 'secretaire' and facture.statut == 'brouillon') or
         (role == 'medecin' and facture.statut in ['validee', 'attente_medecin'])
     ):
-        return HttpResponseForbidden("Vous ne pouvez pas ajouter de ligne à cette étape.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Vous ne pouvez pas ajouter de ligne à cette étape.",
+                'facture': facture,
+                'role': role,
+            }
+        )
 
     context['facture'] = facture
     if request.method == 'POST':
@@ -160,7 +221,15 @@ def edit_resultat(request, resultat_id):
     user = context['user']
     role = context['role']
     if role != 'laborantin':
-        return HttpResponseForbidden("Seul le laborantin peut modifier le résultat.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Seul le laborantin peut modifier le résultat.",
+                'facture': getattr(resultat, 'ligne_facture', None).facture if getattr(resultat, 'ligne_facture', None) else None,
+                'role': role,
+            }
+        )
     if request.method == 'POST':
         form = ResultatForm(request.POST, instance=resultat)
         if form.is_valid():
@@ -211,7 +280,15 @@ def edit_prescription(request, prescription_id):
     user = context['user']
     role = context['role']
     if role != 'medecin':
-        return HttpResponseForbidden("Seul le médecin peut modifier la prescription.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Seul le médecin peut modifier la prescription.",
+                'facture': getattr(prescription, 'resultat', None).ligne_facture.facture if getattr(prescription, 'resultat', None) else None,
+                'role': role,
+            }
+        )
     if request.method == 'POST':
         form = PrescriptionForm(request.POST, instance=prescription)
         if form.is_valid():
@@ -238,7 +315,15 @@ def delete_prescription(request, prescription_id):
     role = context['role']
     # Seul le médecin peut supprimer une prescription
     if role != 'medecin':
-        return HttpResponseForbidden("Seul le médecin peut supprimer la prescription.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Seul le médecin peut supprimer la prescription.",
+                'facture': getattr(prescription, 'resultat', None).ligne_facture.facture if getattr(prescription, 'resultat', None) else None,
+                'role': role,
+            }
+        )
     resultat = prescription.resultat
     facture_id = resultat.ligne_facture.facture.id if resultat and resultat.ligne_facture and resultat.ligne_facture.facture else None
     if request.method == 'POST':
@@ -275,10 +360,26 @@ def ajouter_resultat(request, ligne_id):
         role == 'patient' and ligne.facture.patient == user
     )
     if not (role == 'laborantin' or role == 'medecin' or is_patient_concerne):
-        return HttpResponseForbidden("Accès refusé.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Accès refusé.",
+                'facture': ligne.facture,
+                'role': role,
+            }
+        )
     if request.method == 'POST':
         if role != 'laborantin':
-            return HttpResponseForbidden("Seul le laborantin peut modifier le résultat.")
+            return render(
+                request,
+                'admin_template/html/facture_attente.html',
+                {
+                    'message': "Seul le laborantin peut modifier le résultat.",
+                    'facture': ligne.facture,
+                    'role': role,
+                }
+            )
         form = ResultatForm(request.POST)
         if form.is_valid():
             resultat = form.save(commit=False)
@@ -302,10 +403,26 @@ def ajouter_prescription(request, resultat_id):
         role == 'patient' and resultat.ligne_facture.facture.patient == user
     )
     if not (role == 'medecin' or is_patient_concerne):
-        return HttpResponseForbidden("Accès refusé.")
+        return render(
+            request,
+            'admin_template/html/facture_attente.html',
+            {
+                'message': "Accès refusé.",
+                'facture': resultat.ligne_facture.facture,
+                'role': role,
+            }
+        )
     if request.method == 'POST':
         if role != 'medecin':
-            return HttpResponseForbidden("Seul le médecin peut modifier la prescription.")
+            return render(
+                request,
+                'admin_template/html/facture_attente.html',
+                {
+                    'message': "Seul le médecin peut modifier la prescription.",
+                    'facture': resultat.ligne_facture.facture,
+                    'role': role,
+                }
+            )
         form = PrescriptionForm(request.POST)
         if form.is_valid():
             prescription = form.save(commit=False)
@@ -318,6 +435,7 @@ def ajouter_prescription(request, resultat_id):
         context['prescription'] = prescription
     context['form'] = form if role == 'medecin' else None
     return render(request, 'admin_template/html/prescription_form.html', context)
+
 
 
 

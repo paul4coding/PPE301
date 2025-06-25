@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Supprimer le résultat</title>
+    <title>Facture en attente</title>
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
     <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
@@ -28,16 +28,26 @@
         <div class="wrapper main-wrapper row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-title">
-                    <h1 class="title">Supprimer le résultat</h1>
+                    <h1 class="title"> Statut Facture </h1>
                 </div>
                 <section class="box">
-                    <div class="content-body p">
-                        <p>Voulez-vous vraiment supprimer ce résultat ?</p>
-                        <form method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
-                            <a href="{% url 'detail_facture' resultat.ligne_facture.facture.id %}" class="btn btn-default">Annuler</a>
-                        </form>
+                    <div class="content-body p text-center" style="min-height:320px;">
+                        <h2 class="text-warning" style="margin-bottom:25px;"><i class="fa fa-clock-o"></i> Veuillez patienter</h2>
+                        <p style="font-size:1.15em;">{{ message|default:"Cette facture est temporairement inaccessible pour votre profil. Merci de patienter." }}</p>
+                        <div style="margin:30px 0;">
+                            <a href="javascript:history.back()" class="btn btn-default"><i class="fa fa-arrow-left"></i> Page précédente</a>
+                            <a href="{% url 'admin_home' %}" class="btn btn-primary"><i class="fa fa-home"></i> Retour à l'accueil</a>
+                        </div>
+                        {% if facture %}
+                        <div class="panel panel-default" style="max-width:420px; margin:30px auto;">
+                            <div class="panel-heading"><strong>Résumé de la facture #{{ facture.id }}</strong></div>
+                            <div class="panel-body text-left">
+                                <p><strong>Patient :</strong> {{ facture.patient }}</p>
+                                <p><strong>Date :</strong> {{ facture.date }}</p>
+                                <p><strong>Statut :</strong> {{ facture.get_statut_display }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </section>
             </div>

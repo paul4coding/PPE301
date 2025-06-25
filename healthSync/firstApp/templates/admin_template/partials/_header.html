@@ -46,28 +46,14 @@
                     {% get_notifications as notifications %}
                     <a href="#" data-toggle="dropdown" class="toggle">
                         <i class="fa fa-bell"></i>
-                        <span class="badge badge-accent" id="notif-badge">
-                            {% if notif_marquees_lues %}
-                                0
-                            {% elif notifications and notifications|length > 0 %}
-                                {{ notifications|length }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </span>
+                        <span class="badge badge-accent" id="notif-badge">{% if notifications and notifications|length > 0 %}{{ notifications|length }}{% else %}0{% endif %}</span>
                     </a>
                     <ul class="dropdown-menu notifications animated fadeIn">
                         <li class="total">
                             <span class="small">
                                 {% if notifications and notifications|length > 0 %}
-                                    Vous avez <strong id="notif-count">
-                                        {% if notif_marquees_lues %}
-                                            0
-                                        {% else %}
-                                            {{ notifications|length }}
-                                        {% endif %}
-                                    </strong> nouvelles notifications.
-                                    <a href="#" id="mark-all-notifications-read" class="pull-right"{% if notif_marquees_lues %} style="display:none;"{% endif %}>Tout marquer comme lu</a>
+                                    Vous avez <strong id="notif-count">{{ notifications|length }}</strong> nouvelles notifications.
+                                    <a href="#" id="mark-all-notifications-read" class="pull-right">Tout marquer comme lu</a>
                                 {% else %}
                                     Pas de nouvelles notifications.
                                 {% endif %}
@@ -115,7 +101,7 @@
                 </li>
                 <!-- FIN NOTIFICATIONS -->
 
-                <!-- MESSAGES -->
+                <!-- MESSAGES : Simple lien vers la boîte de réception -->
                 <li class="message-toggle-wrapper spec">
                     <a href="{% url 'messagerie_inbox' %}" class="toggle mr-15">
                         <i class="fa fa-envelope"></i>
@@ -181,28 +167,23 @@
 </div>
 <!-- END TOPBAR -->
 
+<!-- JS POUR MASQUER VISUELLEMENT LES NOTIFS -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('mark-all-notifications-read');
     if (btn) {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            fetch("{% url 'marquer_tout_comme_lu' %}", {
-                method: 'POST',
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Accept": "application/json",
-                }
-            }).then(resp => resp.json())
-              .then(data => {
-                if (data.success) {
-                    var badge = document.getElementById('notif-badge');
-                    var count = document.getElementById('notif-count');
-                    if (badge) { badge.textContent = "0"; }
-                    if (count) { count.textContent = "0"; }
-                    btn.style.display = "none";
-                }
-              });
+            // Met à 0 le badge et le compteur
+            var badge = document.getElementById('notif-badge');
+            var count = document.getElementById('notif-count');
+            if (badge) { badge.textContent = "0"; }
+            if (count) { count.textContent = "0"; }
+            btn.style.display = "none";
+            // Masque toutes les notifications visuellement
+            document.querySelectorAll('.dropdown-menu-list li').forEach(function(el) {
+                el.style.display = "none";
+            });
         });
     }
 });

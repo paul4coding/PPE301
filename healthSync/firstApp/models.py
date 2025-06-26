@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils import timezone
 
+
 class Utilisateur(models.Model):
     """Classe parent pour tous les types d'utilisateurs."""
     ROLE_CHOICES = [

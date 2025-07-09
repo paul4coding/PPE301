@@ -165,14 +165,7 @@
             </li>
             {% endif %}
 
-            {% if role == 'patient' %}
-            <li>
-                <a href="{% url 'bilan_patient' %}">
-                    <i class="fas fa-file-medical-alt"></i>
-                    <span class="title">Mon Bilan</span>
-                </a>
-            </li>
-            {% endif %}
+
 
             {# ------ MENU MESSAGES ------ #}
             {% if role in "secretaire laborantin medecin patient" or True %}

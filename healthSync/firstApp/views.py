@@ -1308,10 +1308,20 @@ def ui_typography(request):
     return render(request, "admin_template/html/ui-typography.html", get_admin_context(request))
 
 def all_notifications(request):
+    notifications = []
+    user = request.user
+
+    if user.is_authenticated:
+        try:
+            # Correspondance via l'email
+            profil = Utilisateur.objects.get(email=user.email)
+            notifications = Notification.objects.filter(destinataire=profil).order_by('-date')
+        except Utilisateur.DoesNotExist:
+            notifications = []  # Aucun profil associé à cet email
+
     context = get_admin_context(request)
-    notifications = Notification.objects.all().order_by('-date')
     context['notifications'] = notifications
-    return render(request, "admin_template/html/all_notifications.html", context)
+    return render(request, 'admin_template/html/all_notifications.html', context)
 
 
 def messagerie_inbox(request):

@@ -12,6 +12,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Count
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.http import HttpResponse
 
 # --- WORKFLOW FACTURE ---
 
@@ -1483,3 +1486,46 @@ def marquer_tout_comme_lu(request):
         request.session['notifications_marquees_lues'] = True
         return JsonResponse({"success": True})
     return JsonResponse({"error": "Requête invalide"}, status=400)
+
+
+def prescription_pdf(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    prescriptions = (
+        Prescription.objects
+        .filter(resultat__ligne_facture__facture__patient=patient)
+        .select_related(
+            'resultat__ligne_facture__facture__agent',
+            'resultat__ligne_facture__service'
+        )
+        .order_by('-resultat__ligne_facture__facture__date')
+    )
+
+    # On prépare les données pour chaque prescription avec le médecin associé si présent
+    prescription_data = []
+    for prescription in prescriptions:
+        facture = prescription.resultat.ligne_facture.facture
+        agent = getattr(facture, "agent", None)
+        medecin = None
+        if agent:
+            try:
+                medecin = Medecin.objects.get(pk=agent.pk)
+            except Medecin.DoesNotExist:
+                medecin = None
+        prescription_data.append({
+            "prescription": prescription,
+            "medecin": medecin,
+        })
+
+    template_path = 'admin_template/html/prescription_pdf.html'
+    context = {
+        'patient': patient,
+        'prescription_data': prescription_data
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=ordonnance_{patient.nom}_{patient.prenom}.pdf'
+    template = get_template(template_path)
+    html = template.render(context)
+    pisa_status = pisa.CreatePDF(html, dest=response, encoding='UTF-8')
+    if pisa_status.err:
+        return HttpResponse('Erreur lors de la génération du PDF', status=500)
+    return response

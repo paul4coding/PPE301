@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ordonnance Médicale</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .title { font-size: 1.6em; color: #007bff; font-weight: bold; margin-bottom: 18px; }
+        .section { margin-bottom: 18px; }
+        .label { font-weight: bold; }
+        .presc-block { margin-bottom: 18px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+        .patient-block { margin-bottom: 18px; }
+        .doctor { margin-top: 8px; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <div class="title">Ordonnance médicale</div>
+    <div class="patient-block">
+        <span class="label">Patient :</span> {{ patient.nom }} {{ patient.prenom }}<br>
+        <span class="label">Email :</span> {{ patient.email }}<br>
+        <span class="label">Âge :</span> {{ patient.age }} ans<br>
+    </div>
+    <hr>
+    {% if prescription_data %}
+        {% for item in prescription_data %}
+            <div class="section presc-block">
+                <span class="label">Date :</span>
+                {{ item.prescription.resultat.ligne_facture.facture.date|date:"d/m/Y" }}<br>
+                <span class="label">Service :</span>
+                {{ item.prescription.resultat.ligne_facture.service }}<br>
+                <span class="label">Médicaments :</span><br>{{ item.prescription.liste_medicaments|linebreaksbr }}<br>
+                <span class="label">Posologie :</span><br>{{ item.prescription.posologie|linebreaksbr }}
+                <div class="doctor">
+                    <span class="label">Prescripteur :</span>
+                    {% if item.medecin %}
+                        Dr. {{ item.medecin.nom }} {{ item.medecin.prenom }}
+                        {% if item.medecin.specialite %}
+                            ({{ item.medecin.specialite.nom }})
+                        {% endif %}
+                    {% else %}
+                        Non renseigné
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div>Aucune prescription disponible.</div>
+    {% endif %}
+</body>
+</html>

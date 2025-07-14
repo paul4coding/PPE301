@@ -26,6 +26,35 @@
         .bilan-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
         .bilan-title { font-size: 1.3em; color: #007bff; margin-bottom: 10px; }
         .bilan-label { font-weight: bold; }
+        .btn-download-ordonnance {
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+            color: #fff !important;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 6px rgba(0,123,255,0.05);
+            display: inline-block;
+        }
+        .btn-download-ordonnance:hover, .btn-download-ordonnance:focus {
+            background: linear-gradient(90deg, #0056b3 0%, #007bff 100%);
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0,123,255,0.15);
+        }
+        .btn-download-ordonnance i {
+            margin-right: 7px;
+        }
+        @media (max-width: 767px) {
+            .btn-download-ordonnance {
+                width: 100%;
+                font-size: 1em;
+                padding: 10px 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -51,7 +80,7 @@
                                     <div class="doctors-head relative text-center">
                                         <div class="patient-img img-circle">
                                             {% if patient.photo %}
-                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="">
+                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
                                             {% else %}
                                                 <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="">
                                             {% endif %}
@@ -95,6 +124,10 @@
                 <div class="col-lg-8 col-md-12">
                     <div class="row">
                         <div class="col-xs-12">
+                            <!-- BOUTON TELECHARGER ORDONNANCE ICI -->
+                            <a href="{% url 'prescription_pdf' patient.id %}" class="btn-download-ordonnance" target="_blank">
+                                <i class="fa fa-download"></i> Télécharger mon ordonnance PDF
+                            </a>
                             <section class="box bilan-section">
                                 <div class="bilan-title"><i class="fa fa-vials"></i> Mes Résultats</div>
                                 {% if resultats %}

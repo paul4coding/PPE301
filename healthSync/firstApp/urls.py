@@ -155,6 +155,8 @@ urlpatterns = [
 
     path('notifications/mark-all-read/', views.marquer_tout_comme_lu, name='marquer_tout_comme_lu'),
     
+    path('patients/<int:patient_id>/prescription_pdf/', views.prescription_pdf, name='prescription_pdf'),
+    
     
     
     

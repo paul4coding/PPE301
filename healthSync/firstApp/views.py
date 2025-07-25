@@ -785,13 +785,13 @@ def connexion(request):
                 elif hasattr(user, 'medecin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'secretaire'):
-                    return redirect('admin_home')
+                    return redirect('secretaire_dashboard')
                 elif hasattr(user, 'laborantin'):
                     return redirect('admin_home')
                 elif hasattr(user, 'patient'):
                     return redirect('admin_home')
                 else:
-                    return redirect('admin_home')
+                    return redirect('admin_dashboard')
             except Utilisateur.DoesNotExist:
                 form.add_error(None, "Identifiants incorrects.")
     else:
@@ -1529,3 +1529,29 @@ def prescription_pdf(request, patient_id):
     if pisa_status.err:
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     return response
+
+
+def secretaire_dashboard(request):
+    # Utilise le même contexte que dans edit_patient
+    context = get_admin_context(request)
+
+    nb_patients = Patient.objects.count()
+    nb_medecins = Medecin.objects.count()
+    today = timezone.now().date()
+    nb_rdv_du_jour = RendezVous.objects.filter(date=today).count()
+    nb_factures_a_traiter = Facture.objects.filter(statut__in=['brouillon', 'attente_secretaire']).count()
+    rdvs_du_jour = RendezVous.objects.filter(date=today).order_by('heure')
+    patients_recents = Patient.objects.order_by('-id')[:5]
+    factures_a_traiter = Facture.objects.filter(statut__in=['brouillon', 'attente_secretaire']).order_by('-date')[:10]
+
+    # Ajoute les stats au contexte global
+    context.update({
+        'nb_patients': nb_patients,
+        'nb_medecins': nb_medecins,
+        'nb_rdv_du_jour': nb_rdv_du_jour,
+        'nb_factures_a_traiter': nb_factures_a_traiter,
+        'rdvs_du_jour': rdvs_du_jour,
+        'patients_recents': patients_recents,
+        'factures_a_traiter': factures_a_traiter,
+    })
+    return render(request, 'admin_template/dashboard_secre.html', context)

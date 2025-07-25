@@ -157,6 +157,9 @@ urlpatterns = [
     
     path('patients/<int:patient_id>/prescription_pdf/', views.prescription_pdf, name='prescription_pdf'),
     
+     path('dashboard/secretaire/', views.secretaire_dashboard, name='secretaire_dashboard'),
+
+    
     
     
     

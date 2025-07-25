@@ -73,6 +73,7 @@ class DossierPatient(models.Model):
     liste_allergie = models.TextField(blank=True)
     list_vaccin = models.TextField(blank=True)
     antecedant_medicaux = models.TextField(blank=True)
+    document_joint = models.FileField(upload_to='dossiers/', null=True, blank=True) 
 
     def __str__(self):
         return f"Dossier de {self.patient}"
@@ -82,6 +83,8 @@ class PageDossierPatient(models.Model):
     date = models.DateField(default=timezone.now)
     temperature = models.FloatField(null=True, blank=True)
     medicaments = models.TextField(blank=True)
+    poids = models.FloatField(null=True, blank=True)  
+    motif = models.TextField(null=True, blank=True) 
     resume_consultation = models.TextField(blank=True, null=True)  
 
     def __str__(self):
@@ -176,6 +179,7 @@ class Service(models.Model):
 class Resultat(models.Model):
     ligne_facture = models.ForeignKey(LigneFacture, on_delete=models.CASCADE, related_name='resultats')
     resultat = models.TextField()
+    fichier_resultat = models.FileField(upload_to='resultats/', null=True, blank=True)
 
     def __str__(self):
         return f"Résultat pour {self.ligne_facture}"
@@ -184,6 +188,7 @@ class Prescription(models.Model):
     resultat = models.ForeignKey(Resultat, on_delete=models.CASCADE, related_name='prescriptions')
     liste_medicaments = models.TextField()
     posologie = models.TextField()
+    fichier_prescription = models.FileField(upload_to='prescriptions/', null=True, blank=True)  
 
     def __str__(self):
         return f"Prescription pour {self.resultat}"

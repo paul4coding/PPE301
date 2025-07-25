@@ -12,6 +12,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+    
     <!-- CORE CSS FRAMEWORK - START -->
     <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
@@ -20,11 +21,10 @@
     <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS FRAMEWORK - END -->
+    
     <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS TEMPLATE - END -->
 </head>
 <body>
     {% include "admin_template/partials/_header.html" %}
@@ -40,33 +40,60 @@
                         <div class="content-body p">
                             <form method="post">
                                 {% csrf_token %}
+
                                 {% if role == 'secretaire' %}
                                     <div class="form-group">
-                                        <label for="temperature">Température</label>
-                                        <input type="text" name="temperature" id="temperature" class="form-control" value="{{ page.temperature }}" required>
+                                        <label for="temperature">Température (°C)</label>
+                                        <input type="number" step="0.1" name="temperature" id="temperature" class="form-control" value="{{ page.temperature|default_if_none:'' }}" required>
                                     </div>
+
                                     <div class="form-group">
-                                        <label for="medicaments">Médicaments (ajoutés par le médecin)</label>
-                                        <textarea id="medicaments" class="form-control" disabled>{{ page.medicaments }}</textarea>
+                                        <label for="poids">Poids (kg)</label>
+                                        <input type="number" step="0.1" name="poids" id="poids" class="form-control" value="{{ page.poids|default_if_none:'' }}">
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="motif">Motif</label>
+                                        <textarea name="motif" id="motif" class="form-control">{{ page.motif|default_if_none:'' }}</textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Médicaments (ajoutés par le médecin)</label>
+                                        <textarea class="form-control" disabled>{{ page.medicaments }}</textarea>
+                                    </div>
+
                                     <div class="form-group">
                                         <label>Résumé de la consultation</label>
                                         <textarea class="form-control" disabled>{{ page.resume_consultation }}</textarea>
                                     </div>
+                                
                                 {% elif role == 'medecin' %}
                                     <div class="form-group">
-                                        <label for="temperature">Température (ajoutée par la secrétaire)</label>
-                                        <input type="text" id="temperature" class="form-control" value="{{ page.temperature }}" disabled>
+                                        <label>Température (ajoutée par la secrétaire)</label>
+                                        <input type="text" class="form-control" value="{{ page.temperature }}" disabled>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label>Poids (ajouté par la secrétaire)</label>
+                                        <input type="text" class="form-control" value="{{ page.poids }}" disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Motif (ajouté par la secrétaire)</label>
+                                        <textarea class="form-control" disabled>{{ page.motif }}</textarea>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="medicaments">Médicaments</label>
                                         <textarea name="medicaments" id="medicaments" class="form-control" required>{{ page.medicaments }}</textarea>
                                     </div>
+
                                     <div class="form-group">
                                         <label for="resume_consultation">Résumé de la consultation</label>
                                         <textarea name="resume_consultation" id="resume_consultation" class="form-control">{{ page.resume_consultation }}</textarea>
                                     </div>
                                 {% endif %}
+
                                 <button type="submit" class="btn btn-primary">Enregistrer</button>
                                 <a href="{% url 'hos_patient_profile' page.dossier.patient.id %}" class="btn btn-default">Annuler</a>
                             </form>
@@ -76,6 +103,7 @@
             </div>
         </section>
     </div>
+
     <!-- CORE JS FRAMEWORK - START -->
     <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
@@ -86,7 +114,8 @@
     <script>
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
-    <!-- CORE JS FRAMEWORK - END -->
+
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-    <!-- END CORE TEMPLATE JS - END
+</body>
+</html>

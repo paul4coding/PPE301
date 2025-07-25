@@ -3,7 +3,8 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 from .views import set_rdv_status
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     # === AUTHENTIFICATION ===
     path('home/', views.user_home, name="acceuil"),
@@ -26,7 +27,7 @@ urlpatterns = [
     path('dossier/<int:dossier_id>/page/ajouter/', views.add_page_dossier_patient, name='add_page_dossier_patient'),
     path('dossier/page/<int:page_id>/edit/', views.edit_page_dossier_patient, name='edit_page_dossier_patient'),
     path('patient/<int:patient_id>/profil/', views.hos_patient_profile, name='hos_patient_profile'),
-
+    path('dossier/<int:dossier_id>/delete/', views.delete_dossier_patient, name='delete_dossier_patient'),
     # === ADMIN ===
     path('admin_home/', views.admin_home, name='admin_home'),
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -160,4 +161,4 @@ urlpatterns = [
     
     
     
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -41,6 +41,7 @@
                                         <th>ID</th>
                                         <th>Patient</th>
                                         <th>Date</th>
+                                        <th>Type</th>
                                         <th>Montant</th>
                                         <th>Actions</th>
                                     </tr>
@@ -51,16 +52,16 @@
                                         <td>{{ facture.id }}</td>
                                         <td>{{ facture.patient }}</td>
                                         <td>{{ facture.date }}</td>
+                                        <td>{{ facture.type_facture.intitule }}</td>
                                         <td>{{ facture.total_lignes }} fcfa</td>
                                         <td>
-                                            
                                             <a href="{% url 'detail_facture' facture.id %}" class="btn btn-info btn-sm">Détail</a>
                                             <a href="{% url 'edit_facture' facture.id %}" class="btn btn-warning btn-sm">Modifier</a>
                                             <a href="{% url 'delete_facture' facture.id %}" class="btn btn-danger btn-sm">Supprimer</a>
                                         </td>
                                     </tr>
                                     {% empty %}
-                                    <tr><td colspan="5">Aucune facture trouvée.</td></tr>
+                                    <tr><td colspan="6">Aucune facture trouvée.</td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>

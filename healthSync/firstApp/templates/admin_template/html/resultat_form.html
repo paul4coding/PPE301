@@ -21,38 +21,38 @@
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-{% include "admin_template/partials/_header.html" %}
-<div class="page-container row-fluid container-fluid">
-    {% include "admin_template/partials/_sidebar.html" %}
-    <section id="main-content">
-        <div class="wrapper main-wrapper row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="page-title">
-                    <h1 class="title">Résultat pour la ligne #{{ ligne.id }}</h1>
-                </div>
-                <section class="box">
-                    <div class="content-body p">
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-success">Enregistrer</button>
-                        </form>
-                        <a href="{% url 'detail_facture' ligne.facture.id %}" class="btn btn-default">Retour à la facture</a>
+    {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+        <section id="main-content">
+            <div class="wrapper main-wrapper row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="page-title">
+                        <h1 class="title">Résultat pour la ligne #{{ ligne.id }}</h1>
                     </div>
-                </section>
+                    <section class="box">
+                        <div class="content-body p">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button type="submit" class="btn btn-success">Enregistrer</button>
+                                <a href="{% url 'detail_facture' ligne.facture.id %}" class="btn btn-default" style="margin-left:10px;">Retour à la facture</a>
+                            </form>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
-    </section>
-</div>
-<script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
-<script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
-<script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
-<script>
-    window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
-</script>
-<script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+        </section>
+    </div>
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+    </script>
+    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
 </body>
 </html>

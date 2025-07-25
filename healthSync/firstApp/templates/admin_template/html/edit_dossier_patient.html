@@ -38,7 +38,7 @@
                     </div>
                     <section class="box">
                         <div class="content-body p">
-                            <form method="post">
+                            <form method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="form-group">
                                     <label for="liste_allergie">Allergies</label>
@@ -51,6 +51,13 @@
                                 <div class="form-group">
                                     <label for="antecedant_medicaux">Antécédents médicaux</label>
                                     <textarea name="antecedant_medicaux" id="antecedant_medicaux" class="form-control" rows="2">{{ dossier.antecedant_medicaux }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="document_joint">Document joint (optionnel)</label>
+                                    <input type="file" name="document_joint" id="document_joint" class="form-control-file">
+                                    {% if dossier.document_joint %}
+                                        <small>Fichier actuel : <a href="{{ dossier.document_joint.url }}" target="_blank">{{ dossier.document_joint.name|slice:"10:" }}</a></small>
+                                    {% endif %}
                                 </div>
                                 <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                                 <a href="{% url 'liste_dossiers_patients' %}" class="btn btn-default">Annuler</a>

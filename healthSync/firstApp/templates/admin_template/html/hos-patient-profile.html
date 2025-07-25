@@ -12,7 +12,6 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
-    <!-- CORE CSS FRAMEWORK - START -->
     <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
@@ -20,11 +19,8 @@
     <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS FRAMEWORK - END -->
-    <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS TEMPLATE - END -->
 </head>
 <body>
     {% include "admin_template/partials/_header.html" %}
@@ -120,9 +116,11 @@
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>Page carnet</th>
+                                                    <th>#</th>
                                                     <th>Date</th>
-                                                    <th>Température</th>
+                                                    <th>Température (°C)</th>
+                                                    <th>Poids (kg)</th>
+                                                    <th>Motif</th>
                                                     <th>Médicaments</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -133,6 +131,8 @@
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ page.date }}</td>
                                                     <td>{{ page.temperature|default:"-" }}</td>
+                                                    <td>{{ page.poids|default:"-" }}</td>
+                                                    <td>{{ page.motif|default:"-" }}</td>
                                                     <td>{{ page.medicaments|default:"-" }}</td>
                                                     <td>
                                                         {% if can_edit_page %}
@@ -142,7 +142,7 @@
                                                 </tr>
                                                 {% if role == 'medecin' and page.resume_consultation %}
                                                 <tr>
-                                                    <td colspan="5" style="background:#f5f8fa">
+                                                    <td colspan="7" style="background:#f5f8fa">
                                                         <strong>Résumé de la consultation :</strong>
                                                         <div>{{ page.resume_consultation }}</div>
                                                     </td>
@@ -163,6 +163,7 @@
             </div>
         </section>
     </div>
+
     <!-- CORE JS FRAMEWORK - START -->
     <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
@@ -173,7 +174,6 @@
     <script>
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
-    <!-- CORE JS FRAMEWORK - END -->
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
     <!-- END CORE TEMPLATE JS - END -->

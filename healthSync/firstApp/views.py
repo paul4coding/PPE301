@@ -52,6 +52,27 @@ def changer_statut_facture(request, facture_id):
 
     facture.save()
     return redirect('detail_facture', facture_id=facture.id)
+def facture_en_attente(request, facture_id):
+    facture = get_object_or_404(Facture, id=facture_id)
+    message = "Cette facture est temporairement inaccessible..."
+
+    if request.method == "POST":
+        fichier = request.FILES.get('upload_file')
+        if fichier:
+            # Traite le fichier ici : sauvegarde, validation, etc.
+            # Exemple simple :
+            with open(f'media/uploads/{fichier.name}', 'wb+') as destination:
+                for chunk in fichier.chunks():
+                    destination.write(chunk)
+            messages.success(request, "Fichier envoyé avec succès.")
+        else:
+            messages.error(request, "Veuillez sélectionner un fichier.")
+    
+    context = {
+        'facture': facture,
+        'message': message,
+    }
+    return render(request, 'admin_template/html/facture_attente.html', context)
 
 def detail_facture(request, facture_id):
     context = get_admin_context(request)
@@ -126,6 +147,7 @@ def detail_facture(request, facture_id):
     context['facture'] = facture
     context['lignes'] = lignes
     context['total'] = total
+    context['role'] = role 
     return render(request, 'admin_template/html/facture_detail.html', context)
 
 def creer_facture(request):
@@ -201,6 +223,11 @@ def bilan_patient(request):
     context['patient'] = patient
     return render(request, 'admin_template/html/bilan_patient.html', context)
 
+
+#debut 
+
+#debut 
+
 def delete_resultat(request, resultat_id):
     context = get_admin_context(request)
     resultat = get_object_or_404(Resultat, id=resultat_id)
@@ -234,7 +261,7 @@ def edit_resultat(request, resultat_id):
             }
         )
     if request.method == 'POST':
-        form = ResultatForm(request.POST, instance=resultat)
+        form = ResultatForm(request.POST, request.FILES, instance=resultat)
         if form.is_valid():
             form.save()
             messages.success(request, "Résultat modifié avec succès.")
@@ -276,28 +303,32 @@ def delete_facture(request, facture_id):
         return redirect('liste_factures')
     context['facture'] = facture
     return render(request, 'admin_template/html/facture_confirm_delete.html', context)
-
 def edit_prescription(request, prescription_id):
     context = get_admin_context(request)
     prescription = get_object_or_404(Prescription, id=prescription_id)
     user = context['user']
     role = context['role']
+
+    # Récupération prudente du résultat pour le template
+    resultat = getattr(prescription, 'resultat', None)
+    context['resultat'] = resultat
+
     if role != 'medecin':
         return render(
             request,
             'admin_template/html/facture_attente.html',
             {
                 'message': "Seul le médecin peut modifier la prescription.",
-                'facture': getattr(prescription, 'resultat', None).ligne_facture.facture if getattr(prescription, 'resultat', None) else None,
+                'facture': getattr(resultat, 'ligne_facture', None).facture if resultat and getattr(resultat, 'ligne_facture', None) else None,
                 'role': role,
             }
         )
+
     if request.method == 'POST':
-        form = PrescriptionForm(request.POST, instance=prescription)
+        form = PrescriptionForm(request.POST, request.FILES, instance=prescription)
         if form.is_valid():
             form.save()
             messages.success(request, "Prescription modifiée avec succès.")
-            resultat = getattr(prescription, 'resultat', None)
             ligne = getattr(resultat, 'ligne_facture', None) if resultat else None
             facture = getattr(ligne, 'facture', None) if ligne else None
             facture_id = getattr(facture, 'id', None)
@@ -307,16 +338,18 @@ def edit_prescription(request, prescription_id):
                 return redirect('liste_factures')
     else:
         form = PrescriptionForm(instance=prescription)
+
     context['form'] = form
     context['prescription'] = prescription
+
     return render(request, 'admin_template/html/prescription_form.html', context)
+
 
 def delete_prescription(request, prescription_id):
     context = get_admin_context(request)
     prescription = get_object_or_404(Prescription, id=prescription_id)
     user = context['user']
     role = context['role']
-    # Seul le médecin peut supprimer une prescription
     if role != 'medecin':
         return render(
             request,
@@ -383,7 +416,7 @@ def ajouter_resultat(request, ligne_id):
                     'role': role,
                 }
             )
-        form = ResultatForm(request.POST)
+        form = ResultatForm(request.POST, request.FILES)
         if form.is_valid():
             resultat = form.save(commit=False)
             resultat.ligne_facture = ligne
@@ -426,7 +459,7 @@ def ajouter_prescription(request, resultat_id):
                     'role': role,
                 }
             )
-        form = PrescriptionForm(request.POST)
+        form = PrescriptionForm(request.POST, request.FILES)
         if form.is_valid():
             prescription = form.save(commit=False)
             prescription.resultat = resultat
@@ -439,11 +472,30 @@ def ajouter_prescription(request, resultat_id):
     context['form'] = form if role == 'medecin' else None
     return render(request, 'admin_template/html/prescription_form.html', context)
 
+#fin
 
 
+#
+def ajouter_resultat(request, ligne_id):
+    context = get_admin_context(request)  # Récupère user, role, etc.
+    ligne = get_object_or_404(LigneFacture, id=ligne_id)
 
+    if request.method == 'POST':
+        form = ResultatForm(request.POST, request.FILES)
+        if form.is_valid():
+            resultat = form.save(commit=False)
+            resultat.ligne_facture = ligne
+            resultat.save()
+            messages.success(request, "Résultat ajouté avec succès.")
+            return redirect('detail_facture', facture_id=ligne.facture.id)
+    else:
+        form = ResultatForm()
 
+    context['form'] = form
+    context['ligne'] = ligne
+    return render(request, 'admin_template/html/resultat_form.html', context)
 
+# 
 
 # Liste des dossiers patients (accessible secrétaire et médecin)
 def liste_dossiers_patients(request):
@@ -464,6 +516,10 @@ def creer_dossier_patient(request):
     return render(request, 'admin_template/html/creer_dossier_patient.html', context)
 
 # Modifier un dossier patient (allergies, vaccins, antécédents)
+
+
+#page_dossier_patient
+
 def edit_dossier_patient(request, dossier_id):
     context = get_admin_context(request)
     dossier = get_object_or_404(DossierPatient, id=dossier_id)
@@ -472,13 +528,18 @@ def edit_dossier_patient(request, dossier_id):
         dossier.liste_allergie = request.POST.get('liste_allergie', '')
         dossier.list_vaccin = request.POST.get('list_vaccin', '')
         dossier.antecedant_medicaux = request.POST.get('antecedant_medicaux', '')
+        
+        # Gérer l'upload du fichier
+        if 'document_joint' in request.FILES:
+            dossier.document_joint = request.FILES['document_joint']
+        
         dossier.save()
         messages.success(request, "Dossier modifié avec succès.")
         return redirect('hos_patient_profile', patient_id=dossier.patient.id)
     return render(request, 'admin_template/html/edit_dossier_patient.html', context)
 
 def delete_dossier_patient(request, dossier_id):
-    context = get_admin_context(request)
+    context = get_admin_context(request)  # ta fonction contextuelle, si utilisée
     dossier = get_object_or_404(DossierPatient, id=dossier_id)
     context['dossier'] = dossier
     if request.method == 'POST':
@@ -486,8 +547,8 @@ def delete_dossier_patient(request, dossier_id):
         messages.success(request, "Le dossier patient a bien été supprimé.")
         return redirect('liste_dossiers_patients')
     return render(request, 'admin_template/html/confirm_delete_dossier.html', context)
-
 # Ajouter une page (jour) au dossier patient
+
 def add_page_dossier_patient(request, dossier_id):
     context = get_admin_context(request)
     dossier = get_object_or_404(DossierPatient, id=dossier_id)
@@ -495,6 +556,8 @@ def add_page_dossier_patient(request, dossier_id):
     if request.method == 'POST':
         temperature = request.POST.get('temperature')
         medicaments = request.POST.get('medicaments', '')
+        poids = request.POST.get('poids') 
+        motif = request.POST.get('motif', '') 
         PageDossierPatient.objects.create(
             dossier=dossier,
             temperature=temperature,
@@ -504,7 +567,6 @@ def add_page_dossier_patient(request, dossier_id):
         return redirect('hos_patient_profile', patient_id=dossier.patient.id)
     return render(request, 'admin_template/html/add_page_dossier_patient.html', context)
 
-# Modifier une page (jour) du dossier patient
 def edit_page_dossier_patient(request, page_id):
     context = get_admin_context(request)
     page = get_object_or_404(PageDossierPatient, id=page_id)
@@ -513,6 +575,8 @@ def edit_page_dossier_patient(request, page_id):
     if request.method == 'POST':
         if role == 'secretaire':
             page.temperature = request.POST.get('temperature')
+            page.poids = request.POST.get('poids') 
+            page.motif = request.POST.get('motif', '') 
         elif role == 'medecin':
             page.medicaments = request.POST.get('medicaments', '')
             page.resume_consultation = request.POST.get('resume_consultation', '')
@@ -520,6 +584,9 @@ def edit_page_dossier_patient(request, page_id):
         messages.success(request, "Page modifiée avec succès.")
         return redirect('hos_patient_profile', patient_id=page.dossier.patient.id)
     return render(request, 'admin_template/html/edit_page_dossier_patient.html', context)
+
+#fin page_dossier_patient
+
 
 # Affichage du profil/dossier patient
 def hos_patient_profile(request, patient_id):

@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Laborantin</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <!-- Favicon & Icons -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+
+    <!-- CSS Frameworks -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - START -->
+    <link href="{% static 'admin/assets/plugins/jvectormap/jquery-jvectormap-2.0.1.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/morris-chart/css/morris.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/calendar/fullcalendar.css' %}" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="{% static 'admin/assets/plugins/icheck/skins/minimal/minimal.css' %}" rel="stylesheet" type="text/css" media="screen"/>
+    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - END -->
+
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class=" ">
+
+    {% include "admin_template/partials/_messages.html" %}
+    {% include "admin_template/partials/_header.html" %}
+
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+
+        <section id="main-content" class=" ">
+            <div class="wrapper main-wrapper row" style=''>
+
+                <div class='col-xs-12'>
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Mon Espace Patient</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bienvenue -->
+                <div class="col-lg-12">
+                    <section class="box nobox marginBottom0">
+                        <div class="content-body">
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-12 col-xs-12">
+                                    <div class="box">
+                                        <div class="hos-promo">
+                                            <div class="promo-info">
+                                                {% if user %}
+                                                    <h3 class="w-text bold">Bonjour, {{ user.prenom }} {{user.nom}}</h3>
+                                                {% endif %}
+                                                <h3 class="w-text bold">Bienvenu sur HealthSync</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so1.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_rdv_a_venir }}</h3>
+                                            <span>RDV à venir</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so2.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_resultats_disponibles }}</h3>
+                                            <span>Résultats disponibles</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so3.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_factures_impayees }}</h3>
+                                            <span>Factures impayées</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so4.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_consultations }}</h3>
+                                            <span>Consultations</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- Rendez-vous à venir -->
+                <div class="col-lg-8">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Mes prochains rendez-vous</h2>
+                        </header>
+                        <div class="content-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Heure</th>
+                                            <th>Médecin</th>
+                                            <th>Motif</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for rdv in rdvs_a_venir %}
+                                        <tr>
+                                            <td>{{ rdv.date|date:"d/m/Y" }}</td>
+                                            <td>{{ rdv.heure|time:"H:i" }}</td>
+                                            <td>Dr. {{ rdv.medecin }}</td>
+                                            <td>{{ rdv.motif }}</td>
+                                            <td><span class="badge badge-{{ rdv.statut|lower }}">{{ rdv.get_statut_display }}</span></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">Aucun rendez-vous à venir.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Notifications récentes -->
+                <div class="col-lg-4">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Notifications Récentes</h2>
+                        </header>
+                        <div class="content-body">
+                            <ul class="list-unstyled">
+                                {% for notif in notifications %}
+                                    <li class="media mb-2">
+                                        <div class="media-body">
+                                            <span class="badge badge-{{ notif.type|lower }}">{{ notif.type }}</span>
+                                            <p class="mb-1">{{ notif.message }}</p>
+                                            <small class="text-muted">{{ notif.date|date:"d/m/Y H:i" }}</small>
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li class="text-center">Aucune notification.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="clearfix"></div>
+                <!-- Factures impayées -->
+                <div class="col-lg-6">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Mes factures</h2>
+                        </header>
+                        <div class="content-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for facture in factures_impayees %}
+                                        <tr>
+                                            <td>{{ facture.date|date:"d/m/Y" }}</td>
+                                            <td>{{ facture.type_facture }}</td>
+                                            <td>{{ facture.frais }} fcfa</td>
+                                            <td><span class="badge badge-{{ facture.statut|lower }}">{{ facture.get_statut_display }}</span></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">Aucune facture impayée.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+         <!-- JS Frameworks -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static "admin/assets/js/jquery.min.js" %}"><\/script>');
+    </script>
+    <!-- Other scripts -->
+    <script src="{% static 'admin/assets/js/scripts.js ' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

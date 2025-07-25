@@ -158,6 +158,12 @@ urlpatterns = [
     path('patients/<int:patient_id>/prescription_pdf/', views.prescription_pdf, name='prescription_pdf'),
     
      path('dashboard/secretaire/', views.secretaire_dashboard, name='secretaire_dashboard'),
+     
+     path('health/dashboard/medecin/', views.medecin_dashboard, name='medecin_dashboard'),
+     
+     path('laborantin/dashboard/', views.laborantin_dashboard, name='laborantin_dashboard'),
+     
+    path('patient/dashboard/', views.patient_dashboard, name='patient_dashboard'),
 
     
     

@@ -1,0 +1,277 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Secrétaire</title>
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <!-- Favicon & Icons -->
+    <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
+
+    <!-- CSS Frameworks -->
+    <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - START -->
+    <link href="{% static 'admin/assets/plugins/jvectormap/jquery-jvectormap-2.0.1.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/morris-chart/css/morris.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    <link href="{% static 'admin/assets/plugins/calendar/fullcalendar.css' %}" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="{% static 'admin/assets/plugins/icheck/skins/minimal/minimal.css' %}" rel="stylesheet" type="text/css" media="screen"/>
+    <!-- HEADER SCRIPTS INCLUDED ON THIS PAGE - END -->
+
+    <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+
+    {% block extra_css %}{% endblock %}
+    
+</head>
+<body class=" ">
+
+    {% include "admin_template/partials/_messages.html" %}
+    {% include "admin_template/partials/_header.html" %}
+
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
+
+        <section id="main-content" class=" ">
+            <div class="wrapper main-wrapper row" style=''>
+
+                <div class='col-xs-12'>
+                    <div class="page-title">
+                        <div class="pull-left">
+                            <h1 class="title">Dashboard Médecin</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistiques principales -->
+                <div class="col-lg-12">
+                    <section class="box nobox marginBottom0">
+                        <div class="content-body">
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-12 col-xs-12">
+                                    <div class="box">
+                                        <div class="hos-promo">
+                                            <div class="promo-info">
+                                                {% if user %}
+                                                    <h3 class="w-text bold">Bonjour, Dr. {{ user.prenom }} {{user.nom}}</h3>
+                                                {% endif %}
+                                                <h3 class="w-text bold">Bienvenu sur HealthSync</h3>
+                                                <h4 class="g-text bold">Spécialité: {{ user.specialite }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so1.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_rdv_du_jour }}</h3>
+                                            <span>RDV aujourd'hui</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so2.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_rdv_a_venir }}</h3>
+                                            <span>RDV à venir</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so3.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_factures_a_valider }}</h3>
+                                            <span>Factures à valider</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so4.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_dossiers_ouverts }}</h3>
+                                            <span>Dossiers ouverts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- Liste Rendez-vous du jour -->
+                <div class="col-lg-8">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Rendez-vous du jour</h2>
+                        </header>
+                        <div class="content-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Heure</th>
+                                            <th>Patient</th>
+                                            <th>Motif</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if rdvs_du_jour %}
+                                            {% for rdv in rdvs_du_jour %}
+                                            <tr>
+                                                <td>{{ rdv.heure|time:"H:i" }}</td>
+                                                <td>{{ rdv.patient }}</td>
+                                                <td>{{ rdv.motif }}</td>
+                                                <td><span class="badge badge-{{ rdv.statut|lower }}">{{ rdv.get_statut_display }}</span></td>
+                                                <td>
+                                                    <a href="{% url 'hos_patient_profile' rdv.patient.id %}" class="btn btn-xs btn-primary">Consulter dossier</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">Aucun rendez-vous aujourd'hui.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Notifications récentes -->
+                <div class="col-lg-4">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Notifications Récentes</h2>
+                        </header>
+                        <div class="content-body">
+                            <ul class="list-unstyled">
+                                {% for notif in notifications %}
+                                    <li class="media mb-2">
+                                        <div class="media-body">
+                                            <span class="badge badge-{{ notif.type|lower }}">{{ notif.type }}</span>
+                                            <p class="mb-1">{{ notif.message }}</p>
+                                            <small class="text-muted">{{ notif.date|date:"d/m/Y H:i" }}</small>
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li class="text-center">Aucune notification.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- Factures à valider -->
+                <div class="col-lg-6">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Factures à valider</h2>
+                        </header>
+                        <div class="content-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Patient</th>
+                                            <th>Type</th>
+                                            <th>Montant</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for facture in factures_a_valider %}
+                                        <tr>
+                                            <td>{{ facture.date|date:"d/m/Y" }}</td>
+                                            <td>{{ facture.patient }}</td>
+                                            <td>{{ facture.type_facture }}</td>
+                                            <td>{{ facture.frais }} fcfa</td>
+                                            <td>
+                                                <a href="{% url 'valider_facture' facture.id %}" class="btn btn-xs btn-success">Valider</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">Aucune facture à valider.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Dossiers récents -->
+                <div class="col-lg-6">
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left">Derniers dossiers consultés</h2>
+                        </header>
+                        <div class="content-body">
+                            <ul class="list-unstyled">
+                                {% for dossier in dossiers_recents %}
+                                <li class="media mb-2">
+                                    {% if dossier.patient.photo %}
+                                        <img class="mr-3 rounded-circle" style="width:40px;height:40px;" src="{{ dossier.patient.photo.url }}" alt="">
+                                    {% else %}
+                                        <img class="mr-3 rounded-circle" style="width:40px;height:40px;" src="{% static 'admin/assets/images/default-avatar.png' %}" alt="">
+                                    {% endif %}
+                                    <div class="media-body">
+                                        <h5 class="mt-0 mb-1">{{ dossier.patient }}</h5>
+                                        <span class="text-muted">Dernière consultation: {{ dossier.date_derniere_consultation|date:"d/m/Y" }}</span>
+                                    </div>
+                                </li>
+                                {% empty %}
+                                <li class="text-center">Aucun dossier récent.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+       <!-- JS Frameworks -->
+    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+    <script>
+        window.jQuery || document.write('<script src="{% static "admin/assets/js/jquery.min.js" %}"><\/script>');
+    </script>
+    <!-- Other scripts -->
+    <script src="{% static 'admin/assets/js/scripts.js ' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

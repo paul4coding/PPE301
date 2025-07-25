@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
+   <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Dashboard Secrétaire</title>
+    <title>Dashboard Laborantin</title>
     <meta content="" name="description" />
     <meta content="" name="author" />
 
@@ -35,7 +35,6 @@
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 
     {% block extra_css %}{% endblock %}
-    
 </head>
 <body class=" ">
 
@@ -51,12 +50,12 @@
                 <div class='col-xs-12'>
                     <div class="page-title">
                         <div class="pull-left">
-                            <h1 class="title">Dashboard Médecin</h1>
+                            <h1 class="title">Mon Espace Patient</h1>
                         </div>
                     </div>
                 </div>
 
-                <!-- Statistiques principales -->
+                <!-- Bienvenue -->
                 <div class="col-lg-12">
                     <section class="box nobox marginBottom0">
                         <div class="content-body">
@@ -66,10 +65,9 @@
                                         <div class="hos-promo">
                                             <div class="promo-info">
                                                 {% if user %}
-                                                    <h3 class="w-text bold">Bonjour, Dr. {{ user.prenom }} {{user.nom}}</h3>
+                                                    <h3 class="w-text bold">Bonjour, {{ user.prenom }} {{user.nom}}</h3>
                                                 {% endif %}
                                                 <h3 class="w-text bold">Bienvenu sur HealthSync</h3>
-                                                <h4 class="g-text bold">Spécialité: {{ user.specialite }}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -79,15 +77,6 @@
                                     <div class="r4_counter db_box">
                                         <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so1.png' %}" class="ico-icon-o" alt=""></i>
                                         <div class="stats">
-                                            <h3 class="mb-5">{{ nb_rdv_du_jour }}</h3>
-                                            <span>RDV aujourd'hui</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-6 col-xs-12">
-                                    <div class="r4_counter db_box">
-                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so2.png' %}" class="ico-icon-o" alt=""></i>
-                                        <div class="stats">
                                             <h3 class="mb-5">{{ nb_rdv_a_venir }}</h3>
                                             <span>RDV à venir</span>
                                         </div>
@@ -95,10 +84,19 @@
                                 </div>
                                 <div class="col-lg-3 col-sm-6 col-xs-12">
                                     <div class="r4_counter db_box">
+                                        <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so2.png' %}" class="ico-icon-o" alt=""></i>
+                                        <div class="stats">
+                                            <h3 class="mb-5">{{ nb_resultats_disponibles }}</h3>
+                                            <span>Résultats disponibles</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-6 col-xs-12">
+                                    <div class="r4_counter db_box">
                                         <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so3.png' %}" class="ico-icon-o" alt=""></i>
                                         <div class="stats">
-                                            <h3 class="mb-5">{{ nb_factures_a_valider }}</h3>
-                                            <span>Factures à valider</span>
+                                            <h3 class="mb-5">{{ nb_factures_impayees }}</h3>
+                                            <span>Factures impayées</span>
                                         </div>
                                     </div>
                                 </div>
@@ -106,8 +104,8 @@
                                     <div class="r4_counter db_box">
                                         <i class="pull-left ico-icon icon-md icon-primary mt-10"><img src="{% static 'admin/data/icons/hos-icon-so4.png' %}" class="ico-icon-o" alt=""></i>
                                         <div class="stats">
-                                            <h3 class="mb-5">{{ nb_dossiers_ouverts }}</h3>
-                                            <span>Dossiers ouverts</span>
+                                            <h3 class="mb-5">{{ nb_consultations }}</h3>
+                                            <span>Consultations</span>
                                         </div>
                                     </div>
                                 </div>
@@ -118,42 +116,38 @@
 
                 <div class="clearfix"></div>
 
-                <!-- Liste Rendez-vous du jour -->
+                <!-- Rendez-vous à venir -->
                 <div class="col-lg-8">
                     <section class="box">
                         <header class="panel_header">
-                            <h2 class="title pull-left">Rendez-vous du jour</h2>
+                            <h2 class="title pull-left">Mes prochains rendez-vous</h2>
                         </header>
                         <div class="content-body">
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Date</th>
                                             <th>Heure</th>
-                                            <th>Patient</th>
+                                            <th>Médecin</th>
                                             <th>Motif</th>
                                             <th>Statut</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% if rdvs_du_jour %}
-                                            {% for rdv in rdvs_du_jour %}
-                                            <tr>
-                                                <td>{{ rdv.heure|time:"H:i" }}</td>
-                                                <td>{{ rdv.patient }}</td>
-                                                <td>{{ rdv.motif }}</td>
-                                                <td><span class="badge badge-{{ rdv.statut|lower }}">{{ rdv.get_statut_display }}</span></td>
-                                                <td>
-                                                    <a href="{% url 'hos_patient_profile' rdv.patient.id %}" class="btn btn-xs btn-primary">Consulter dossier</a>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="5" class="text-center">Aucun rendez-vous aujourd'hui.</td>
-                                            </tr>
-                                        {% endif %}
+                                        {% for rdv in rdvs_a_venir %}
+                                        <tr>
+                                            <td>{{ rdv.date|date:"d/m/Y" }}</td>
+                                            <td>{{ rdv.heure|time:"H:i" }}</td>
+                                            <td>Dr. {{ rdv.medecin }}</td>
+                                            <td>{{ rdv.motif }}</td>
+                                            <td><span class="badge badge-{{ rdv.statut|lower }}">{{ rdv.get_statut_display }}</span></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">Aucun rendez-vous à venir.</td>
+                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -186,12 +180,11 @@
                 </div>
 
                 <div class="clearfix"></div>
-
-                <!-- Factures à valider -->
+                <!-- Factures impayées -->
                 <div class="col-lg-6">
                     <section class="box">
                         <header class="panel_header">
-                            <h2 class="title pull-left">Factures à valider</h2>
+                            <h2 class="title pull-left">Mes factures</h2>
                         </header>
                         <div class="content-body">
                             <div class="table-responsive">
@@ -199,26 +192,22 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Patient</th>
                                             <th>Type</th>
                                             <th>Montant</th>
-                                            <th>Actions</th>
+                                            <th>Statut</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for facture in factures_a_valider %}
+                                        {% for facture in factures_impayees %}
                                         <tr>
                                             <td>{{ facture.date|date:"d/m/Y" }}</td>
-                                            <td>{{ facture.patient }}</td>
                                             <td>{{ facture.type_facture }}</td>
                                             <td>{{ facture.frais }} fcfa</td>
-                                            <td>
-                                                <a href="{% url 'valider_facture' facture.id %}" class="btn btn-xs btn-success">Valider</a>
-                                            </td>
+                                            <td><span class="badge badge-{{ facture.statut|lower }}">{{ facture.get_statut_display }}</span></td>
                                         </tr>
                                         {% empty %}
                                         <tr>
-                                            <td colspan="5" class="text-center">Aucune facture à valider.</td>
+                                            <td colspan="4" class="text-center">Aucune facture impayée.</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -228,39 +217,11 @@
                     </section>
                 </div>
 
-                <!-- Dossiers récents -->
-                <div class="col-lg-6">
-                    <section class="box">
-                        <header class="panel_header">
-                            <h2 class="title pull-left">Derniers dossiers consultés</h2>
-                        </header>
-                        <div class="content-body">
-                            <ul class="list-unstyled">
-                                {% for dossier in dossiers_recents %}
-                                <li class="media mb-2">
-                                    {% if dossier.patient.photo %}
-                                        <img class="mr-3 rounded-circle" style="width:40px;height:40px;" src="{{ dossier.patient.photo.url }}" alt="">
-                                    {% else %}
-                                        <img class="mr-3 rounded-circle" style="width:40px;height:40px;" src="{% static 'admin/assets/images/default-avatar.png' %}" alt="">
-                                    {% endif %}
-                                    <div class="media-body">
-                                        <h5 class="mt-0 mb-1">{{ dossier.patient }}</h5>
-                                        <span class="text-muted">Dernière consultation: {{ dossier.date_derniere_consultation|date:"d/m/Y" }}</span>
-                                    </div>
-                                </li>
-                                {% empty %}
-                                <li class="text-center">Aucun dossier récent.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </section>
-                </div>
-
             </div>
         </section>
     </div>
 
-       <!-- JS Frameworks -->
+         <!-- JS Frameworks -->
     <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
     <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
     <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>

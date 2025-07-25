@@ -3,13 +3,22 @@
 <!-- SIDEBAR - START -->
 
 <div class="page-sidebar fixedscroll">
-    <div class="page-sidebar-wrapper" id="main-menu-wrapper">
+    <div class="page-sidebar-wrapper" id="main-menu-wrapper"> 
         <ul class='wraplist'>
             <li class='menusection'>Principal</li>
 
-            {% if role == 'secretaire' or role == 'laborantin' %}
+            {% if role == 'laborantin' %}
             <li>
-                <a href="{% url 'admin_home' %}">
+                <a href="{% url 'laborantin_dashboard' %}">
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
+                    <span class="title">Tableau de bord</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role == 'secretaire'%}
+            <li>
+                <a href="{% url 'secretaire_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord</span>
                 </a>
@@ -18,7 +27,7 @@
 
             {% if role == 'patient' %}
             <li>
-                <a href="{% url 'hos_patient_dash' %}">
+                <a href="{% url 'patient_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/3.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord patient</span>
                 </a>
@@ -33,7 +42,7 @@
 
             {% if role == 'medecin' %}
             <li>
-                <a href="{% url 'admin_home' %}">
+                <a href="{% url 'medecin_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord médecin</span>
                 </a>

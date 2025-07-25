@@ -15,6 +15,7 @@ from django.db.models import Q, Count
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
+from datetime import date
 
 # --- WORKFLOW FACTURE ---
 
@@ -850,15 +851,15 @@ def connexion(request):
                 if hasattr(user, 'admin'):
                     return redirect('admin_dashboard')
                 elif hasattr(user, 'medecin'):
-                    return redirect('admin_home')
+                    return redirect('medecin_dashboard')
                 elif hasattr(user, 'secretaire'):
-                    return redirect('admin_home')
+                    return redirect('secretaire_dashboard')
                 elif hasattr(user, 'laborantin'):
-                    return redirect('admin_home')
+                    return redirect('laborantin_dashboard')
                 elif hasattr(user, 'patient'):
-                    return redirect('admin_home')
+                    return redirect('patient_dashboard')
                 else:
-                    return redirect('admin_home')
+                    return redirect('admin_dashboard')
             except Utilisateur.DoesNotExist:
                 form.add_error(None, "Identifiants incorrects.")
     else:
@@ -1596,3 +1597,151 @@ def prescription_pdf(request, patient_id):
     if pisa_status.err:
         return HttpResponse('Erreur lors de la génération du PDF', status=500)
     return response
+
+
+def secretaire_dashboard(request):
+    # Utilise le même contexte que dans edit_patient
+    context = get_admin_context(request)
+
+    nb_patients = Patient.objects.count()
+    nb_medecins = Medecin.objects.count()
+    today = timezone.now().date()
+    nb_rdv_du_jour = RendezVous.objects.filter(date=today).count()
+    nb_factures_a_traiter = Facture.objects.filter(statut__in=['brouillon', 'attente_secretaire']).count()
+    rdvs_du_jour = RendezVous.objects.filter(date=today).order_by('heure')
+    patients_recents = Patient.objects.order_by('-id')[:5]
+    factures_a_traiter = Facture.objects.filter(statut__in=['brouillon', 'attente_secretaire']).order_by('-date')[:10]
+
+    # Ajoute les stats au contexte global
+    context.update({
+        'nb_patients': nb_patients,
+        'nb_medecins': nb_medecins,
+        'nb_rdv_du_jour': nb_rdv_du_jour,
+        'nb_factures_a_traiter': nb_factures_a_traiter,
+        'rdvs_du_jour': rdvs_du_jour,
+        'patients_recents': patients_recents,
+        'factures_a_traiter': factures_a_traiter,
+    })
+    return render(request, 'admin_template/dashboard_secre.html', context)
+
+
+def medecin_dashboard(request):
+    context = get_admin_context(request)
+    today = timezone.now().date()
+
+    user_id = request.session.get("user_id")
+    medecin = Medecin.objects.get(id=user_id) if user_id else None
+
+    # Statistiques
+    nb_rdv_du_jour = RendezVous.objects.filter(date=today, medecin=medecin).count()
+    nb_rdv_a_venir = RendezVous.objects.filter(date__gt=today, medecin=medecin).count()
+    nb_factures_a_valider = Facture.objects.filter(statut='attente_medecin', agent=medecin).count()
+    nb_dossiers_ouverts = DossierPatient.objects.count()  # à adapter si tu veux les dossiers liés au médecin
+
+    # Données principales
+    rdvs_du_jour = RendezVous.objects.filter(date=today, medecin=medecin).order_by('heure')
+    factures_a_valider = Facture.objects.filter(statut='attente_medecin', agent=medecin).order_by('-date')[:10]
+    dossiers_recents = DossierPatient.objects.select_related('patient').order_by('-id')[:5]
+    notifications = Notification.objects.filter(destinataire=medecin).order_by('-date')[:5]
+
+    context.update({
+        'user': medecin,
+        'nb_rdv_du_jour': nb_rdv_du_jour,
+        'nb_rdv_a_venir': nb_rdv_a_venir,
+        'nb_factures_a_valider': nb_factures_a_valider,
+        'nb_dossiers_ouverts': nb_dossiers_ouverts,
+        'rdvs_du_jour': rdvs_du_jour,
+        'factures_a_valider': factures_a_valider,
+        'dossiers_recents': dossiers_recents,
+        'notifications': notifications,
+    })
+
+    return render(request, 'admin_template/dashboard_medo.html', context)
+
+def laborantin_dashboard(request):
+    context = get_admin_context(request)
+
+    # Statistiques
+    nb_analyses_en_cours = LigneFacture.objects.filter(
+        service__type_analyse__isnull=False,
+        resultats__isnull=True
+    ).count()
+
+    nb_analyses_terminees = LigneFacture.objects.filter(
+        service__type_analyse__isnull=False,
+        resultats__isnull=False
+    ).count()
+
+    nb_factures_a_traiter = Facture.objects.filter(
+        statut='attente_laborantin'
+    ).count()
+
+    nb_resultats_a_rendre = LigneFacture.objects.filter(
+        service__type_analyse__isnull=False,
+        resultats__isnull=True
+    ).count()
+
+    # Données pour les tableaux
+    analyses_en_cours = LigneFacture.objects.filter(
+        service__type_analyse__isnull=False,
+        resultats__isnull=True
+    ).order_by('-facture__date')[:10]
+
+    resultats_a_rendre = LigneFacture.objects.filter(
+        service__type_analyse__isnull=False,
+        resultats__isnull=True
+    ).order_by('-id')[:10]
+
+    dernieres_analyses = Resultat.objects.order_by('-id')[:5]  # corrigé ici
+
+    # Mise à jour du contexte
+    context.update({
+        'nb_analyses_en_cours': nb_analyses_en_cours,
+        'nb_analyses_terminees': nb_analyses_terminees,
+        'nb_factures_a_traiter': nb_factures_a_traiter,
+        'nb_resultats_a_rendre': nb_resultats_a_rendre,
+        'analyses_en_cours': analyses_en_cours,
+        'resultats_a_rendre': resultats_a_rendre,
+        'dernieres_analyses': dernieres_analyses,
+    })
+
+    return render(request, 'admin_template/dashboard_labo.html', context)
+
+
+def patient_dashboard(request):
+    context = get_admin_context(request)  # récupère un contexte de base (ex: utilisateur connecté, etc.)
+
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('connexion')  # ou autre vue de connexion
+
+    patient = get_object_or_404(Patient, id=user_id)
+
+    # Requêtes
+    rdvs_a_venir_qs = RendezVous.objects.filter(patient=patient, date__gte=date.today()).order_by('date', 'heure')
+    factures_impayees_qs = patient.factures_patient.filter(statut='impayee').order_by('-date')
+    notifications_qs = patient.notifications.order_by('-date')
+
+    resultats_disponibles_qs = LigneFacture.objects.filter(
+        facture__patient=patient,
+        resultats__isnull=False
+    ).distinct().order_by('-facture__date')
+
+    nb_rdv_a_venir = rdvs_a_venir_qs.count()
+    nb_factures_impayees = factures_impayees_qs.count()
+    nb_notifications = notifications_qs.count()
+    nb_consultations = RendezVous.objects.filter(patient=patient, statut='termine').count()
+
+    # Ajout au contexte
+    context.update({
+        'rdvs_a_venir': rdvs_a_venir_qs[:5],
+        'factures_impayees': factures_impayees_qs[:5],
+        'notifications': notifications_qs[:5],
+        'resultats_disponibles': resultats_disponibles_qs[:5],
+        'nb_rdv_a_venir': nb_rdv_a_venir,
+        'nb_factures_impayees': nb_factures_impayees,
+        'nb_notifications': nb_notifications,
+        'nb_consultations': nb_consultations,
+    })
+
+    return render(request, 'admin_template/dashboard_patient.html', context)

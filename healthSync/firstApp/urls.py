@@ -10,7 +10,7 @@ urlpatterns = [
     path('home/', views.user_home, name="acceuil"),
     path('inscription/', views.inscription, name='inscription'),
     path('connexion/', views.connexion, name='connexion'),
-    path('welcome/', views.welcome_view, name='welcome'),
+    path('', views.welcome_view, name='welcome'),
 
     # === PATIENT ===
     path('patient/bilan/', views.bilan_patient, name='bilan_patient'),
@@ -110,7 +110,7 @@ urlpatterns = [
 
     # === INDEX ===
     path('dashboard/', views.index_dashboard, name='index_dashboard'),
-    path('', views.index, name='index'),
+    path('index/', views.index, name='index'),
 
     # === UI ===
     path('ui/404/', views.ui_404, name='ui_404'),

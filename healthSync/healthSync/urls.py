@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static  
+from firstApp import views 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+    path('', views.welcome_view, name='welcome'),
     #URLS application firstApp
     path('health/', include('firstApp.urls')),
 ]

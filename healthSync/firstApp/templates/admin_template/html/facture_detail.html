@@ -66,9 +66,11 @@
                                         <td>{{ ligne.service }}</td>
                                         <td>{{ ligne.prix }} fcfa</td>
                                         <td>
-                                            <a href="{% url 'ajouter_resultat' ligne.id %}" class="btn btn-xs btn-info">Résultat</a>
+                                            {% if role == "laborantin" %}
+                                                <a href="{% url 'ajouter_resultat' ligne.id %}" class="btn btn-xs btn-info">Résultat</a>
+                                            {% endif %}
                                         </td>
-                                    </tr>
+                                    </trs>
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -121,6 +123,13 @@
                                         <div class="bilan-card">
                                             <span class="bilan-label">Service :</span> {{ ligne.service }}<br>
                                             <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
+                                                {% if resultat.fichier_resultat %}
+                                                    <div style="margin-top:10px;">
+                                                        <a href="{{ resultat.fichier_resultat.url }}" download class="btn btn-xs btn-outline-secondary mt-2">
+                                                            <i class="fa fa-download"></i> Télécharger le fichier
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
                                             {% if role == 'laborantin' %}
                                                 <a href="{% url 'edit_resultat' resultat.id %}" class="btn btn-xs btn-warning ml-2">Modifier</a>
                                                 <a href="{% url 'delete_resultat' resultat.id %}" class="btn btn-xs btn-danger ml-2">Supprimer</a>
@@ -168,4 +177,4 @@
     <!-- CORE JS FRAMEWORK - END -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
 </body>
-</html> donne moi le fichier corriger complet avec le champ su niveu de resulat et prescription
+</html> 

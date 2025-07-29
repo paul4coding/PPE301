@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Résultat</title>
+
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
     <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
@@ -21,38 +22,75 @@
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    {% include "admin_template/partials/_header.html" %}
-    <div class="page-container row-fluid container-fluid">
-        {% include "admin_template/partials/_sidebar.html" %}
-        <section id="main-content">
-            <div class="wrapper main-wrapper row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="page-title">
-                        <h1 class="title">Résultat pour la ligne #{{ ligne.id }}</h1>
-                    </div>
-                    <section class="box">
-                        <div class="content-body p">
-                            <form method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <button type="submit" class="btn btn-success">Enregistrer</button>
-                                <a href="{% url 'detail_facture' ligne.facture.id %}" class="btn btn-default" style="margin-left:10px;">Retour à la facture</a>
-                            </form>
-                        </div>
-                    </section>
+{% include "admin_template/partials/_header.html" %}
+<div class="page-container row-fluid container-fluid">
+    {% include "admin_template/partials/_sidebar.html" %}
+    <section id="main-content">
+        <div class="wrapper main-wrapper row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="page-title">
+                    <h1 class="title">Résultat pour la ligne #{{ ligne.id }}</h1>
                 </div>
+                <section class="box">
+                    <div class="content-body p">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_resultat" class="control-label col-sm-2">Résultat</label>
+                                <div class="col-sm-10">
+                                    {{ form.resultat }}
+                                    {% if form.resultat.errors %}
+                                        <div class="text-danger small">{{ form.resultat.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_fichier_resultat" class="control-label col-sm-2">Fichier joint</label>
+                                <div class="col-sm-10">
+                                    {{ form.fichier_resultat }}
+                                    {% if form.fichier_resultat.errors %}
+                                        <div class="text-danger small">{{ form.fichier_resultat.errors }}</div>
+                                    {% endif %}
+                                    {% if resultat and resultat.fichier_resultat %}
+                                        <p class="mt-2">
+                                            <a href="{{ resultat.fichier_resultat.url }}" target="_blank" class="btn btn-sm btn-default">
+                                                Voir le fichier existant
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                                    <a href="{% url 'detail_facture' ligne.facture.id %}" class="btn btn-default">Retour à la facture</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </div>
-        </section>
-    </div>
-    <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
-    <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
-    <script>
-        window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
-    </script>
-    <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+        </div>
+    </section>
+</div>
+
+<script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
+<script>
+    window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
+</script>
+<script src="{% static 'admin/assets/js/scripts.js' %}"></script>
 </body>
 </html>

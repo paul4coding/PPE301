@@ -106,7 +106,21 @@ class LigneFactureForm(forms.ModelForm):
 class ResultatForm(forms.ModelForm):
     class Meta:
         model = Resultat
-        fields = ['resultat']
+        fields = ['resultat', 'fichier_resultat']
+        widgets = {
+            'resultat': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Entrez le résultat ici...',
+                'rows': 5
+            }),
+            'fichier_resultat': forms.ClearableFileInput(attrs={
+                'class': 'form-control-file'
+            }),
+        }
+        labels = {
+            'resultat': 'Résultat écrit',
+            'fichier_resultat': 'Fichier joint (image, PDF, Word...)'
+        }
 
 class PrescriptionForm(forms.ModelForm):
     class Meta:

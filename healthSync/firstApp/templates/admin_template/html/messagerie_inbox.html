@@ -26,6 +26,19 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* Style pour le petit point rouge indiquant les messages non lus */
+        .badge-unread {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 
 <body class=" ">
@@ -58,16 +71,20 @@
                         {% if conversations %}
                             <ul class="list-group">
                                 {% for conv in conversations %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center" style="display:flex;justify-content:space-between;align-items:center;">
-                                    <a href="{% url 'messagerie_conversation' conv.id %}">
-                                        {% for p in conv.participants.all %}
-                                            {% if p != user %}
-                                                {{ p.prenom }} {{ p.nom }}{% if not forloop.last %}, {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </a>
-                                    
-                                </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" style="display:flex;justify-content:space-between;align-items:center;">
+                                        <a href="{% url 'messagerie_conversation' conv.id %}">
+                                            {% for p in conv.participants.all %}
+                                                {% if p != user %}
+                                                    {{ p.prenom }} {{ p.nom }}{% if not forloop.last %}, {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </a>
+                                        <!-- DEBUG -->
+{{ conv.nb_messages_non_lus }} messages non lus
+                                        {% if conv.nb_messages_non_lus > 0 %}
+                                            <span class="badge-unread" title="Nouveaux messages non lus"></span>
+                                        {% endif %}
+                                    </li>
                                 {% endfor %}
                             </ul>
                         {% else %}

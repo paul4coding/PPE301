@@ -11,7 +11,9 @@
 <div class="form-container">
     
     <div class="logo-container">
-        <img src="{% static 'img/logo/logohs1.png' %}" alt="Logo" class="logo">
+        <a href="{% url 'welcome' %}">
+            <img src="{% static 'img/logo/logo2.jpg' %}" alt="Logo" class="logo">
+        </a>
     </div>
 
     <h2>Connexion</h2>
@@ -23,8 +25,32 @@
         <label for="mot_de_passe">Mot de passe</label>
         <input type="password" id="mot_de_passe" name="mot_de_passe" placeholder="Entrez votre mot de passe" required>
 
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+
         <button type="submit">Se connecter</button>
     </form>
+
+    <p style="text-align: center; margin-top: 1rem;">
+    Vous n'avez pas de compte ? 
+    <a href="{% url 'inscription' %}" style="color: #4fc3f7; font-weight: bold; text-decoration: none;">
+        Inscrivez-vous
+    </a>
+    </p>
+    <p style="text-align: center; margin-top: 0.5rem;">
+        <a href="{% url 'welcome' %}" 
+        style="display: inline-block; padding: 8px 16px; background-color: #f0f0f0; 
+                color: #333; text-decoration: none; border-radius: 5px; 
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold;">
+            ⬅ Retour à l'accueil
+        </a>
+    </p>
+
 </div>
 
 </body>

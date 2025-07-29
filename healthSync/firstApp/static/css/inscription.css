@@ -69,3 +69,30 @@ body {
     height: auto;
     margin-top: -1rem; /* Optionnel : ajuste la position verticale si nécessaire */
 }
+
+/* Container des messages dans le formulaire, juste au-dessus du bouton */
+.messages-container {
+    margin: 0 0 1rem 0; /* espace dessous (entre message et bouton) */
+    width: 100%;
+}
+
+/* Style général des messages */
+.alert {
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+/* Message erreur : fond rouge sombre, texte rouge vif */
+.alert-error, .alert-danger, .error {
+    background-color: #9b2c2c;  /* Rouge foncé */
+    color: #ff4d4d;             /* Rouge vif plus visible */
+    border-color: #b94a48;
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.7);
+}
+
+

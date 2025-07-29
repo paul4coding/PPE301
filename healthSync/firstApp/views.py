@@ -829,7 +829,10 @@ def inscription(request):
                     Laborantin.objects.create(**user_data, is_validated=False)
                 elif personnel_role == 'secretaire':
                     Secretaire.objects.create(**user_data, is_validated=False)
-            return redirect('welcome')
+            
+            # 🔸 Ajout du message de succès ici
+            messages.success(request, "Inscription réussie ! Vous pouvez maintenant vous connecter.")
+            return redirect('connexion')
     else:
         form = InscriptionForm()
     return render(request, 'user_template/inscription.html', {'form': form})
@@ -842,12 +845,14 @@ def connexion(request):
             mot_de_passe = form.cleaned_data['mot_de_passe']
             try:
                 user = Utilisateur.objects.get(email=email, mot_de_passe=mot_de_passe)
-                # Vérification de la validation pour le personnel de santé
+
                 if (hasattr(user, 'medecin') or hasattr(user, 'secretaire') or hasattr(user, 'laborantin')) and not user.is_validated:
-                    form.add_error(None, "Votre compte doit être validé par l'administrateur avant de pouvoir vous connecter.")
-                    return render(request, 'user_template/connexion.html', {'form': form})
+                    messages.error(request, "Votre compte doit être validé par l'administrateur avant de pouvoir vous connecter.")
+                    return redirect('connexion')
+
                 request.session['user_id'] = user.id
-                # Redirection selon le type d'utilisateur
+                # Plus de message succès
+
                 if hasattr(user, 'admin'):
                     return redirect('admin_dashboard')
                 elif hasattr(user, 'medecin'):
@@ -861,10 +866,12 @@ def connexion(request):
                 else:
                     return redirect('admin_dashboard')
             except Utilisateur.DoesNotExist:
-                form.add_error(None, "Identifiants incorrects.")
+                messages.error(request, "Identifiants incorrects.")
+                return redirect('connexion')
     else:
         form = ConnexionForm()
     return render(request, 'user_template/connexion.html', {'form': form})
+
 
 # premiere page que voit l'utilisateur
 def welcome_view(request):
@@ -1400,8 +1407,9 @@ def messagerie_inbox(request):
     user = context['user']
 
     conversations = Conversation.objects.filter(participants=user).annotate(
-        nb_non_lus=Count('messages', filter=~Q(messages__lu_par=user))
-    ).distinct().order_by('-messages__date_envoi')
+        nb_messages_non_lus=Count('messages', filter=~Q(messages__lu_par=user))
+    ).order_by('-messages__date_envoi').distinct()
+
     context['conversations'] = conversations
     return render(request, 'admin_template/html/messagerie_inbox.html', context)
 

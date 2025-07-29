@@ -11,7 +11,7 @@
             <li>
                 <a href="{% url 'laborantin_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
-                    <span class="title">Tableau de bord</span>
+                    <span class="title">Tableau de bord Laborantin</span>
                 </a>
             </li>
             {% endif %}
@@ -20,7 +20,7 @@
             <li>
                 <a href="{% url 'secretaire_dashboard' %}">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
-                    <span class="title">Tableau de bord</span>
+                    <span class="title">Tableau de bord Sécretaire</span>
                 </a>
             </li>
             {% endif %}
@@ -43,7 +43,7 @@
             {% if role == 'medecin' %}
             <li>
                 <a href="{% url 'medecin_dashboard' %}">
-                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Tableau de bord médecin</span>
                 </a>
             </li>
@@ -59,8 +59,7 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_doctors' %}">Tous les médecins</a></li>
                     <li><a href="{% url 'hos_add_doctor' %}">Ajouter un médecin</a></li>
-                    <li><a href="{% url 'hos_edit_doctor' medecin_id=0 %}">Modifier un médecin</a></li>
-                    <li><a href="{% url 'hos_delete_doctor' medecin_id=0 %}">Supprimer un médecin</a></li>
+
                 </ul>
             </li>
             {% endif %}
@@ -75,8 +74,7 @@
                 <ul class="sub-menu">
                     <li><a href="{% url 'hos_all_patients' %}">Tous les patients</a></li>
                     <li><a href="{% url 'hos_add_patient' %}">Ajouter un patient</a></li>
-                    <li><a href="{% url 'hos_edit_patient' patient_id=0 %}">Modifier un patient</a></li>
-                    <li><a href="{% url 'hos_delete_patient' patient_id=0 %}">Supprimer un patient</a></li>
+
                 </ul>
             </li>
             {% endif %}
@@ -85,7 +83,7 @@
             {% if role == 'secretaire' or role == 'medecin' %}
             <li>
                 <a href="javascript:;">
-                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/15.png' %}" alt="" class="width-20"></i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/4.png' %}" alt="" class="width-20"></i>
                     <span class="title">Dossiers Patients</span>
                     <span class="arrow"></span>
                 </a>
@@ -121,7 +119,8 @@
                     <li><a href="{% url 'hos_schedule' %}">Planning du médecin</a></li>
                     {% endif %}
                     {% if role == 'secretaire' %}
-                    <li><a href="{% url 'hos_book_appointment' %}">Prendre rendez-vous</a></li>
+                    <li><a href="{% url 'hos_book_appointment' %}">Nouveau Rendez-vous</a></li>
+                    <li><a href="{% url 'liste_rendezvous' %}">Liste des Rendez-vous</a></li>
                     {% endif %}
                 </ul>
             {% endif %}
@@ -148,7 +147,7 @@
             {% if role == 'laborantin' or role == 'medecin' %}
             <li>
                 <a href="javascript:;">
-                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/8.png' %}" alt="" class="width-20"></i>
+                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/i1.png' %}" alt="" class="width-20"></i>
                     <span class="title">Résultats &amp; Prescriptions</span>
                     <span class="arrow"></span>
                 </a>
@@ -190,20 +189,7 @@
             {% endif %}
             {# ------ FIN MENU MESSAGES ------ #}
 
-            {% if role == 'secretaire' %}
-            <li>
-                <a href="{% url 'hos_events' %}">
-                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/9.png' %}" alt="" class="width-20"></i>
-                    <span class="title">Gestion des événements</span>
-                </a>
-                <a href="{% url 'liste_rendezvous' %}">
-                    <i class="img"><img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20"></i>
-                    <span class="title">Liste des Rendez-vous</span>
-                </a>
-            </li>
-            {% endif %}
-
-            {% if role in roles_pages_acces %}
+            {% if role == 'admin' %}
             <li>
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20"></i>
@@ -217,7 +203,7 @@
             </li>
             {% endif %}
 
-            {% if role in roles_support %}
+            {% if role == 'admin' %}
             <li>
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/11.png' %}" alt="" class="width-20"></i>
@@ -231,7 +217,7 @@
             </li>
             {% endif %}
 
-            {% if role != 'patient' %}
+            {% if role == 'admin' %}
             <li class='menusection'>Visualisation de données</li>
 
             <li>

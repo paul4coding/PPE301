@@ -30,17 +30,7 @@
                 {{ item.prescription.resultat.ligne_facture.service }}<br>
                 <span class="label">Médicaments :</span><br>{{ item.prescription.liste_medicaments|linebreaksbr }}<br>
                 <span class="label">Posologie :</span><br>{{ item.prescription.posologie|linebreaksbr }}
-                <div class="doctor">
-                    <span class="label">Prescripteur :</span>
-                    {% if item.medecin %}
-                        Dr. {{ item.medecin.nom }} {{ item.medecin.prenom }}
-                        {% if item.medecin.specialite %}
-                            ({{ item.medecin.specialite.nom }})
-                        {% endif %}
-                    {% else %}
-                        Non renseigné
-                    {% endif %}
-                </div>
+
             </div>
         {% endfor %}
     {% else %}

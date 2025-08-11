@@ -45,9 +45,9 @@
                                     <div class="doctors-head relative text-center">
                                         <div class="patient-img img-circle">
                                             {% if patient.photo %}
-                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="">
+                                                <img src="{{ patient.photo.url }}" class="rad-50 center-block" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
                                             {% else %}
-                                                <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="">
+                                                <img src="{% static 'admin/data/profile/1430504.png' %}" class="rad-50 center-block" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
                                             {% endif %}
                                             <div class="stutas"></div>
                                         </div>

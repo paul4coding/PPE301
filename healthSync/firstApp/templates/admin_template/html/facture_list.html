@@ -101,7 +101,6 @@
                     <td>${facture.total_lignes} fcfa</td>
                     <td>
                         <a href="{% url 'detail_facture' 0 %}".replace('0', facture.id) class="btn btn-info btn-sm">Détail</a>
-                        <a href="{% url 'edit_facture' 0 %}".replace('0', facture.id) class="btn btn-warning btn-sm">Modifier</a>
                         <a href="{% url 'delete_facture' 0 %}".replace('0', facture.id) class="btn btn-danger btn-sm">Supprimer</a>
                     </td>
                 </tr>

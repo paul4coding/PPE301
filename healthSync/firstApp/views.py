@@ -404,6 +404,7 @@ def api_recherche_factures(request):
     else:
         factures = Facture.objects.none()
 
+    # Si q n'est pas vide, on filtre, sinon on garde tout
     if q:
         factures = factures.filter(
             Q(patient__nom__icontains=q) | Q(patient__prenom__icontains=q)

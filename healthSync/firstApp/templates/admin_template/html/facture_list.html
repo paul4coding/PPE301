@@ -35,6 +35,9 @@
                     </div>
                     <section class="box">
                         <div class="content-body p">
+                            <div class="form-group">
+                                <input type="text" id="search-patient" class="form-control" placeholder="Rechercher par nom du patient...">
+                            </div>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -46,7 +49,7 @@
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="factures-tbody">
                                     {% for facture in factures %}
                                     <tr>
                                         <td>{{ facture.id }}</td>
@@ -83,5 +86,36 @@
     </script>
     <!-- CORE JS FRAMEWORK - END -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <script>
+    document.getElementById('search-patient').addEventListener('input', function() {
+        let q = this.value;
+        fetch("{% url 'api_recherche_factures' %}?q=" + encodeURIComponent(q))
+            .then(response => response.json())
+            .then(data => {
+                let tbody = document.getElementById('factures-tbody');
+                tbody.innerHTML = '';
+                if (data.factures.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">Aucune facture trouvée.</td></tr>';
+                } else {
+                    data.factures.forEach(facture => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${facture.id}</td>
+                                <td>${facture.patient}</td>
+                                <td>${facture.date}</td>
+                                <td>${facture.type}</td>
+                                <td>${facture.total_lignes} fcfa</td>
+                                <td>
+                                    <a href="{% url 'detail_facture' 0 %}".replace('0', facture.id) class="btn btn-info btn-sm">Détail</a>
+                                    <a href="{% url 'edit_facture' 0 %}".replace('0', facture.id) class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="{% url 'delete_facture' 0 %}".replace('0', facture.id) class="btn btn-danger btn-sm">Supprimer</a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+    });
+    </script>
 </body>
 </html>

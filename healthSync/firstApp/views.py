@@ -16,6 +16,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from datetime import date
+from django.http import JsonResponse
+from django.db.models import Q
+
 
 # --- WORKFLOW FACTURE ---
 
@@ -227,7 +230,6 @@ def bilan_patient(request):
 
 #debut 
 
-#debut 
 
 def delete_resultat(request, resultat_id):
     context = get_admin_context(request)
@@ -386,6 +388,37 @@ def liste_factures(request):
     context['factures'] = factures
     context['total_general'] = sum(f.frais for f in factures)
     return render(request, 'admin_template/html/facture_list.html', context)
+
+
+#systeme de recherche des factures
+
+def api_recherche_factures(request):
+    q = request.GET.get('q', '').strip()
+    role = get_admin_context(request)['role']
+    user = get_admin_context(request)['user']
+
+    if role == 'patient':
+        factures = Facture.objects.filter(patient=user)
+    elif role in ['medecin', 'secretaire', 'laborantin']:
+        factures = Facture.objects.all()
+    else:
+        factures = Facture.objects.none()
+
+    if q:
+        factures = factures.filter(
+            Q(patient__nom__icontains=q) | Q(patient__prenom__icontains=q)
+        )
+
+    data = []
+    for f in factures:
+        data.append({
+            "id": f.id,
+            "patient": str(f.patient),
+            "date": f.date.strftime("%d/%m/%Y"),
+            "type": f.type_facture.intitule if f.type_facture else "",
+            "total_lignes": f.total_lignes,
+        })
+    return JsonResponse({"factures": data})
 
 def ajouter_resultat(request, ligne_id):
     context = get_admin_context(request)

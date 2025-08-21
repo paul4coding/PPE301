@@ -100,8 +100,12 @@
                             <i class="fa fa-folder-open"></i> Liste des dossiers patients
                         </a>
                     </li>
-                    <li><a href="{% url 'edit_dossier_patient' dossier_id=0 %}">Modifier un dossier patient</a></li>
-                    <li><a href="{% url 'delete_dossier_patient' dossier_id=0 %}">Supprimer un dossier patient</a></li>
+                    <li>
+                        <a href="{% url 'edit_dossier_patient' dossier_id=0 %}">
+                            <!--<i class="fa fa-edit"></i>Modifier un dossier patient-->
+                        </a>
+                    </li>
+                    <!-- <li><a href="{% url 'delete_dossier_patient' dossier_id=0 %}">Supprimer un dossier patient</a></li>-->
                 </ul>
             </li>
             {% endif %}
@@ -136,7 +140,7 @@
                 </a>
                 <ul class="sub-menu">
                     <li><a href="{% url 'liste_factures' %}">Liste des factures</a></li>
-                    {% if role == 'secretaire' or role == 'medecin' %}
+                    {% if role == 'secretaire' %}
                         <li><a href="{% url 'creer_facture' %}">Créer une facture</a></li>
                     {% endif %}
                 </ul>
@@ -189,7 +193,7 @@
             {% endif %}
             {# ------ FIN MENU MESSAGES ------ #}
 
-            {% if role == 'admin' %}
+            {% if role in "secretaire laborantin medecin patient" or True %}
             <li>
                 <a href="javascript:;">
                     <i class="img"><img src="{% static 'admin/data/hos-dash/icons/10.png' %}" alt="" class="width-20"></i>
@@ -197,8 +201,7 @@
                     <span class="arrow "></span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{% url 'connexion' %}">Connexion</a></li>
-                    <li><a href="{% url 'welcome' %}">Deconnexion</a></li>
+                    <li><a href="{% url 'connexion' %}">Deconnexion</a></li>
                 </ul>
             </li>
             {% endif %}

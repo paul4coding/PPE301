@@ -38,7 +38,18 @@
             <a href="javascript:history.back()" class="btn btn-default">
                 <i class="fa fa-arrow-left"></i> Page précédente
             </a>
-            <a href="{% url 'admin_home' %}" class="btn btn-primary">
+            {% if role == 'secretaire'%}
+            <a href="{% url 'secretaire_dashboard' %}" class="btn btn-primary">
+            {% endif %}
+
+            {% if role == 'laborantin'%}
+            <a href="{% url 'laborantin_dashboard' %}" class="btn btn-primary">
+            {% endif %}
+
+            {% if role == 'medecin'%}
+            <a href="{% url 'medecin_dashboard' %}" class="btn btn-primary">
+            {% endif %}
+
                 <i class="fa fa-home"></i> Retour à l'accueil
             </a>
         </div>

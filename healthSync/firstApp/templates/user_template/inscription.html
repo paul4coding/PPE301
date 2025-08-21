@@ -5,62 +5,78 @@
     <meta charset="UTF-8">
     <title>Inscription</title>
     <link rel="stylesheet" href="{% static 'css/inscription.css' %}">
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+        .step-buttons { margin-top: 1.5rem; display: flex; justify-content: space-between; }
+        .step-buttons button { min-width: 120px; }
+        .logo-container { text-align: center; margin-bottom: 1rem; }
+    </style>
 </head>
 <body>
-
 <div class="form-container">
-
-
-    
     <div class="logo-container">
         <a href="{% url 'welcome' %}">
             <img src="{% static 'img/logo/logo2.jpg' %}" alt="Logo" class="logo">
         </a>
     </div>
-
     <h2>Inscription</h2>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="inscription-form">
         {% csrf_token %}
-        <p>Qui suis-je ?</p>
-        {{ form.user_type }}
 
-        <div id="personnel-role-section" style="display: none;">
-            <p>Quel est votre rôle ?</p>
-            {{ form.personnel_role }}
+        <!-- ÉTAPE 1 -->
+        <div class="step active" id="step-1">
+            <p>Qui suis-je ?</p>
+            {{ form.user_type }}
+            <div id="personnel-role-section" style="display: none;">
+                <p>Quel est votre rôle ?</p>
+                {{ form.personnel_role }}
+            </div>
+            <label>{{ form.nom.label }}</label>
+            {{ form.nom }}
+            <label>{{ form.prenom.label }}</label>
+            {{ form.prenom }}
+            <div class="step-buttons">
+                <span></span>
+                <button type="button" id="next-1" class="btn btn-primary">Suivant</button>
+            </div>
         </div>
 
-        <div id="specialite-section" style="display: none;">
-            <p>Spécialité (si Médecin) :</p>
-            {{ form.specialite }}
+        <!-- ÉTAPE 2 -->
+        <div class="step" id="step-2">
+            <div id="specialite-section" style="display: none;">
+                <p>Spécialité (si Médecin) :</p>
+                {{ form.specialite }}
+            </div>
+            <div id="carte-identite-section" style="display: none;">
+                <label>{{ form.numero_carte_identite.label }}</label>
+                {{ form.numero_carte_identite }}
+            </div>
+            <label>{{ form.sexe.label }}</label>
+            {{ form.sexe }}
+            <label>{{ form.age.label }}</label>
+            {{ form.age }}
+            <label>{{ form.email.label }}</label>
+            {{ form.email }}
+            <div class="step-buttons">
+                <button type="button" id="prev-2" class="btn btn-default">Précédent</button>
+                <button type="button" id="next-2" class="btn btn-primary">Suivant</button>
+            </div>
         </div>
 
-        <label>{{ form.nom.label }}</label>
-        {{ form.nom }}
-
-        <label>{{ form.prenom.label }}</label>
-        {{ form.prenom }}
-
-        <label>{{ form.sexe.label }}</label>
-        {{ form.sexe }}
-
-        <label>{{ form.age.label }}</label>
-        {{ form.age }}
-
-        <label>{{ form.email.label }}</label>
-        {{ form.email }}
-
-        <label>{{ form.mot_de_passe.label }}</label>
-        {{ form.mot_de_passe }}
-
-        <div id="carte-identite-section" style="display: none;">
-            <label>{{ form.numero_carte_identite.label }}</label>
-            {{ form.numero_carte_identite }}
+        <!-- ÉTAPE 3 -->
+        <div class="step" id="step-3">
+            <label>{{ form.mot_de_passe.label }}</label>
+            {{ form.mot_de_passe }}
+            <label>{{ form.photo.label }}</label>
+            {{ form.photo }}
+            <div class="step-buttons">
+                <button type="button" id="prev-3" class="btn btn-default">Précédent</button>
+                <button type="submit" class="btn btn-success">S'inscrire</button>
+            </div>
         </div>
 
-        <label>{{ form.photo.label }}</label>
-        {{ form.photo }}
-
-                <!-- ✅ Bloc d'affichage des messages Django -->
+        <!-- Messages Django -->
         {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">
@@ -68,46 +84,81 @@
             </div>
         {% endfor %}
         {% endif %}
-
-        <button type="submit">S'inscrire</button>
     </form>
 
     <p style="text-align: center; margin-top: 1rem;">
-    Vous avez déjà un compte ? 
-    <a href="{% url 'connexion' %}" style="color: #4fc3f7; font-weight: bold; text-decoration: none;">
-        Connectez-vous
-    </a>
+        Vous avez déjà un compte ?
+        <a href="{% url 'connexion' %}" style="color: #4fc3f7; font-weight: bold; text-decoration: none;">
+            Connectez-vous
+        </a>
     </p>
     <p style="text-align: center; margin-top: 0.5rem;">
-        <a href="{% url 'welcome' %}" 
-        style="display: inline-block; padding: 8px 16px; background-color: #f0f0f0; 
-                color: #333; text-decoration: none; border-radius: 5px; 
+        <a href="{% url 'welcome' %}"
+        style="display: inline-block; padding: 8px 16px; background-color: #f0f0f0;
+                color: #333; text-decoration: none; border-radius: 5px;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold;">
             ⬅ Retour à l'accueil
         </a>
     </p>
-
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function toggleCarteIdentite() {
+    // Wizard navigation
+    let currentStep = 1;
+    const steps = [1, 2, 3];
+    function showStep(step) {
+        steps.forEach(s => {
+            document.getElementById('step-' + s).classList.remove('active');
+        });
+        document.getElementById('step-' + step).classList.add('active');
+        currentStep = step;
+    }
+    document.getElementById('next-1').onclick = function() { showStep(2); };
+    document.getElementById('prev-2').onclick = function() { showStep(1); };
+    document.getElementById('next-2').onclick = function() { showStep(3); };
+    document.getElementById('prev-3').onclick = function() { showStep(2); };
+
+    // Affichage dynamique des champs selon le type d'utilisateur
+    function togglePersonnelRole() {
         var userType = document.querySelector('input[name="user_type"]:checked');
+        var personnelSection = document.getElementById('personnel-role-section');
         var carteSection = document.getElementById('carte-identite-section');
-        if (userType && userType.value === 'patient') {
+        if (userType && userType.value === 'personnel') {
+            personnelSection.style.display = '';
+            carteSection.style.display = 'none';
+        } else if (userType && userType.value === 'patient') {
+            personnelSection.style.display = 'none';
             carteSection.style.display = '';
         } else {
+            personnelSection.style.display = 'none';
             carteSection.style.display = 'none';
         }
     }
-
-    toggleCarteIdentite();
+    function toggleSpecialite() {
+        var roleSelect = document.querySelector('select[name="personnel_role"]');
+        var specialiteSection = document.getElementById('specialite-section');
+        if (roleSelect && roleSelect.value === 'medecin') {
+            specialiteSection.style.display = '';
+        } else {
+            specialiteSection.style.display = 'none';
+        }
+    }
+    // Initialisation
+    togglePersonnelRole();
+    toggleSpecialite();
     document.querySelectorAll('input[name="user_type"]').forEach(function(radio) {
-        radio.addEventListener('change', toggleCarteIdentite);
+        radio.addEventListener('change', function() {
+            togglePersonnelRole();
+            toggleSpecialite();
+        });
     });
+    var roleSelect = document.querySelector('select[name="personnel_role"]');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleSpecialite);
+    }
 });
 </script>
-
 <script src="{% static 'js/inscription.js' %}"></script>
 </body>
 </html>

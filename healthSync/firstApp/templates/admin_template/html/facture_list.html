@@ -22,6 +22,11 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <style>
+        .pagination { margin: 20px 0; }
+        .pagination li { display: inline-block; margin: 0 2px; }
+        .pagination li.active a { background: #007bff; color: #fff; }
+    </style>
 </head>
 <body>
     {% include "admin_template/partials/_header.html" %}
@@ -35,6 +40,9 @@
                     </div>
                     <section class="box">
                         <div class="content-body p">
+                            <div class="form-group">
+                                <input type="text" id="search-patient" class="form-control" placeholder="Rechercher par nom du patient...">
+                            </div>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -46,25 +54,13 @@
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {% for facture in factures %}
-                                    <tr>
-                                        <td>{{ facture.id }}</td>
-                                        <td>{{ facture.patient }}</td>
-                                        <td>{{ facture.date }}</td>
-                                        <td>{{ facture.type_facture.intitule }}</td>
-                                        <td>{{ facture.total_lignes }} fcfa</td>
-                                        <td>
-                                            <a href="{% url 'detail_facture' facture.id %}" class="btn btn-info btn-sm">Détail</a>
-                                            <a href="{% url 'edit_facture' facture.id %}" class="btn btn-warning btn-sm">Modifier</a>
-                                            <a href="{% url 'delete_facture' facture.id %}" class="btn btn-danger btn-sm">Supprimer</a>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr><td colspan="6">Aucune facture trouvée.</td></tr>
-                                    {% endfor %}
+                                <tbody id="factures-tbody">
+                                    <!-- Les lignes seront générées par JS -->
                                 </tbody>
                             </table>
+                            <nav>
+                                <ul class="pagination" id="factures-pagination"></ul>
+                            </nav>
                         </div>
                     </section>
                 </div>
@@ -83,5 +79,75 @@
     </script>
     <!-- CORE JS FRAMEWORK - END -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <script>
+    let allFactures = [];
+    let currentPage = 1;
+    const perPage = 5;
+
+    function renderFactures(factures) {
+        let tbody = document.getElementById('factures-tbody');
+        tbody.innerHTML = '';
+        if (factures.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6">Aucune facture trouvée.</td></tr>';
+            return;
+        }
+        factures.forEach(facture => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${facture.id}</td>
+                    <td>${facture.patient}</td>
+                    <td>${facture.date}</td>
+                    <td>${facture.type}</td>
+                    <td>${facture.total_lignes} fcfa</td>
+                    <td>
+                        <a href="{% url 'detail_facture' 0 %}".replace('0', facture.id) class="btn btn-info btn-sm">Détail</a>
+                        <a href="{% url 'edit_facture' 0 %}".replace('0', facture.id) class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="{% url 'delete_facture' 0 %}".replace('0', facture.id) class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function renderPagination(total, page) {
+        let ul = document.getElementById('factures-pagination');
+        ul.innerHTML = '';
+        let pages = Math.ceil(total / perPage);
+        if (pages <= 1) return;
+        for (let i = 1; i <= pages; i++) {
+            ul.innerHTML += `<li class="${i === page ? 'active' : ''}">
+                <a href="#" onclick="gotoPage(${i});return false;">${i}</a>
+            </li>`;
+        }
+    }
+
+    function gotoPage(page) {
+        currentPage = page;
+        let start = (page - 1) * perPage;
+        let end = start + perPage;
+        renderFactures(allFactures.slice(start, end));
+        renderPagination(allFactures.length, page);
+    }
+
+    function fetchFactures(q = '') {
+        fetch("{% url 'api_recherche_factures' %}?q=" + encodeURIComponent(q))
+            .then(response => response.json())
+            .then(data => {
+                allFactures = data.factures;
+                gotoPage(1);
+            });
+    }
+
+    document.getElementById('search-patient').addEventListener('input', function() {
+        fetchFactures(this.value);
+    });
+
+    // Initialisation au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchFactures('');
+    });
+
+    window.gotoPage = gotoPage;
+    </script>
 </body>
 </html>

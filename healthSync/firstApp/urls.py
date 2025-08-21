@@ -49,6 +49,7 @@ urlpatterns = [
     path('factures/', views.liste_factures, name='liste_factures'),
     path('facture/<int:facture_id>/', views.detail_facture, name='detail_facture'),
     path('facture/<int:facture_id>/edit/', views.edit_facture, name='edit_facture'),
+    path('api/recherche-factures/', views.api_recherche_factures, name='api_recherche_factures'),
     path('facture/<int:facture_id>/delete/', views.delete_facture, name='delete_facture'),
     path('facture/creer/', views.creer_facture, name='creer_facture'),
     path('facture/<int:facture_id>/ajouter-ligne/', views.ajouter_ligne_facture, name='ajouter_ligne_facture'),

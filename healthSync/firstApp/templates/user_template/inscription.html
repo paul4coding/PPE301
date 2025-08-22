@@ -5,12 +5,185 @@
     <meta charset="UTF-8">
     <title>Inscription</title>
     <link rel="stylesheet" href="{% static 'css/inscription.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700&display=swap" rel="stylesheet">
     <style>
-        .step { display: none; }
-        .step.active { display: block; }
-        .step-buttons { margin-top: 1.5rem; display: flex; justify-content: space-between; }
-        .step-buttons button { min-width: 120px; }
-        .logo-container { text-align: center; margin-bottom: 1rem; }
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1e40af;
+            --accent-blue: #60a5fa;
+            --background: #f9fbfd;
+            --white: #fff;
+            --gray: #f3f4f6;
+            --border: #e5e7eb;
+            --text: #1e293b;
+            --danger: #ef4444;
+        }
+        body {
+            background: var(--background);
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--text);
+            margin: 0;
+        }
+        .form-container {
+            max-width: 410px;
+            margin: 50px auto 0;
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: 0 6px 36px rgba(37,99,235,0.16), 0 1.5px 6px rgba(30,64,175,0.07);
+            padding: 36px 36px 18px 36px;
+            position: relative;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .logo {
+            max-width: 100px;
+            border-radius: 50%;
+        }
+        h2 {
+            color: var(--primary-blue-dark);
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        label {
+            font-weight: 500;
+            margin-bottom: 3px;
+            display: block;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: var(--gray);
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input[type="file"] {
+            margin-top: 7px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: #eef4ff;
+        }
+        .step {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .step.active {
+            display: block;
+        }
+        .step-buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .step-buttons button {
+            min-width: 120px;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 0;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+        }
+        .btn-default {
+            background: var(--gray);
+            color: var(--primary-blue);
+        }
+        .btn-default:hover {
+            background: var(--accent-blue);
+            color: var(--white);
+        }
+        .btn-success {
+            background: linear-gradient(90deg, #10b981, #22d3ee);
+            color: var(--white);
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .alert {
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.97rem;
+            background: #f1f5f9;
+            color: var(--danger);
+        }
+        .alert-success { color: #10b981; background: #dcfce7; }
+        .alert-info    { color: #2563eb; background: #dbeafe; }
+        .alert-warning { color: #f59e42; background: #fff7ed; }
+        .alert-error,
+        .alert-danger  { color: var(--danger); background: #fef2f2; }
+
+        .radio-group {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        .radio-group label {
+            font-weight: 400;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            accent-color: var(--primary-blue);
+            margin-right: 7px;
+        }
+
+        .link-action {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.18s;
+        }
+        .link-action:hover {
+            color: var(--primary-blue-dark);
+            text-decoration: underline;
+        }
+        .return-home {
+            display: block;
+            background: var(--gray);
+            color: var(--primary-blue-dark);
+            border-radius: 5px;
+            box-shadow: 0 1.5px 6px rgba(30,64,175,0.06);
+            text-align: center;
+            margin: 0.5rem auto 0;
+            width: fit-content;
+            padding: 8px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.18s;
+        }
+        .return-home:hover {
+            background: var(--accent-blue);
+            color: var(--white);
+        }
+        @media (max-width: 520px) {
+            .form-container { padding: 18px 4vw; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
     </style>
 </head>
 <body>
@@ -20,16 +193,20 @@
             <img src="{% static 'img/logo/logo2.jpg' %}" alt="Logo" class="logo">
         </a>
     </div>
-    <h2>Inscription</h2>
-    <form method="post" enctype="multipart/form-data" id="inscription-form">
+    <h2>Créer un compte</h2>
+    <form method="post" enctype="multipart/form-data" id="inscription-form" autocomplete="off">
         {% csrf_token %}
 
         <!-- ÉTAPE 1 -->
         <div class="step active" id="step-1">
-            <p>Qui suis-je ?</p>
-            {{ form.user_type }}
-            <div id="personnel-role-section" style="display: none;">
-                <p>Quel est votre rôle ?</p>
+            <label style="margin-bottom: 8px;">Qui êtes-vous ?</label>
+            <div class="radio-group">
+                {% for radio in form.user_type %}
+                    <label>{{ radio.tag }} {{ radio.choice_label }}</label>
+                {% endfor %}
+            </div>
+            <div id="personnel-role-section" style="display:none;">
+                <label>Votre rôle :</label>
                 {{ form.personnel_role }}
             </div>
             <label>{{ form.nom.label }}</label>
@@ -44,11 +221,11 @@
 
         <!-- ÉTAPE 2 -->
         <div class="step" id="step-2">
-            <div id="specialite-section" style="display: none;">
-                <p>Spécialité (si Médecin) :</p>
+            <div id="specialite-section" style="display:none;">
+                <label>Spécialité (si Médecin) :</label>
                 {{ form.specialite }}
             </div>
-            <div id="carte-identite-section" style="display: none;">
+            <div id="carte-identite-section" style="display:none;">
                 <label>{{ form.numero_carte_identite.label }}</label>
                 {{ form.numero_carte_identite }}
             </div>
@@ -79,27 +256,13 @@
         <!-- Messages Django -->
         {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-            </div>
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
         {% endif %}
     </form>
 
-    <p style="text-align: center; margin-top: 1rem;">
-        Vous avez déjà un compte ?
-        <a href="{% url 'connexion' %}" style="color: #4fc3f7; font-weight: bold; text-decoration: none;">
-            Connectez-vous
-        </a>
-    </p>
-    <p style="text-align: center; margin-top: 0.5rem;">
-        <a href="{% url 'welcome' %}"
-        style="display: inline-block; padding: 8px 16px; background-color: #f0f0f0;
-                color: #333; text-decoration: none; border-radius: 5px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold;">
-            ⬅ Retour à l'accueil
-        </a>
-    </p>
+    <a href="{% url 'connexion' %}" class="link-action">Vous avez déjà un compte ? Connectez-vous</a>
+    <a href="{% url 'welcome' %}" class="return-home">⬅ Retour à l'accueil</a>
 </div>
 
 <script>

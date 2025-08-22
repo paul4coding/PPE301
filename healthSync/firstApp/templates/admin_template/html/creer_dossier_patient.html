@@ -26,11 +26,20 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <!-- CORE CSS FRAMEWORK - END -->
 
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
     <!-- CORE CSS TEMPLATE - END -->
 
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px;
+            padding: 6px 12px;
+        }
+    </style>
 </head>
 <!-- END HEAD -->
 
@@ -103,8 +112,22 @@
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
     <!-- CORE JS FRAMEWORK - END -->
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
     <!-- END CORE TEMPLATE JS - END -->
+
+    <script>
+    $(document).ready(function() {
+        $('#patient_id').select2({
+            placeholder: '-- Choisir un patient --',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+    </script>
 </body>
 </html>

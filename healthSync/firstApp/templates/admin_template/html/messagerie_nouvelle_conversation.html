@@ -24,6 +24,15 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px;
+            padding: 6px 12px;
+        }
+    </style>
 </head>
 
 <body class=" ">
@@ -55,7 +64,7 @@
                         <div class="form-group">
                             <label for="destinataire_medecin" class="control-label col-sm-3">Médecin :</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="destinataire_medecin" id="destinataire_medecin">
+                                <select class="form-control destinataire-select" name="destinataire_medecin" id="destinataire_medecin">
                                     <option value="">-- Sélectionner un médecin --</option>
                                     {% for u in medecins %}
                                         <option value="{{ u.id }}">{{ u.prenom }} {{ u.nom }} ({{ u.email }})</option>
@@ -66,7 +75,7 @@
                         <div class="form-group">
                             <label for="destinataire_laborantin" class="control-label col-sm-3">Laborantin :</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="destinataire_laborantin" id="destinataire_laborantin">
+                                <select class="form-control destinataire-select" name="destinataire_laborantin" id="destinataire_laborantin">
                                     <option value="">-- Sélectionner un laborantin --</option>
                                     {% for u in laborantins %}
                                         <option value="{{ u.id }}">{{ u.prenom }} {{ u.nom }} ({{ u.email }})</option>
@@ -77,7 +86,7 @@
                         <div class="form-group">
                             <label for="destinataire_secretaire" class="control-label col-sm-3">Secrétaire :</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="destinataire_secretaire" id="destinataire_secretaire">
+                                <select class="form-control destinataire-select" name="destinataire_secretaire" id="destinataire_secretaire">
                                     <option value="">-- Sélectionner une secrétaire --</option>
                                     {% for u in secretaires %}
                                         <option value="{{ u.id }}">{{ u.prenom }} {{ u.nom }} ({{ u.email }})</option>
@@ -88,7 +97,7 @@
                         <div class="form-group">
                             <label for="destinataire_patient" class="control-label col-sm-3">Patient :</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="destinataire_patient" id="destinataire_patient">
+                                <select class="form-control destinataire-select" name="destinataire_patient" id="destinataire_patient">
                                     <option value="">-- Sélectionner un patient --</option>
                                     {% for u in patients %}
                                         <option value="{{ u.id }}">{{ u.prenom }} {{ u.nom }} ({{ u.email }})</option>
@@ -115,12 +124,23 @@
     <script src="{% static 'admin/assets/plugins/viewport/viewportchecker.js' %}"></script>
     <script>window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');</script>
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        // Pour ne pouvoir sélectionner qu'un seul destinataire à la fois
-        $('select').on('change', function(){
-            if($(this).val()){
-                $('select').not(this).val('');
-            }
+        // Active le champ de recherche select2 sur tous les destinataires
+        $(document).ready(function() {
+            $('.destinataire-select').select2({
+                placeholder: 'Rechercher et sélectionner...',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Pour ne pouvoir sélectionner qu'un seul destinataire à la fois
+            $('.destinataire-select').on('change', function(){
+                if($(this).val()){
+                    $('.destinataire-select').not(this).val('').trigger('change');
+                }
+            });
         });
     </script>
 </body>

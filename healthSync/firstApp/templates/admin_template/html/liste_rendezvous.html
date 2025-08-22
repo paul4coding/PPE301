@@ -25,6 +25,12 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <style>
+        .pagination { margin: 20px 0; }
+        .pagination li { display: inline-block; margin: 0 2px; }
+        .pagination li.active a { background: #007bff; color: #fff; }
+        .search-bar { max-width: 350px; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
     <!-- HEADER -->
@@ -76,10 +82,9 @@
                     </div>
                 </div>
                 <div class="clearfix"></div>
-
                 <div class="col-xs-12">
                     <div class="alert alert-info mt-3">
-                        Nombre de rendez-vous chargés : {{ rendezvous|length }}
+                        Nombre de rendez-vous chargés : <span id="rdv-count">{{ rendezvous|length }}</span>
                     </div>
                 </div>
                 <div class="col-xs-12 mt-4">
@@ -88,6 +93,9 @@
                             <h4 class="panel-title">Tous les Rendez-vous</h4>
                         </div>
                         <div class="panel-body">
+                            <div class="form-group">
+                                <input type="text" class="form-control search-bar" id="search-rdv" placeholder="Rechercher par patient, médecin, date, motif, statut...">
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover">
                                     <thead>
@@ -101,79 +109,14 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {% for rdv in rendezvous %}
-                                        <tr>
-                                            <td>
-                                                {# Affichage date en français ex: 17 juin 2025 #}
-                                                {{ rdv.date|date:"j F Y" }}
-                                            </td>
-                                            <td>
-                                                {{ rdv.heure|time:"H:i" }}
-                                                {% if rdv.heure_fin %} - {{ rdv.heure_fin|time:"H:i" }}{% endif %}
-                                            </td>
-                                            <td>
-                                                {{ rdv.patient.nom|default:"-" }} {{ rdv.patient.prenom|default:"" }}
-                                                <br><small>{{ rdv.patient.telephone|default:"" }}</small>
-                                            </td>
-                                            <td>
-                                                {{ rdv.medecin.nom|default:"-" }} {{ rdv.medecin.prenom|default:"" }}
-                                            </td>
-                                            <td>{{ rdv.motif|default:"-" }}</td>
-                                            <td>
-                                                <span class="label label-{% if rdv.statut == 'annulé' %}danger{% elif rdv.statut == 'confirmé' %}success{% elif rdv.statut == 'en_attente' %}warning{% else %}default{% endif %}">
-                                                    {{ rdv.get_statut_display }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <!-- Bouton Modifier -->
-                                                <a href="{% url 'modifier_rendezvous' rdv.id %}" class="btn btn-xs btn-warning" title="Modifier">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </a>
-                                                <!-- Bouton Supprimer -->
-                                                <form method="post" action="{% url 'supprimer_rendezvous' rdv.id %}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce rendez-vous ?');">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger btn-xs" title="Supprimer">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                                <!-- Bouton Détail (modal) -->
-                                                <a href="#" class="btn btn-xs btn-info" data-toggle="modal" data-target="#rdvDetailModal{{ rdv.id }}" title="Détails">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <!-- Modal Détail pour chaque rdv -->
-                                                <div class="modal fade" id="rdvDetailModal{{ rdv.id }}" tabindex="-1" role="dialog" aria-labelledby="rdvDetailModalLabel{{ rdv.id }}" aria-hidden="true">
-                                                  <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content border-primary">
-                                                      <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title" id="rdvDetailModalLabel{{ rdv.id }}">Détail du rendez-vous</h5>
-                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
-                                                          <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                      </div>
-                                                      <div class="modal-body text-dark">
-                                                        <strong>Patient :</strong> {{ rdv.patient.nom }}<br>
-                                                        <strong>Médecin :</strong> {{ rdv.medecin.nom }}<br>
-                                                        <strong>Motif :</strong> {{ rdv.motif }}<br>
-                                                        <strong>Statut :</strong> {{ rdv.statut }}<br>
-                                                        <strong>Date :</strong> {{ rdv.date|date:"j F Y" }} à {{ rdv.heure|slice:":5" }}<br>
-                                                      </div>
-                                                      <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fermer</button>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr>
-                                            <td colspan="7" class="text-center">Aucun rendez-vous trouvé.</td>
-                                        </tr>
-                                        {% endfor %}
+                                    <tbody id="rdv-tbody">
+                                        <!-- Contenu généré par JS -->
                                     </tbody>
                                 </table>
                             </div>
+                            <nav>
+                                <ul class="pagination" id="rdv-pagination"></ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -202,5 +145,149 @@
         });
     </script>
     {% endif %}
+
+    <script>
+    // Les rendez-vous sont injectés dans la page côté serveur (optimisé pour JS)
+    let allRendezvous = [
+        {% for rdv in rendezvous %}
+        {
+            id: {{ rdv.id }},
+            date: "{{ rdv.date|date:'Y-m-d' }}",
+            date_fr: "{{ rdv.date|date:'j F Y' }}",
+            heure: "{{ rdv.heure|time:'H:i' }}",
+            heure_fin: "{% if rdv.heure_fin %}{{ rdv.heure_fin|time:'H:i' }}{% else %}{% endif %}",
+            patient_nom: "{{ rdv.patient.nom|default_if_none:''|escapejs }}",
+            patient_prenom: "{{ rdv.patient.prenom|default_if_none:''|escapejs }}",
+            patient_tel: "{{ rdv.patient.telephone|default_if_none:''|escapejs }}",
+            medecin_nom: "{{ rdv.medecin.nom|default_if_none:''|escapejs }}",
+            medecin_prenom: "{{ rdv.medecin.prenom|default_if_none:''|escapejs }}",
+            motif: "{{ rdv.motif|default_if_none:''|escapejs }}",
+            statut: "{{ rdv.statut|escapejs }}",
+            statut_display: "{{ rdv.get_statut_display|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    let currentPage = 1;
+    const perPage = 10;
+
+    function badgeStatutClass(statut) {
+        if (statut === 'annulé') return 'danger';
+        if (statut === 'confirmé') return 'success';
+        if (statut === 'en_attente') return 'warning';
+        return 'default';
+    }
+
+    function renderRendezvous(rendezvous) {
+        let tbody = document.getElementById('rdv-tbody');
+        tbody.innerHTML = '';
+        if (rendezvous.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center">Aucun rendez-vous trouvé.</td></tr>';
+            document.getElementById('rdv-count').textContent = '0';
+            return;
+        }
+        document.getElementById('rdv-count').textContent = rendezvous.length;
+        rendezvous.forEach(rdv => {
+            tbody.innerHTML += `
+            <tr>
+                <td>${rdv.date_fr}</td>
+                <td>${rdv.heure}${rdv.heure_fin ? ' - ' + rdv.heure_fin : ''}</td>
+                <td>
+                    ${rdv.patient_nom} ${rdv.patient_prenom}
+                    <br><small>${rdv.patient_tel}</small>
+                </td>
+                <td>
+                    ${rdv.medecin_nom} ${rdv.medecin_prenom}
+                </td>
+                <td>${rdv.motif}</td>
+                <td>
+                    <span class="label label-${badgeStatutClass(rdv.statut)}">${rdv.statut_display}</span>
+                </td>
+                <td>
+                     <a href="/health/admin/rendezvous/modifier/${rdv.id}/" class="btn btn-xs btn-warning" title="Modifier">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+        <form method="post" action="/health/supprimer/${rdv.id}/" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce rendez-vous ?');">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <button type="submit" class="btn btn-danger btn-xs" title="Supprimer">
+                <i class="fa fa-trash"></i>
+            </button>
+        </form>
+                    <a href="#" class="btn btn-xs btn-info" data-toggle="modal" data-target="#rdvDetailModal${rdv.id}" title="Détails">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    <div class="modal fade" id="rdvDetailModal${rdv.id}" tabindex="-1" role="dialog" aria-labelledby="rdvDetailModalLabel${rdv.id}" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content border-primary">
+                          <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="rdvDetailModalLabel${rdv.id}">Détail du rendez-vous</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fermer">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body text-dark">
+                            <strong>Patient :</strong> ${rdv.patient_nom} ${rdv.patient_prenom}<br>
+                            <strong>Médecin :</strong> ${rdv.medecin_nom} ${rdv.medecin_prenom}<br>
+                            <strong>Motif :</strong> ${rdv.motif}<br>
+                            <strong>Statut :</strong> ${rdv.statut_display}<br>
+                            <strong>Date :</strong> ${rdv.date_fr} à ${rdv.heure}${rdv.heure_fin ? ' - ' + rdv.heure_fin : ''}<br>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fermer</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </td>
+            </tr>
+            `;
+        });
+    }
+
+    function renderPagination(total, page) {
+        let ul = document.getElementById('rdv-pagination');
+        ul.innerHTML = '';
+        let pages = Math.ceil(total / perPage);
+        if (pages <= 1) return;
+        for (let i = 1; i <= pages; i++) {
+            ul.innerHTML += `<li class="${i === page ? 'active' : ''}">
+                <a href="#" onclick="gotoPage(${i});return false;">${i}</a>
+            </li>`;
+        }
+    }
+
+    function gotoPage(page) {
+        currentPage = page;
+        let start = (page - 1) * perPage;
+        let end = start + perPage;
+        let filtered = getFilteredRdv();
+        renderRendezvous(filtered.slice(start, end));
+        renderPagination(filtered.length, page);
+    }
+
+    function getFilteredRdv() {
+        const q = document.getElementById('search-rdv').value.trim().toLowerCase();
+        if (!q) return allRendezvous;
+        return allRendezvous.filter(rdv =>
+            (rdv.patient_nom + ' ' + rdv.patient_prenom).toLowerCase().includes(q) ||
+            (rdv.medecin_nom + ' ' + rdv.medecin_prenom).toLowerCase().includes(q) ||
+            rdv.date_fr.toLowerCase().includes(q) ||
+            rdv.date.toLowerCase().includes(q) ||
+            (rdv.motif || '').toLowerCase().includes(q) ||
+            (rdv.statut_display || '').toLowerCase().includes(q) ||
+            (rdv.statut || '').toLowerCase().includes(q)
+        );
+    }
+
+    document.getElementById('search-rdv').addEventListener('input', function() {
+        gotoPage(1);
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        gotoPage(1);
+    });
+
+    window.gotoPage = gotoPage;
+    </script>
 </body>
 </html>

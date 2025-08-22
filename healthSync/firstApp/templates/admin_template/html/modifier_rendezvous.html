@@ -18,6 +18,21 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px;
+            padding: 6px 12px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 24px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 38px;
+        }
+    </style>
 </head>
 
 <body>
@@ -155,5 +170,39 @@
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+    // Appliquer Select2 sur les champs de sélection au chargement
+    $(document).ready(function() {
+        // Appliquer Select2 sur les champs qui ont plus de 10 options (ou à adapter)
+        var $medecinSelect = $('select[name="{{ form.medecin.name }}"]');
+        var $patientSelect = $('select[name="{{ form.patient.name }}"]');
+        var $statutSelect = $('select[name="{{ form.statut.name }}"]');
+
+        // Change le placeholder "---------" en "---sélectionnez---" dans les options
+        $medecinSelect.find('option').each(function(){
+            if ($(this).text().trim() === "---------") {
+                $(this).text('---sélectionnez---');
+            }
+        });
+        $patientSelect.find('option').each(function(){
+            if ($(this).text().trim() === "---------") {
+                $(this).text('---sélectionnez---');
+            }
+        });
+        $statutSelect.find('option').each(function(){
+            if ($(this).text().trim() === "---------") {
+                $(this).text('---sélectionnez---');
+            }
+        });
+
+        // Initialisation Select2
+        $medecinSelect.select2({placeholder: "---sélectionnez---", width: '100%'});
+        $patientSelect.select2({placeholder: "---sélectionnez---", width: '100%'});
+        $statutSelect.select2({placeholder: "---sélectionnez---", width: '100%'});
+    });
+    </script>
 </body>
 </html>

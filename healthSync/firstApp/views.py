@@ -391,36 +391,8 @@ def liste_factures(request):
     return render(request, 'admin_template/html/facture_list.html', context)
 
 
-#systeme de recherche des factures
 
-def api_recherche_factures(request):
-    q = request.GET.get('q', '').strip()
-    role = get_admin_context(request)['role']
-    user = get_admin_context(request)['user']
 
-    if role == 'patient':
-        factures = Facture.objects.filter(patient=user)
-    elif role in ['medecin', 'secretaire', 'laborantin']:
-        factures = Facture.objects.all()
-    else:
-        factures = Facture.objects.none()
-
-    # Si q n'est pas vide, on filtre, sinon on garde tout
-    if q:
-        factures = factures.filter(
-            Q(patient__nom__icontains=q) | Q(patient__prenom__icontains=q)
-        )
-
-    data = []
-    for f in factures:
-        data.append({
-            "id": f.id,
-            "patient": str(f.patient),
-            "date": f.date.strftime("%d/%m/%Y"),
-            "type": f.type_facture.intitule if f.type_facture else "",
-            "total_lignes": f.total_lignes,
-        })
-    return JsonResponse({"factures": data})
 
 def ajouter_resultat(request, ligne_id):
     context = get_admin_context(request)
@@ -538,6 +510,29 @@ def liste_dossiers_patients(request):
     context = get_admin_context(request)
     context['dossiers'] = DossierPatient.objects.select_related('patient').all()
     return render(request, 'admin_template/html/liste_dossiers_patients.html', context)
+
+def api_recherche_dossiers(request):
+    q = request.GET.get('q', '').strip()
+    dossiers = DossierPatient.objects.select_related('patient')
+    if q:
+        dossiers = dossiers.filter(
+            Q(patient__nom__icontains=q) |
+            Q(patient__prenom__icontains=q)
+        )
+    dossiers = dossiers.order_by('-id')
+
+    data = []
+    for dossier in dossiers:
+        data.append({
+            "id": dossier.id,
+            "patient_id": dossier.patient.id,
+            "patient_nom": dossier.patient.nom,
+            "patient_prenom": dossier.patient.prenom,
+            "liste_allergie": dossier.liste_allergie,
+            "list_vaccin": dossier.list_vaccin,
+            "antecedant_medicaux": dossier.antecedant_medicaux
+        })
+    return JsonResponse({"dossiers": data})
 
 # Création d'un dossier patient (secrétaire uniquement)
 def creer_dossier_patient(request):

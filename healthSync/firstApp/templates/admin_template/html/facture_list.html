@@ -26,6 +26,7 @@
         .pagination { margin: 20px 0; }
         .pagination li { display: inline-block; margin: 0 2px; }
         .pagination li.active a { background: #007bff; color: #fff; }
+        .search-bar { max-width: 350px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -41,7 +42,7 @@
                     <section class="box">
                         <div class="content-body p">
                             <div class="form-group">
-                                <input type="text" id="search-patient" class="form-control" placeholder="Rechercher par nom du patient...">
+                                <input type="text" id="search-facture" class="form-control search-bar" placeholder="Rechercher par patient, date, type, montant...">
                             </div>
                             <table class="table table-bordered">
                                 <thead>
@@ -80,7 +81,18 @@
     <!-- CORE JS FRAMEWORK - END -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
     <script>
-    let allFactures = [];
+    // Les factures sont injectées côté serveur dans la variable JS ci-dessous
+    let allFactures = [
+        {% for facture in factures %}
+        {
+            id: {{ facture.id }},
+            patient: "{{ facture.patient|default_if_none:''|escapejs }}",
+            date: "{{ facture.date|date:'d/m/Y' }}",
+            type: "{{ facture.type|default_if_none:''|escapejs }}",
+            total_lignes: "{{ facture.total_lignes|default_if_none:facture.frais|floatformat:0 }}",
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
     let currentPage = 1;
     const perPage = 5;
 
@@ -100,10 +112,13 @@
                     <td>${facture.type}</td>
                     <td>${facture.total_lignes} fcfa</td>
                     <td>
-                        <a href="{% url 'detail_facture' 0 %}".replace('0', facture.id) class="btn btn-info btn-sm">Détail</a>
-                        <a href="{% url 'edit_facture' 0 %}".replace('0', facture.id) class="btn btn-warning btn-sm">Modifier</a>
-                        <a href="{% url 'delete_facture' 0 %}".replace('0', facture.id) class="btn btn-danger btn-sm">Supprimer</a>
-                    </td>
+            <a href="/health/facture/${facture.id}/" class="btn btn-info btn-sm">Détail</a>
+            <a href="/health/facture/${facture.id}/edit/" class="btn btn-warning btn-sm">Modifier</a>
+            <form method="post" action="/health/facture/${facture.id}/delete/" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+            </form>
+        </td>
                 </tr>
             `;
         });
@@ -121,30 +136,32 @@
         }
     }
 
+    function getFilteredFactures() {
+        const q = document.getElementById('search-facture').value.trim().toLowerCase();
+        if (!q) return allFactures;
+        return allFactures.filter(facture =>
+            (facture.patient || '').toLowerCase().includes(q) ||
+            (facture.date || '').toLowerCase().includes(q) ||
+            (facture.type || '').toLowerCase().includes(q) ||
+            (facture.total_lignes + '').toLowerCase().includes(q)
+        );
+    }
+
     function gotoPage(page) {
         currentPage = page;
         let start = (page - 1) * perPage;
         let end = start + perPage;
-        renderFactures(allFactures.slice(start, end));
-        renderPagination(allFactures.length, page);
+        let filtered = getFilteredFactures();
+        renderFactures(filtered.slice(start, end));
+        renderPagination(filtered.length, page);
     }
 
-    function fetchFactures(q = '') {
-        fetch("{% url 'api_recherche_factures' %}?q=" + encodeURIComponent(q))
-            .then(response => response.json())
-            .then(data => {
-                allFactures = data.factures;
-                gotoPage(1);
-            });
-    }
-
-    document.getElementById('search-patient').addEventListener('input', function() {
-        fetchFactures(this.value);
+    document.getElementById('search-facture').addEventListener('input', function() {
+        gotoPage(1);
     });
 
-    // Initialisation au chargement
     document.addEventListener('DOMContentLoaded', function() {
-        fetchFactures('');
+        gotoPage(1);
     });
 
     window.gotoPage = gotoPage;

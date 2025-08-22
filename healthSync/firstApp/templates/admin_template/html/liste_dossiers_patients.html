@@ -30,7 +30,51 @@
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
     <!-- CORE CSS TEMPLATE - END -->
-
+    <style>
+        .pagination-custom {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 10px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        .pagination-custom li {
+            margin: 0 4px;
+        }
+        .pagination-custom li a,
+        .pagination-custom li span {
+            color: #007bff;
+            background: #fff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            padding: 7px 16px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+            display: block;
+            cursor: pointer;
+        }
+        .pagination-custom li.active span,
+        .pagination-custom li a:hover {
+            background: #007bff;
+            color: #fff;
+        }
+        .pagination-custom li.disabled span {
+            color: #aaa;
+            border-color: #eee;
+            background: #f9f9f9;
+            cursor: not-allowed;
+        }
+        .search-bar-dossier {
+            max-width: 400px;
+            margin: 20px 0 30px 0;
+        }
+        .actions-left {
+            display: flex;
+            gap: 5px;
+            justify-content: flex-start;
+        }
+    </style>
 </head>
 <!-- END HEAD -->
 
@@ -57,6 +101,10 @@
                             <h1 class="title">Liste des dossiers patients</h1>
                         </div>
                     </div>
+                    <!-- Barre de recherche dynamique -->
+                    <div class="form-group search-bar-dossier">
+                        <input type="text" id="search-dossier" class="form-control" placeholder="Rechercher par nom du patient...">
+                    </div>
                 </div>
 
                 <div class="clearfix"></div>
@@ -74,25 +122,11 @@
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {% for dossier in dossiers %}
-                                    <tr>
-                                        <td>{{ dossier.patient.nom }} {{ dossier.patient.prenom }}</td>
-                                        <td>{{ dossier.liste_allergie|default:"-" }}</td>
-                                        <td>{{ dossier.list_vaccin|default:"-" }}</td>
-                                        <td>{{ dossier.antecedant_medicaux|default:"-" }}</td>
-                                        <td>
-                                            <a href="{% url 'edit_dossier_patient' dossier.id %}" class="btn btn-warning btn-xs">Éditer</a>
-                                            <a href="{% url 'hos_patient_profile' dossier.patient.id %}" class="btn btn-info btn-xs">Voir</a>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="5" class="text-center">Aucun dossier patient trouvé.</td>
-                                    </tr>
-                                    {% endfor %}
+                                <tbody id="dossiers-tbody">
+                                    <!-- Les lignes seront générées par JS -->
                                 </tbody>
                             </table>
+                            <ul class="pagination-custom" id="dossiers-pagination"></ul>
                         </div>
                     </section>
                 </div>
@@ -122,5 +156,95 @@
     <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
     <!-- END CORE TEMPLATE JS - END -->
+
+    <script>
+        // Prépare les dossiers côté JS
+        const allDossiers = [
+            {% for dossier in dossiers %}
+            {
+                id: "{{ dossier.id }}",
+                patient_nom: "{{ dossier.patient.nom|escapejs }}",
+                patient_prenom: "{{ dossier.patient.prenom|escapejs }}",
+                allergies: "{{ dossier.liste_allergie|default:"-"|escapejs }}",
+                vaccins: "{{ dossier.list_vaccin|default:"-"|escapejs }}",
+                antecedents: "{{ dossier.antecedant_medicaux|default:"-"|escapejs }}",
+                edit_url: "{% url 'edit_dossier_patient' dossier.id %}",
+                profile_url: "{% url 'hos_patient_profile' dossier.patient.id %}"
+            },
+            {% endfor %}
+        ];
+        const perPage = 6;
+        let currentPage = 1;
+        let filteredDossiers = allDossiers.slice();
+
+        function renderDossiers(dossiers) {
+            let html = '';
+            if (dossiers.length === 0) {
+                html = `<tr><td colspan="5" class="text-center">Aucun dossier patient trouvé.</td></tr>`;
+            } else {
+                dossiers.forEach(dossier => {
+                    html += `
+                        <tr>
+                            <td>${dossier.patient_nom} ${dossier.patient_prenom}</td>
+                            <td>${dossier.allergies}</td>
+                            <td>${dossier.vaccins}</td>
+                            <td>${dossier.antecedents}</td>
+                            <td>
+                                <div class="actions-left">
+                                    <a href="${dossier.edit_url}" class="btn btn-warning btn-xs">Éditer</a>
+                                    <a href="${dossier.profile_url}" class="btn btn-info btn-xs">Voir</a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('dossiers-tbody').innerHTML = html;
+        }
+
+        function renderPagination(total, page) {
+            let ul = document.getElementById('dossiers-pagination');
+            ul.innerHTML = '';
+            let pages = Math.ceil(total / perPage);
+            if (pages <= 1) return;
+            // Previous
+            ul.innerHTML += `<li class="${page === 1 ? 'disabled' : ''}">
+                <span ${page === 1 ? '' : 'onclick="gotoPage(' + (page-1) + ')"'}>&laquo;</span>
+            </li>`;
+            // Pages
+            for (let i = 1; i <= pages; i++) {
+                ul.innerHTML += `<li class="${i === page ? 'active' : ''}">
+                    <span onclick="gotoPage(${i})">${i}</span>
+                </li>`;
+            }
+            // Next
+            ul.innerHTML += `<li class="${page === pages ? 'disabled' : ''}">
+                <span ${page === pages ? '' : 'onclick="gotoPage(' + (page+1) + ')"'}>&raquo;</span>
+            </li>`;
+        }
+
+        function gotoPage(page) {
+            currentPage = page;
+            let start = (page - 1) * perPage;
+            let end = start + perPage;
+            renderDossiers(filteredDossiers.slice(start, end));
+            renderPagination(filteredDossiers.length, page);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            gotoPage(1);
+        });
+
+        window.gotoPage = gotoPage;
+
+        // Recherche dynamique par nom du patient
+        document.getElementById('search-dossier').addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            filteredDossiers = allDossiers.filter(d =>
+                (d.patient_nom + ' ' + d.patient_prenom).toLowerCase().includes(q)
+            );
+            gotoPage(1);
+        });
+    </script>
 </body>
 </html>

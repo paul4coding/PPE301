@@ -223,9 +223,15 @@ def bilan_patient(request):
         return render(request, 'admin_template/html/bilan_patient.html', context)
     resultats = Resultat.objects.filter(ligne_facture__facture__patient=patient)
     prescriptions = Prescription.objects.filter(resultat__ligne_facture__facture__patient=patient)
+    # Partie consultation : pages du dossier patient
+    dossier = getattr(patient, 'dossier', None)
+    consultations = []
+    if dossier:
+        consultations = dossier.pages.all().order_by('-id')
     context['resultats'] = resultats
     context['prescriptions'] = prescriptions
     context['patient'] = patient
+    context['consultations'] = consultations
     return render(request, 'admin_template/html/bilan_patient.html', context)
 
 

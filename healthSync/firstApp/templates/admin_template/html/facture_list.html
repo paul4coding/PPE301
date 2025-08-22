@@ -112,6 +112,7 @@
                     <td>${facture.type}</td>
                     <td>${facture.total_lignes} fcfa</td>
                     <td>
+<<<<<<< HEAD
             <a href="/health/facture/${facture.id}/" class="btn btn-info btn-sm">Détail</a>
             <a href="/health/facture/${facture.id}/edit/" class="btn btn-warning btn-sm">Modifier</a>
             <form method="post" action="/health/facture/${facture.id}/delete/" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');">
@@ -119,6 +120,11 @@
                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
             </form>
         </td>
+=======
+                        <a href="{% url 'detail_facture' 0 %}".replace('0', facture.id) class="btn btn-info btn-sm">Détail</a>
+                        <a href="{% url 'delete_facture' 0 %}".replace('0', facture.id) class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+>>>>>>> ca437dfb9ea084483c31fa30c3d5437ff4295732
                 </tr>
             `;
         });

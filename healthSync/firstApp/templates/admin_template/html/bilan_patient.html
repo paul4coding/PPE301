@@ -135,7 +135,6 @@
                                         <div class="bilan-card">
                                             <span class="bilan-label">Date :</span> {{ resultat.ligne_facture.facture.date }}<br>
                                             <span class="bilan-label">Service :</span> {{ resultat.ligne_facture.service }}<br>
-                                            <span class="bilan-label">Résultat :</span> {{ resultat.resultat|linebreaksbr }}
                                             {% if resultat.prescriptions.all %}
                                                 <div class="bilan-label mt-2">Prescriptions associées :</div>
                                                 {% for prescription in resultat.prescriptions.all %}

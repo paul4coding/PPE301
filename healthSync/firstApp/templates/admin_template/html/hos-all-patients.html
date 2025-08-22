@@ -11,13 +11,9 @@
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'admin/assets/images/favicon.png' %}" type="image/x-icon" />
-    <!-- For iPhone -->
     <link rel="apple-touch-icon-precomposed" href="{% static 'admin/assets/images/apple-touch-icon-57-precomposed.png' %}">
-    <!-- For iPhone 4 Retina display -->
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}">
-    <!-- For iPad -->
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}">
-    <!-- For iPad Retina display -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}">
 
     <!-- CORE CSS FRAMEWORK - START -->
@@ -28,31 +24,54 @@
     <link href="{% static 'admin/assets/fonts/webfont/cryptocoins.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/animate.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS FRAMEWORK - END -->
-
-    <!-- CORE CSS TEMPLATE - START -->
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
-    <!-- CORE CSS TEMPLATE - END -->
-
+    <style>
+        .pagination-custom {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 10px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        .pagination-custom li {
+            margin: 0 4px;
+        }
+        .pagination-custom li a,
+        .pagination-custom li span {
+            color: #007bff;
+            background: #fff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            padding: 7px 16px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+            display: block;
+            cursor: pointer;
+        }
+        .pagination-custom li.active span,
+        .pagination-custom li a:hover {
+            background: #007bff;
+            color: #fff;
+        }
+        .pagination-custom li.disabled span {
+            color: #aaa;
+            border-color: #eee;
+            background: #f9f9f9;
+            cursor: not-allowed;
+        }
+        .search-bar-patient {
+            max-width: 400px;
+            margin: 20px 0 30px 0;
+        }
+    </style>
 </head>
-<!-- END HEAD -->
-
-<!-- BEGIN BODY -->
 <body class=" ">
 
-    <!-- START TOPBAR -->
     {% include "admin_template/partials/_header.html" %}
-    <!-- END TOPBAR -->
-
-    <!-- START CONTAINER -->
     <div class="page-container row-fluid container-fluid">
-
-        <!-- SIDEBAR - START -->
         {% include "admin_template/partials/_sidebar.html" %}
-        <!--  SIDEBAR - END -->
-
-        <!-- START CONTENT -->
         <section id="main-content" class=" ">
             <div class="wrapper main-wrapper row" style=''>
 
@@ -62,112 +81,28 @@
                             <h1 class="title">Tous les patients</h1>
                         </div>
                     </div>
+                    <!-- Barre de recherche dynamique -->
+                    <div class="form-group search-bar-patient">
+                        <input type="text" id="search-patient" class="form-control" placeholder="Rechercher par nom...">
+                    </div>
                 </div>
 
                 <div class="clearfix"></div>
                 <!-- MAIN CONTENT AREA STARTS -->
 
-                {% for patient in patients %}
-                <div class="col-lg-4 col-md-6">
-                    <section class="box ">
-                        <div class="content-body p">
-                            <div class="row">
-                                <div class="doctors-list patient relative">
-                                    <div class="doctors-head relative text-center">
-                                        <div class="patient-img img-circle">
-                                            {% if patient.photo %}
-                                                <img src="{{ patient.photo.url }}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
-                                            {% else %}
-                                                <img src="{% static 'admin/data/profile/1430504.png' %}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
-                                            {% endif %}
-                                            <div class="stutas recent"></div>
-                                        </div>
-                                        <h3 class="header w-text relative bold">Nom : {{ patient.nom }} {{ patient.prenom }}</h3>
-                                    </div>
-                                    <div class="row">
-                                        <div class="patients-info relative" >
-                                            <div class="col-sm-6 col-xs-12">
-                                                <div class="patient-card has-shadow2">
-                                                    <div class="doc-info-wrap">
-                                                        <div class="patient-info">
-                                                            <h5 class="bold">
-                                                                {% if patient.sexe == "M" %}
-                                                                    Masculin
-                                                                {% elif patient.sexe == "F" %}
-                                                                    Féminin
-                                                                {% else %}
-                                                                    {{ patient.sexe }}
-                                                                {% endif %}
-                                                            </h5>
-                                                            <h6>Genre du Patient(e)</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6 col-xs-12">
-                                                <div class="patient-card has-shadow2">
-                                                    <div class="doc-info-wrap">
-                                                        <div class="patient-info">
-                                                            <h5 class="bold">Age: {{ patient.age }}</h5>
-                                                            <h6>Ans</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div><!-- end row -->
-                                    <div class="col-xs-12 mb-20 text-center">
-                                        <div class="btn-group" role="group" aria-label="Actions patient">
-                                            <!-- Voir profil -->
-                                            {% if patient.id %}
-                                                <a href="{% url 'hos_patient_profile' patient.id %}" class="btn btn-primary gradient-blue" title="Voir le profil">
-                                                    <i class="fa fa-user"></i>
-                                                </a>
-                                            {% else %}
-                                                <span class="btn btn-default gradient-blue" style="pointer-events:none;" title="Profil indisponible">
-                                                    <i class="fa fa-user"></i>
-                                                </span>
-                                            {% endif %}
-                                            <!-- Modifier -->
-                                            <a href="{% url 'hos_edit_patient' patient.id %}" class="btn btn-warning" title="Modifier">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </a>
-                                            <!-- Supprimer -->
-                                            <form action="{% url 'hos_delete_patient' patient.id %}" method="post" style="display:inline;">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                <div id="patients-list">
+                    <!-- Les patients seront affichés ici par JS -->
                 </div>
-                {% empty %}
                 <div class="col-xs-12">
-                    <div class="alert alert-info text-center">Aucun patient trouvé.</div>
+                    <ul class="pagination-custom" id="patients-pagination"></ul>
                 </div>
-                {% endfor %}
-
                 <div class="clearfix"></div>
-
-                <div class="col-xs-12 mb-30 mt-15">
-                    <div class="form-group no-mb text-center">
-                        <button type="button" class="btn btn-primary btn-lg gradient-blue" style="width:100%;max-width:300px">Load more</button>
-                    </div>
-                </div>
-
-                <!-- MAIN CONTENT AREA ENDS -->
             </div>
         </section>
         <!-- END CONTENT -->
         <div class="page-chatapi hideit">
             <!-- ... le reste ... -->
         </div>
-
         <div class="chatapi-windows "></div>
     </div>
     <!-- END CONTAINER -->
@@ -181,9 +116,141 @@
     <script>
         window.jQuery || document.write('<script src="{% static 'admin/assets/js/jquery.min.js' %}"><\/script>');
     </script>
-    <!-- CORE JS FRAMEWORK - END -->
-    <!-- CORE TEMPLATE JS - START -->
     <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-    <!-- END CORE TEMPLATE JS - END -->
+    <script>
+        // Récupère les patients du contexte Django
+        const allPatients = [
+            {% for patient in patients %}
+            {
+                id: "{{ patient.id }}",
+                nom: "{{ patient.nom|escapejs }}",
+                prenom: "{{ patient.prenom|escapejs }}",
+                age: "{{ patient.age }}",
+                sexe: "{% if patient.sexe == 'M' %}Masculin{% elif patient.sexe == 'F' %}Féminin{% else %}{{ patient.sexe }}{% endif %}",
+                photo: "{% if patient.photo %}{{ patient.photo.url }}{% else %}{% static 'admin/data/profile/1430504.png' %}{% endif %}",
+                profile_url: "{% url 'hos_patient_profile' patient.id %}",
+                edit_url: "{% url 'hos_edit_patient' patient.id %}",
+                delete_url: "{% url 'hos_delete_patient' patient.id %}"
+            },
+            {% endfor %}
+        ];
+        const perPage = 6;
+        let currentPage = 1;
+        let filteredPatients = allPatients.slice();
+
+        function renderPatients(patients) {
+            let html = '';
+            if (patients.length === 0) {
+                html = `<div class="col-xs-12"><div class="alert alert-info text-center">Aucun patient trouvé.</div></div>`;
+            } else {
+                patients.forEach(patient => {
+                    html += `
+                    <div class="col-lg-4 col-md-6">
+                        <section class="box ">
+                            <div class="content-body p">
+                                <div class="row">
+                                    <div class="doctors-list patient relative">
+                                        <div class="doctors-head relative text-center">
+                                            <div class="patient-img img-circle">
+                                                <img src="${patient.photo}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;background:#f2f2f2;">
+                                                <div class="stutas recent"></div>
+                                            </div>
+                                            <h3 class="header w-text relative bold">Nom : ${patient.nom} ${patient.prenom}</h3>
+                                        </div>
+                                        <div class="row">
+                                            <div class="patients-info relative" >
+                                                <div class="col-sm-6 col-xs-12">
+                                                    <div class="patient-card has-shadow2">
+                                                        <div class="doc-info-wrap">
+                                                            <div class="patient-info">
+                                                                <h5 class="bold">${patient.sexe}</h5>
+                                                                <h6>Genre du Patient(e)</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 col-xs-12">
+                                                    <div class="patient-card has-shadow2">
+                                                        <div class="doc-info-wrap">
+                                                            <div class="patient-info">
+                                                                <h5 class="bold">Age: ${patient.age}</h5>
+                                                                <h6>Ans</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 mb-20 text-center">
+                                            <div class="btn-group" role="group" aria-label="Actions patient">
+                                                <a href="${patient.profile_url}" class="btn btn-primary gradient-blue" title="Voir le profil">
+                                                    <i class="fa fa-user"></i>
+                                                </a>
+                                                <a href="${patient.edit_url}" class="btn btn-warning" title="Modifier">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <form action="${patient.delete_url}" method="post" style="display:inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce patient ?');">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    `;
+                });
+            }
+            document.getElementById('patients-list').innerHTML = html;
+        }
+
+        function renderPagination(total, page) {
+            let ul = document.getElementById('patients-pagination');
+            ul.innerHTML = '';
+            let pages = Math.ceil(total / perPage);
+            if (pages <= 1) return;
+            // Previous
+            ul.innerHTML += `<li class="${page === 1 ? 'disabled' : ''}">
+                <span ${page === 1 ? '' : 'onclick="gotoPage(' + (page-1) + ')"'}>&laquo;</span>
+            </li>`;
+            // Pages
+            for (let i = 1; i <= pages; i++) {
+                ul.innerHTML += `<li class="${i === page ? 'active' : ''}">
+                    <span onclick="gotoPage(${i})">${i}</span>
+                </li>`;
+            }
+            // Next
+            ul.innerHTML += `<li class="${page === pages ? 'disabled' : ''}">
+                <span ${page === pages ? '' : 'onclick="gotoPage(' + (page+1) + ')"'}>&raquo;</span>
+            </li>`;
+        }
+
+        function gotoPage(page) {
+            currentPage = page;
+            let start = (page - 1) * perPage;
+            let end = start + perPage;
+            renderPatients(filteredPatients.slice(start, end));
+            renderPagination(filteredPatients.length, page);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            gotoPage(1);
+        });
+
+        window.gotoPage = gotoPage;
+
+        // Recherche dynamique par nom
+        document.getElementById('search-patient').addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            filteredPatients = allPatients.filter(p =>
+                (p.nom + ' ' + p.prenom).toLowerCase().includes(q)
+            );
+            gotoPage(1);
+        });
+    </script>
 </body>
 </html>

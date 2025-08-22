@@ -104,8 +104,86 @@
                 </div>
                 <div class="clearfix"></div>
 
+<<<<<<< HEAD
                 <div id="doctors-list">
                     <!-- Les médecins seront affichés ici par JS -->
+=======
+                {% for medecin in medecins %}
+                <div class="col-lg-4 col-md-6">
+                    <section class="box">
+                        <div class="content-body p">
+                            <div class="row">
+                                <div class="doctors-list patient relative">
+                                    <div class="doctors-head relative text-center">
+                                        <div class="doctor-card has-shadow">
+                                            <div class="doc-info-wrap text-left">
+                                                <div class="doctor-img">
+                                                    <img src="{% if medecin.photo %}{{ medecin.photo.url }}{% else %}{% static 'admin/data/profile/profilDefault.jpg' %}{% endif %}" alt="photo" class="doctor-photo"/>
+                                                </div>
+                                                <div class="doc-info text-center">
+                                                    <h4 class="bold">{{ medecin.nom }} {{ medecin.prenom }}</h4>
+                                                    <h5>{{ medecin.specialite.nom }}</h5>
+                                                    {% if medecin.note %}
+                                                    <div class="doc-rating">
+                                                        {% for i in "12345" %}
+                                                            {% if medecin.note|default:0 >= i %}
+                                                                <i class="fa fa-star"></i>
+                                                            {% elif medecin.note|default:0 >= i|add:"-0.5" %}
+                                                                <i class="fa fa-star-half"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-star-o"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        <span>{{ medecin.note }}</span>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:15px;">
+                                        <div class="col-xs-6 text-center">
+                                            <div>
+                                                <h5 class="bold">
+                                                    {% if medecin.sexe == "M" %}
+                                                        Masculin
+                                                    {% elif medecin.sexe == "F" %}
+                                                        Féminin
+                                                    {% else %}
+                                                        {{ medecin.sexe }}
+                                                    {% endif %}
+                                                </h5>
+                                                <h6>Sexe</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 text-center">
+                                            <div>
+                                                <h5 class="bold">{{ medecin.age }}</h5>
+                                                <h6>Âge</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 text-center" style="margin-top:15px;">
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'hos_doctor_profile' medecin.id %}" class="btn btn-primary" title="Voir le profil">
+                                                <i class="fa fa-user"></i>
+                                            </a>
+                                            <a href="{% url 'hos_edit_doctor' medecin.id %}" class="btn btn-warning" title="Modifier">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                            <form action="{% url 'hos_delete_doctor' medecin.id %}" method="post" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger" title="Supprimer" onclick="return confirm('Supprimer ce médecin ?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+>>>>>>> 94ebb308c9058b6c64c2487d3ed956626743d85d
                 </div>
                 <div class="col-xs-12">
                     <ul class="pagination-custom" id="doctors-pagination"></ul>

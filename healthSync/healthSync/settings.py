@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'firstApp',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -138,6 +139,17 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "latrelvai@gmail.com"       # ton adresse Gmail
+EMAIL_HOST_PASSWORD = "tqgj vfoi hxrf mqst"  # le mot de passe d'application (16 caractères)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 
 MEDIA_URL = '/media/'

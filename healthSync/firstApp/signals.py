@@ -1,6 +1,10 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import RendezVous, Notification, Secretaire
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import RendezVous
+from .utils import envoyer_notification_rdv
 
 @receiver(post_save, sender=RendezVous)
 def notifie_creation_ou_modification_rdv(sender, instance, created, **kwargs):
@@ -58,3 +62,9 @@ def notifie_creation_ou_modification_rdv(sender, instance, created, **kwargs):
                     lien=url,
                     type="rendezvous"
                 )
+                
+
+@receiver(post_save, sender=RendezVous)
+def envoyer_mail_creation_rdv(sender, instance, created, **kwargs):
+    if created:
+        envoyer_notification_rdv(instance)

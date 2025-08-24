@@ -125,7 +125,8 @@
                 id: "{{ patient.id }}",
                 nom: "{{ patient.nom|escapejs }}",
                 prenom: "{{ patient.prenom|escapejs }}",
-                age: "{{ patient.age }}",
+                age: "{{ patient.age|default:'' }}",
+                date_naissance: "{{ patient.date_naissance|date:'Y-m-d' }}",
                 sexe: "{% if patient.sexe == 'M' %}Masculin{% elif patient.sexe == 'F' %}Féminin{% else %}{{ patient.sexe }}{% endif %}",
                 photo: "{% if patient.photo %}{{ patient.photo.url }}{% else %}{% static 'admin/data/profile/1430504.png' %}{% endif %}",
                 profile_url: "{% url 'hos_patient_profile' patient.id %}",
@@ -138,12 +139,34 @@
         let currentPage = 1;
         let filteredPatients = allPatients.slice();
 
+        // Fonction pour calculer l'âge à partir de la date de naissance (format YYYY-MM-DD)
+        function getAge(dateString) {
+            if (!dateString) return null;
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            if (isNaN(birthDate.getTime())) return null;
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
         function renderPatients(patients) {
             let html = '';
             if (patients.length === 0) {
                 html = `<div class="col-xs-12"><div class="alert alert-info text-center">Aucun patient trouvé.</div></div>`;
             } else {
                 patients.forEach(patient => {
+                    // Calcul dynamique de l'âge
+                    let ageToShow = '-';
+                    if (patient.date_naissance) {
+                        const age = getAge(patient.date_naissance);
+                        ageToShow = (age !== null && age >= 0) ? age : (patient.age ? patient.age : '-');
+                    } else if (patient.age) {
+                        ageToShow = patient.age;
+                    }
                     html += `
                     <div class="col-lg-4 col-md-6">
                         <section class="box ">
@@ -173,7 +196,7 @@
                                                     <div class="patient-card has-shadow2">
                                                         <div class="doc-info-wrap">
                                                             <div class="patient-info">
-                                                                <h5 class="bold">Age: ${patient.age}</h5>
+                                                                <h5 class="bold">Age: ${ageToShow}</h5>
                                                                 <h6>Ans</h6>
                                                             </div>
                                                         </div>

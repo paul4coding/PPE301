@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 
+
 class Utilisateur(models.Model):
     """Classe parent pour tous les types d'utilisateurs."""
     ROLE_CHOICES = [
@@ -14,7 +15,8 @@ class Utilisateur(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     sexe = models.CharField(max_length=1, choices=[('M', 'Masculin'), ('F', 'Féminin')])
-    age = models.IntegerField()
+    age = models.IntegerField(null=True, blank=True)  
+    date_naissance = models.DateField(null=True, blank=True)  
     email = models.EmailField(unique=True)
     mot_de_passe = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='photos/', null=True, blank=True)

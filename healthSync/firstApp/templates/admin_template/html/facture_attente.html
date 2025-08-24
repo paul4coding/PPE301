@@ -22,6 +22,9 @@
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
 </head>
 <body style="background:#f8f9fa;">
+        {% include "admin_template/partials/_header.html" %}
+    <div class="page-container row-fluid container-fluid">
+        {% include "admin_template/partials/_sidebar.html" %}
     
     <div class="container text-center" style="margin-top:100px;">
         <h2 class="text-warning">Facture en attente</h2>

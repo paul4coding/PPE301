@@ -141,7 +141,8 @@
                 id: "{{ medecin.id }}",
                 nom: "{{ medecin.nom|escapejs }}",
                 prenom: "{{ medecin.prenom|escapejs }}",
-                age: "{{ medecin.age }}",
+                age: "{{ medecin.age|default:'' }}",
+                date_naissance: "{{ medecin.date_naissance|date:'Y-m-d' }}",
                 sexe: "{% if medecin.sexe == 'M' %}Masculin{% elif medecin.sexe == 'F' %}Féminin{% else %}{{ medecin.sexe }}{% endif %}",
                 specialite: "{{ medecin.specialite.nom|escapejs }}",
                 note: "{{ medecin.note|default_if_none:'' }}",
@@ -156,12 +157,34 @@
         let currentPage = 1;
         let filteredDoctors = allDoctors.slice();
 
+        // Fonction pour calculer l'âge à partir de la date de naissance (format YYYY-MM-DD)
+        function getAge(dateString) {
+            if (!dateString) return null;
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            if (isNaN(birthDate.getTime())) return null;
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
         function renderDoctors(doctors) {
             let html = '';
             if (doctors.length === 0) {
                 html = `<div class="col-xs-12"><div class="alert alert-info text-center">Aucun médecin trouvé.</div></div>`;
             } else {
                 doctors.forEach(doctor => {
+                    // Calcul dynamique de l'âge
+                    let ageToShow = '-';
+                    if (doctor.date_naissance) {
+                        const age = getAge(doctor.date_naissance);
+                        ageToShow = (age !== null && age >= 0) ? age : (doctor.age ? doctor.age : '-');
+                    } else if (doctor.age) {
+                        ageToShow = doctor.age;
+                    }
                     html += `
                     <div class="col-lg-4 col-md-6">
                         <section class="box">
@@ -191,7 +214,7 @@
                                             </div>
                                             <div class="col-xs-6 text-center">
                                                 <div>
-                                                    <h5 class="bold">${doctor.age}</h5>
+                                                    <h5 class="bold">${ageToShow}</h5>
                                                     <h6>Âge</h6>
                                                 </div>
                                             </div>

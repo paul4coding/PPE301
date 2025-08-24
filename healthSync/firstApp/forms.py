@@ -1,6 +1,7 @@
 from django import forms
-from .models import Utilisateur, Specialite,Medecin
-from .models import RendezVous, Patient,Facture, LigneFacture, Resultat, Prescription
+from .models import Utilisateur, Specialite, Medecin
+from .models import RendezVous, Patient, Facture, LigneFacture, Resultat, Prescription
+
 class ConnexionForm(forms.Form):
     email = forms.EmailField()
     mot_de_passe = forms.CharField(widget=forms.PasswordInput)
@@ -22,7 +23,6 @@ class InscriptionForm(forms.ModelForm):
         required=False,
         label="Quel est votre rôle ?"
     )
-
     specialite = forms.ModelChoiceField(
         queryset=Specialite.objects.all(),
         required=False,
@@ -32,12 +32,19 @@ class InscriptionForm(forms.ModelForm):
         required=False,
         label="Numéro de carte d'identité"
     )
+    date_naissance = forms.DateField(
+        label="Date de naissance",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=True
+    )
 
     class Meta:
         model = Utilisateur
-        fields = ['nom', 'prenom', 'sexe', 'age', 'email', 'mot_de_passe', 'photo', 'user_type', 'personnel_role','numero_carte_identite']
-        
-    
+        fields = [
+            'nom', 'prenom', 'sexe', 'date_naissance', 'email', 'mot_de_passe', 'photo',
+            'user_type', 'personnel_role', 'numero_carte_identite'
+        ]
+
 class MedecinForm(forms.ModelForm):
     class Meta:
         model = Medecin
@@ -45,7 +52,7 @@ class MedecinForm(forms.ModelForm):
             'nom',
             'prenom',
             'sexe',
-            'age',
+            'date_naissance',
             'email',
             'mot_de_passe',
             'photo',
@@ -54,12 +61,13 @@ class MedecinForm(forms.ModelForm):
         widgets = {
             'mot_de_passe': forms.PasswordInput(render_value=True),
             'sexe': forms.Select(choices=[('M', 'Masculin'), ('F', 'Féminin')]),
+            'date_naissance': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
         labels = {
             'nom': "Nom",
             'prenom': "Prénom",
             'sexe': "Sexe",
-            'age': "Âge",
+            'date_naissance': "Date de naissance",
             'email': "Email",
             'mot_de_passe': "Mot de passe",
             'photo': "Photo",
@@ -89,14 +97,13 @@ class RendezVousForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Pour forcer le format de la date dans le champ (important pour la modification !)
         self.fields['date'].input_formats = ['%Y-%m-%d']
         self.fields['heure'].input_formats = ['%H:%M']
 
 class FactureForm(forms.ModelForm):
     class Meta:
         model = Facture
-        fields = ['type_facture', 'frais', 'date']      
+        fields = ['type_facture', 'frais', 'date']
 
 class LigneFactureForm(forms.ModelForm):
     class Meta:
@@ -125,4 +132,4 @@ class ResultatForm(forms.ModelForm):
 class PrescriptionForm(forms.ModelForm):
     class Meta:
         model = Prescription
-        fields = ['liste_medicaments', 'posologie']        
+        fields = ['liste_medicaments', 'posologie']

@@ -821,6 +821,9 @@ def get_user_role(user):
 ROLES_PAGES_ACCES = ['patient', 'secretaire', 'medecin']
 ROLES_SUPPORT = ['patient', 'secretaire', 'laborantin']
 
+
+#modi
+
 def user_home(request):
     user_id = request.session.get('user_id')
     user = None
@@ -847,7 +850,7 @@ def inscription(request):
                 'nom': form.cleaned_data['nom'],
                 'prenom': form.cleaned_data['prenom'],
                 'sexe': form.cleaned_data['sexe'],
-                'age': form.cleaned_data['age'],
+                'date_naissance': form.cleaned_data['date_naissance'],
                 'email': form.cleaned_data['email'],
                 'mot_de_passe': form.cleaned_data['mot_de_passe'],
                 'photo': photo,
@@ -908,6 +911,9 @@ def connexion(request):
         form = ConnexionForm()
     return render(request, 'user_template/connexion.html', {'form': form})
 
+
+
+#modi
 
 # premiere page que voit l'utilisateur
 def welcome_view(request):
@@ -1068,7 +1074,7 @@ def hos_add_doctor(request):
         nom = request.POST.get("nom")
         prenom = request.POST.get("prenom")
         sexe = request.POST.get("sexe")
-        age = request.POST.get("age")
+        date_naissance = request.POST.get("date_naissance")  # <-- récupère la date de naissance        
         email = request.POST.get("email")
         mot_de_passe = request.POST.get("mot_de_passe")
         mot_de_passe_confirm = request.POST.get("mot_de_passe_confirm")
@@ -1097,7 +1103,7 @@ def hos_add_doctor(request):
             nom=nom,
             prenom=prenom,
             sexe=sexe,
-            age=age,
+            date_naissance=date_naissance,
             email=email,
             mot_de_passe=mot_de_passe,  # Hash si tu veux, sinon plaintext, mais déconseillé en prod
             specialite=specialite,
@@ -1116,7 +1122,7 @@ def hos_add_patient(request):
         nom = request.POST.get("nom")
         prenom = request.POST.get("prenom")
         sexe = request.POST.get("sexe")
-        age = request.POST.get("age")
+        date_naissance = request.POST.get("date_naissance")  # <-- récupère la date de naissance
         email = request.POST.get("email")
         mot_de_passe = request.POST.get("password")
         mot_de_passe2 = request.POST.get("password_confirm")
@@ -1141,7 +1147,7 @@ def hos_add_patient(request):
                 nom=nom,
                 prenom=prenom,
                 sexe=sexe,
-                age=age,
+                date_naissance=date_naissance,  # <-- enregistre la date de naissance
                 email=email,
                 mot_de_passe=mot_de_passe,  # À chiffrer avec make_password pour une vraie app !
                 numero_carte_identite=numero_carte_identite,

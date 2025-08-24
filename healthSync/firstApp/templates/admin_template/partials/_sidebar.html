@@ -38,6 +38,12 @@
                     <span class="title">Mon Bilan</span>
                 </a>
             </li>
+            <li>
+            <a href="{% url 'hos_patient_profileself' %}">
+                <i class="fa fa-folder-open"></i>
+                <span class="title">Dossier médical</span>
+            </a>
+            </li>
             {% endif %}
 
             {% if role == 'medecin' %}

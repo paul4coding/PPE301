@@ -624,7 +624,23 @@ def edit_page_dossier_patient(request, page_id):
 
 #fin page_dossier_patient
 
-
+#pour patient connecte
+def hos_patient_profile_self(request):
+    context = get_admin_context(request)
+    user = context.get('user')
+    if not user or not hasattr(user, 'patient'):
+        messages.error(request, "Accès réservé aux patients.")
+        return redirect('connexion')
+    patient = user.patient
+    dossier = getattr(patient, 'dossier', None)
+    context.update({
+        'patient': patient,
+        'dossier': dossier,
+        'can_edit_dossier': False,
+        'can_add_page': False,
+        'can_edit_page': False,
+    })
+    return render(request, 'admin_template/html/hos-patient-profile.html', context)
 # Affichage du profil/dossier patient
 def hos_patient_profile(request, patient_id):
     context = get_admin_context(request)

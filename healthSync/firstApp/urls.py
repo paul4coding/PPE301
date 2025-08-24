@@ -27,6 +27,7 @@ urlpatterns = [
     path('dossier/<int:dossier_id>/page/ajouter/', views.add_page_dossier_patient, name='add_page_dossier_patient'),
     path('dossier/page/<int:page_id>/edit/', views.edit_page_dossier_patient, name='edit_page_dossier_patient'),
     path('patient/<int:patient_id>/profil/', views.hos_patient_profile, name='hos_patient_profile'),
+    path('patient/profil/', views.hos_patient_profile_self, name='hos_patient_profileself'),
     path('dossier/<int:dossier_id>/delete/', views.delete_dossier_patient, name='delete_dossier_patient'),
     # === ADMIN ===
     path('admin_home/', views.admin_home, name='admin_home'),

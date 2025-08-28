@@ -292,12 +292,31 @@ def edit_resultat(request, resultat_id):
 def edit_facture(request, facture_id):
     context = get_admin_context(request)
     facture = get_object_or_404(Facture, id=facture_id)
+
+    # Interdiction de modification si déjà clôturée
+    if facture.statut == "cloturee":
+        messages.warning(request, "Cette facture est clôturée et n'est plus modifiable.")
+        return redirect('detail_facture', facture_id=facture.id)
+
     if request.method == 'POST':
         form = FactureForm(request.POST, instance=facture)
+        action = request.POST.get('action')
         if form.is_valid():
-            form.save()
-            messages.success(request, "Facture modifiée avec succès.")
-            return redirect('detail_facture', facture_id=facture.id)
+            facture = form.save(commit=False)
+            type_facture = getattr(facture, 'type', '').lower()
+            # Bouton spécial pour clôturer directement une consultation
+            if action == "valider_finale" and type_facture == "consultation":
+                facture.statut = "cloturee"
+                facture.save()
+                messages.success(request, "Facture de consultation clôturée définitivement.")
+                return redirect('detail_facture', facture_id=facture.id)
+            else:
+                # Si la facture est consultation, on ne la fait PAS passer par le workflow normal !
+                if type_facture == "consultation":
+                    facture.statut = "brouillon"
+                facture.save()
+                messages.success(request, "Facture modifiée avec succès.")
+                return redirect('detail_facture', facture_id=facture.id)
     else:
         form = FactureForm(instance=facture)
     context['form'] = form

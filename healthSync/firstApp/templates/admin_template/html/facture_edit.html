@@ -10,7 +10,6 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'admin/assets/images/apple-touch-icon-114-precomposed.png' %}" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'admin/assets/images/apple-touch-icon-72-precomposed.png' %}" />
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'admin/assets/images/apple-touch-icon-144-precomposed.png' %}" />
-    
     <link href="{% static 'admin/assets/plugins/pace/pace-theme-flash.css' %}" rel="stylesheet" type="text/css" media="screen" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/plugins/bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet" type="text/css" />
@@ -20,7 +19,6 @@
     <link href="{% static 'admin/assets/plugins/perfect-scrollbar/perfect-scrollbar.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/style.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'admin/assets/css/responsive.css' %}" rel="stylesheet" type="text/css" />
-
 </head>
 <body style="background:#f8f9fa;">
 
@@ -41,12 +39,27 @@
         {{ form.as_p }}
         <button type="submit" class="btn btn-success">Enregistrer</button>
         <a href="{% url 'detail_facture' facture.id %}" class="btn btn-default">Annuler</a>
+        <button id="btn-validation-finale" name="action" value="valider_finale" type="submit" class="btn btn-danger" style="display:none; margin-left:10px;">Valider et clôturer la facture</button>
     </form>
-
 </div>
 
 <!-- CORE JS FRAMEWORK - START -->
 <script src="{% static 'admin/assets/js/jquery.min.js' %}"></script>
+<script>
+$(document).ready(function(){
+    function checkConsultation() {
+        // Adapter le sélecteur si votre champ s'appelle différemment !
+        var type = $('[name="type"]').val();
+        if(type && type.toLowerCase() === "Consultation"){
+            $("#btn-validation-finale").show();
+        } else {
+            $("#btn-validation-finale").hide();
+        }
+    }
+    checkConsultation();
+    $('[name="type"]').on('change', checkConsultation);
+});
+</script>
 <script src="{% static 'admin/assets/js/jquery.easing.min.js' %}"></script>
 <script src="{% static 'admin/assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'admin/assets/plugins/pace/pace.min.js' %}"></script>
@@ -55,8 +68,6 @@
 <script>
     window.jQuery || document.write('<script src="{% static "admin/assets/js/jquery.min.js" %}"><\/script>');
 </script>
-<!-- CORE JS FRAMEWORK - END -->
 <script src="{% static 'admin/assets/js/scripts.js' %}"></script>
-
 </body>
 </html>

@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-amvpa_$00l28-i8gja$iarmbpwck$m34l+0t=%#^08sy7q*s1s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition

@@ -88,7 +88,7 @@
             id: {{ facture.id }},
             patient: "{{ facture.patient|default_if_none:''|escapejs }}",
             date: "{{ facture.date|date:'d/m/Y' }}",
-            type: "{{ facture.type|default_if_none:''|escapejs }}",
+            type: "{{ facture.type_facture.intitule|default_if_none:''|escapejs }}",
             total_lignes: "{{ facture.total_lignes|default_if_none:facture.frais|floatformat:0 }}",
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
@@ -112,13 +112,13 @@
                     <td>${facture.type}</td>
                     <td>${facture.total_lignes} fcfa</td>
                     <td>
-            <a href="/health/facture/${facture.id}/" class="btn btn-info btn-sm">Détail</a>
-            <a href="/health/facture/${facture.id}/edit/" class="btn btn-warning btn-sm">Modifier</a>
-            <form method="post" action="/health/facture/${facture.id}/delete/" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');">
-                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-            </form>
-        </td>
+                        <a href="/health/facture/${facture.id}/" class="btn btn-info btn-sm">Détail</a>
+                        <a href="/health/facture/${facture.id}/edit/" class="btn btn-warning btn-sm">Modifier</a>
+                        <form method="post" action="/health/facture/${facture.id}/delete/" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
                 </tr>
             `;
         });
